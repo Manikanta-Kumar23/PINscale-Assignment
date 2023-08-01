@@ -1,0 +1,143 @@
+.background {
+  background-image: url("https://res.cloudinary.com/djwve85r0/image/upload/v1690626120/BG1_fwalla.jpg");
+  backdrop-filter: blur(45px);
+  background-size: cover;
+  height: 100vh;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.page-card {
+  background-color: #ffffff15;
+  border-radius: 13px;
+  box-shadow: 3px 3px 23px #838181;
+  display: flex;
+  width: 85%;
+  height: 77%;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(25px);
+}
+.image-card {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 65%;
+}
+@media (min-width: 768px) {
+  .image-card {
+    display: flex;
+  }
+}
+.company-logo {
+  width: 25%;
+  min-width: 175px;
+  padding: 5px;
+  margin: 5px;
+  align-self: flex-start;
+}
+.vector-img {
+  width: 95%;
+  min-width: 350px;
+  padding: 5px;
+  margin: 5px;
+}
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  border-style: solid;
+  border-radius: 13px;
+  border-width: 3px;
+  border-color: #ffffff15;
+  width: 85%;
+  margin-right: 5%;
+  height: 85%;
+  box-shadow: inset 1px 1px 7px 0px #838181;
+}
+@media (min-width: 768px) {
+  .login-form {
+    width: 35%;
+  }
+}
+.logo {
+  width: 65px;
+  height: 65px;
+  min-height: 35px;
+  min-width: 35px;
+  padding: 5px;
+  margin: 5px;
+}
+.form-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.input-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 95%;
+}
+.label {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  color: #343434;
+  font-weight: 700;
+  padding: 5px;
+  margin: 5px;
+  margin-bottom: 0px;
+}
+.icon-box {
+  border-style: solid;
+  border-width: 1px;
+  border-color: #e0e0e0;
+  padding: 5px;
+  margin: 5px;
+  display: flex;
+  align-items: center;
+  margin-top: 0px;
+  width: 95%;
+  border-radius: 5px;
+}
+.input {
+  width: 85%;
+  padding: 5px;
+  padding-left: 13px;
+  font-size: 17px;
+  margin-left: 5px;
+  color: #1b2a33;
+  background-color: transparent;
+  border: none;
+  border-width: 0px;
+  border-color: transparent;
+  outline: none;
+}
+.login-btn {
+  font-size: 13px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 900;
+  color: #ffffff;
+  border-radius: 13px;
+  height: 35px;
+  width: 125px;
+  border-width: 0px;
+  background-color: #1b2a33;
+  align-self: center;
+  margin: 5px;
+  padding: 5px;
+  margin-top: 13px;
+  cursor: pointer;
+  outline: none;
+}
+.err {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  color: #fe5c73;
+  font-weight: 700;
+  padding: 5px;
+  margin: 5px;
+  margin-bottom: 0px;
+}

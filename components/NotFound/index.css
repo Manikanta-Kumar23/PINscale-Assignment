@@ -1,0 +1,54 @@
+.not-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffffff;
+  backdrop-filter: blur(15px);
+  padding: 3%;
+  height: 100vh;
+}
+.not-img {
+  width: 35%;
+  padding: 5px;
+  margin: 5px;
+  margin-bottom: 3%;
+  color: #ffffff;
+}
+@media (min-width: 768px) {
+  .not-found-img {
+    width: 35%;
+  }
+}
+.not-heading {
+  font-family: "Roboto";
+  font-size: 23px;
+  font-weight: 700;
+  color: #343c6a;
+  margin: 5px;
+  padding: 5px;
+}
+.not-para {
+  font-family: "Roboto";
+  font-size: 13px;
+  font-weight: 500;
+  color: #718ebf;
+  margin: 5px;
+  padding: 5px;
+}
+.home-btn {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  padding: 8px, 16px 8px, 16px;
+  background-color: #2d60ff;
+  color: #ffffff;
+  border-width: 0px;
+  cursor: pointer;
+  outline: none;
+  outline-style: double;
+  border-radius: 13px;
+  width: 125px;
+  height: 35px;
+}
