@@ -36,9 +36,12 @@ class Login extends Component {
   };
 
   onCheckMail = (event) => {
-    if (event.target.value.endsWith("@gmail.com") === false) {
+    if (
+      event.target.value.endsWith("@gmail.com") === false &&
+      event.target.value !== ""
+    ) {
       this.setState({
-        errMssg: "Please provide a valid Email-Id",
+        errMssg: "*Please provide a valid Email-Id",
         mailErr: true,
       });
     } else if (event.target.value.endsWith("@gmail.com")) {
@@ -51,27 +54,31 @@ class Login extends Component {
 
   onLogin = async (event) => {
     const { email, password } = this.state;
-    const userDetails = { email, password };
     event.preventDefault();
-    const url = `https://bursting-gelding-24.hasura.app/api/rest/get-user-id`;
-    const options = {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-hasura-admin-secret":
-          "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
-      },
-      body: JSON.stringify(userDetails),
-    };
-    const res = await fetch(url, options);
-    const data = await res.json();
-    if (data.get_user_id.length !== 0) {
-      this.onSuccess(data.get_user_id[0].id);
+    if (email !== "" && password !== "") {
+      const userDetails = { email, password };
+      const url = `https://bursting-gelding-24.hasura.app/api/rest/get-user-id`;
+      const options = {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-hasura-admin-secret":
+            "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
+        },
+        body: JSON.stringify(userDetails),
+      };
+      const res = await fetch(url, options);
+      const data = await res.json();
+      if (data.get_user_id.length !== 0) {
+        this.onSuccess(data.get_user_id[0].id);
+      } else {
+        this.setState({
+          mailErr: true,
+          errMssg: "*email & password doesn't match",
+        });
+      }
     } else {
-      this.setState({
-        mailErr: true,
-        errMssg: "email & password doesn't match",
-      });
+      alert("Email & Password are required");
     }
   };
 
@@ -139,7 +146,7 @@ class Login extends Component {
               <button className="login-btn" type="submit">
                 Login
               </button>
-              {mailErr && <p className="err">*{errMssg}</p>}
+              {mailErr && <p className="err">{errMssg}</p>}
             </div>
           </form>
         </div>

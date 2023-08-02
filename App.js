@@ -536,12 +536,8 @@ class App extends Component {
         <Switch>
           <Route exact path="/login" component={Login} />
           <AuthenticateRoute exact path="/" component={Home} />
-          <AuthenticateRoute
-            exact
-            path="/transactions"
-            component={Transactions}
-          />
-          <AuthenticateRoute exact path="/profile" component={Profile} />
+          <AuthenticateRoute path="/transactions" component={Transactions} />
+          <AuthenticateRoute path="/profile" component={Profile} />
           <Route component={NotFound} />
         </Switch>
       </ResourceContext.Provider>
