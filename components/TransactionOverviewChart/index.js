@@ -1,6 +1,13 @@
 import { format, parseISO } from "date-fns";
 
-import { BarChart, Bar, XAxis, YAxis, Legend } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 import "./index.css";
 
@@ -48,59 +55,61 @@ const TransactionOverviewChart = (props) => {
       {credit === 0 && debit === 0 ? (
         <p className="no-data">No Data to show at the given time.</p>
       ) : (
-        <BarChart
-          width={900}
-          height={400}
-          data={formatData}
-          margin={{ top: 5 }}
-        >
-          <XAxis
-            dataKey="date"
-            tick={{
-              stroke: "#6c757d",
-              strokeWidth: 1,
-              fontSize: 15,
-              fontFamily: "Roboto",
-            }}
-          />
-          <YAxis
-            tickFormatter={DataFormatter}
-            tick={{
-              stroke: "#6c757d",
-              strokeWidth: 0.5,
-              fontSize: 15,
-              fontFamily: "Roboto",
-            }}
-          />
-          <Legend
-            layout="horizontal"
-            align="right"
-            verticalAlign="top"
-            wrapperStyle={{
-              paddingTop: 20,
-              textAlign: "center",
-              fontSize: 12,
-              fontFamily: "Roboto",
-              margin: 5,
-              radius: [5, 5, 5, 5],
-            }}
-          />
-          <Bar
-            dataKey="debit"
-            name="Debit"
-            fill="#4D78FF"
-            radius={[5, 5, 5, 5]}
-            barSize="20%"
-          />
-          <Bar
-            dataKey="credit"
-            name="Credit"
-            fill="#FCAA0B"
-            radius={[5, 5, 5, 5]}
-            barSize="20%"
-            margin="3%"
-          />
-        </BarChart>
+        <ResponsiveContainer width="85%" height={400}>
+          <BarChart
+            width={500}
+            height={400}
+            data={formatData}
+            margin={{ top: 5 }}
+          >
+            <XAxis
+              dataKey="date"
+              tick={{
+                stroke: "#6c757d",
+                strokeWidth: 1,
+                fontSize: 15,
+                fontFamily: "Roboto",
+              }}
+            />
+            <YAxis
+              tickFormatter={DataFormatter}
+              tick={{
+                stroke: "#6c757d",
+                strokeWidth: 0.5,
+                fontSize: 15,
+                fontFamily: "Roboto",
+              }}
+            />
+            <Legend
+              layout="horizontal"
+              align="right"
+              verticalAlign="top"
+              wrapperStyle={{
+                paddingTop: 20,
+                textAlign: "center",
+                fontSize: 12,
+                fontFamily: "Roboto",
+                margin: 5,
+                radius: [5, 5, 5, 5],
+              }}
+            />
+            <Bar
+              dataKey="debit"
+              name="Debit"
+              fill="#4D78FF"
+              radius={[5, 5, 5, 5]}
+              barSize="20%"
+            />
+            <Bar
+              dataKey="credit"
+              name="Credit"
+              fill="#FCAA0B"
+              radius={[5, 5, 5, 5]}
+              barSize="20%"
+              margin="3%"
+            />
+          </BarChart>
+        </ResponsiveContainer>
       )}
     </div>
   );

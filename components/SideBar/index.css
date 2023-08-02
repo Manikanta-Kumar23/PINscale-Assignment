@@ -13,9 +13,9 @@
   border-color: #00000025;
 }
 @media (min-width: 768px) {
-    .sidebar-card {
-        display: flex;
-    }
+  .sidebar-card {
+    display: flex;
+  }
 }
 .sidebar-logo {
   width: 85%;
@@ -159,6 +159,13 @@
   display: flex;
   padding: 5px;
   align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+@media (min-width: 768px) {
+  .btn-crd {
+    flex-direction: row;
+  }
 }
 .s-btn {
   font-family: Arial, Helvetica, sans-serif;
@@ -177,6 +184,7 @@
   border-radius: 7px;
   margin: 5px;
   margin-right: 13px;
+  margin-bottom: 7px;
 }
 .no-btn {
   font-family: Arial, Helvetica, sans-serif;

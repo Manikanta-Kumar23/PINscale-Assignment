@@ -326,7 +326,7 @@ class Profile extends Component {
         <SideBar />
         <div className="home-content">
           <Navbar />
-          {this.userData()}
+          <div className="main-content">{this.userData()}</div>
         </div>
       </div>
     );

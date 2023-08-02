@@ -29,6 +29,7 @@ const ResourceContext = React.createContext({
   updateSuccessMssg: "",
   showSidebar: "",
   onShow: () => {},
+  allTransaction: () => {},
 });
 
 export default ResourceContext;

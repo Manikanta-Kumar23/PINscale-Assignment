@@ -53,6 +53,11 @@ class Transactions extends Component {
     showPopup: true,
   };
 
+  componentDidMount() {
+    const { allTransaction } = this.context;
+    allTransaction();
+  }
+
   changeTypeId = (id) => {
     this.setState({
       activeTypeId: id,
@@ -349,5 +354,7 @@ class Transactions extends Component {
     );
   }
 }
+
+Transactions.contextType = ResourceContext;
 
 export default Transactions;

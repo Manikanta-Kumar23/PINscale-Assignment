@@ -528,6 +528,7 @@ class App extends Component {
           updateSuccessMssg,
           showSidebar,
           onShow: this.onShow,
+          allTransaction: this.allTransaction,
         }}
       >
         <UpdateTransactions />
