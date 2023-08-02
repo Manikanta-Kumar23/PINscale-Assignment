@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/PINscale-Assignment/static/css/main.58565689.css",
-    "main.js": "/PINscale-Assignment/static/js/main.aa27b487.js",
+    "main.js": "/PINscale-Assignment/static/js/main.2bf7aa7a.js",
     "index.html": "/PINscale-Assignment/index.html",
     "main.58565689.css.map": "/PINscale-Assignment/static/css/main.58565689.css.map",
-    "main.aa27b487.js.map": "/PINscale-Assignment/static/js/main.aa27b487.js.map"
+    "main.2bf7aa7a.js.map": "/PINscale-Assignment/static/js/main.2bf7aa7a.js.map"
   },
   "entrypoints": [
     "static/css/main.58565689.css",
-    "static/js/main.aa27b487.js"
+    "static/js/main.2bf7aa7a.js"
   ]
 }
