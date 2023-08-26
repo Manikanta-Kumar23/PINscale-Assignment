@@ -1,5 +1,4 @@
 import Cookies from "js-cookie";
-
 import { Redirect, Route } from "react-router-dom";
 
 const AuthenticateRoute = (props) => {

@@ -1,16 +1,11 @@
-import "./index.css";
-
 import { useState } from "react"
-
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
-
 import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
-
 import { MdOutlineMail } from "react-icons/md";
-
 import { PiPassword } from "react-icons/pi";
-
 import Cookies from "js-cookie";
+
+import "./index.css";
 
 const Login = () => {
   const [email , setEmail] = useState("")

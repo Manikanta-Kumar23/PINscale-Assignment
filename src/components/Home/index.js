@@ -1,35 +1,20 @@
 import Popup from "reactjs-popup";
-
-import useUserId from "../UserId";
-
-import useDataFetching from "../DataFetching";
-
 import { parseISO, format } from "date-fns";
-
 import { ThreeDots } from "react-loader-spinner";
-
-import ResourceContext from "../../context/ResourceContext";
-
 import { RxCross2 } from "react-icons/rx";
-
 import { BiUpArrowCircle } from "react-icons/bi";
-
 import { BsArrowDownCircle } from "react-icons/bs";
-
 import { HiOutlinePencil } from "react-icons/hi";
-
 import { IoWarningOutline } from "react-icons/io5";
-
 import { RiDeleteBin6Line } from "react-icons/ri";
 
+import useUserId from "../useUserId";
+import useDataFetching from "../useDataFetching";
+import ResourceContext from "../../context/ResourceContext";
 import FailureView from "../FailureView";
-
 import TransactionOverviewChart from "../TransactionOverviewChart";
-
 import SideBar from "../SideBar";
-
 import Navbar from "../Navbar";
-
 import "./index.css";
 
 const apiStatus = {
@@ -46,7 +31,7 @@ const Home = () => {
   "x-hasura-admin-secret":
     "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",}}
 
-    if (parseInt(userId) !== 3) {
+    if ((userId) !== "3") {
       apiUrl = {...apiUrl , creditUrl:"https://bursting-gelding-24.hasura.app/api/rest/credit-debit-totals" ,
                 recentTransactionUrl: "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=3&offset=0" ,
               overviewUrl: "https://bursting-gelding-24.hasura.app/api/rest/daywise-totals-7-days" }
@@ -63,10 +48,10 @@ const Home = () => {
     const homeCreditData = useDataFetching(apiUrl.creditUrl , apiOptions)
     const isLoading = homeCreditData.isLoading
     let creditData
-    if (isLoading === apiStatus.res && parseInt(userId) !== 3) {
+    if (isLoading === apiStatus.res && (userId) !== "3") {
       creditData = homeCreditData.data.totals_credit_debit_transactions
     }
-    else if (isLoading === apiStatus.res && parseInt(userId) === 3) {
+    else if (isLoading === apiStatus.res && (userId) === "3") {
       creditData = homeCreditData.data.transaction_totals_admin
     }
 
@@ -90,10 +75,10 @@ const Home = () => {
     const overviewData = useDataFetching(apiUrl.overviewUrl , apiOptions)
     const overviewLoading = overviewData.isLoading
     let overviewList = []
-    if (overviewLoading === apiStatus.res && parseInt(userId) !== 3) {
+    if (overviewLoading === apiStatus.res && (userId) !== "3") {
       overviewList = overviewData.data.last_7_days_transactions_credit_debit_totals
     }
-    else if (overviewLoading === apiStatus.res && parseInt(userId) === 3) {
+    else if (overviewLoading === apiStatus.res && (userId) === "3") {
       overviewList = overviewData.data.last_7_days_transactions_totals_admin;
     }
 
@@ -103,7 +88,7 @@ const Home = () => {
         let credit = 0;
         let debit = 0;
         creditData.map((each) => {
-          if (each.type === "credit") {
+          if (each.type.toLowerCase() === "credit") {
             credit += each.sum;
             return credit;
           } else {
@@ -132,7 +117,7 @@ const Home = () => {
                 <div className="cost-card">
                   <h1
                     className={`cost ${
-                      each.type === "Debit" ? "debit-cost" : null
+                      each.type.toLocaleLowerCase() === "debit" ? "debit-cost" : null
                     }`}
                   >
                     ${each.cost}
@@ -212,7 +197,7 @@ const Home = () => {
                     <table className="table">
                       <thead className="head">
                         <tr className="head-card">
-                          {parseInt(userId) === 3 && <th>User Name</th>}
+                          {(userId) === "3" && <th>User Name</th>}
                           <th>Transaction Name</th>
                           <th>Category</th>
                           <th>Date</th>
@@ -223,10 +208,10 @@ const Home = () => {
                         <tbody className="body">
                           {recentTransactionsList.map((each) => (
                             <tr key={each.id}>
-                              {parseInt(userId) === 3 && (
+                              {(userId) === "3" && (
                                 <td>
                                   <div className="usr-icn-crd">
-                                    {parseInt(userId) === 3 ? (
+                                    {(userId) === "3" ? (
                                       each.type.toLowerCase() === "credit" ? (
                                         <BiUpArrowCircle
                                           color="#16DBAA"
@@ -257,7 +242,7 @@ const Home = () => {
                               )}
                               <td>
                                 <div className="align">
-                                  {parseInt(userId) !== 3 ? (
+                                  {(userId) !== "3" ? (
                                     each.type.toLowerCase() === "credit" ? (
                                       <BiUpArrowCircle
                                         color="#16DBAA"
@@ -294,7 +279,7 @@ const Home = () => {
                                     : `-$${each.amount}`
                                 }`}
                               </td>
-                              {parseInt(userId) !== 3 && (
+                              {(userId) !== "3" && (
                                 <>
                                   <td>
                                     <button

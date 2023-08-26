@@ -1,8 +1,9 @@
 import {useState } from "react";
+import { RxCross2 } from "react-icons/rx";
+import { format, parse} from "date-fns";
 
 import ResourceContext from "../../context/ResourceContext";
-
-import { RxCross2 } from "react-icons/rx";
+import useUserId from "../useUserId";
 
 import "./index.css";
 
@@ -31,6 +32,7 @@ const AddTransactions = () => {
   const [dateErrMssg , setDateErrMssg] = useState("")
   const [typeErr , setTypeErr] = useState(false)
   const [typeErrMssg ,setTypeErrMssg]  =useState("")
+  const userId = useUserId()
 
   const onTransactionName = (event) => {
       setTransactionName(event.target.value)
@@ -109,18 +111,31 @@ const AddTransactions = () => {
           const {
             showTransactionPopup,
             onCancel,
-            onAddTransaction,
             transactionSuccessMssg,
+            addTransactionToDatabase
           } = value;
-          const addTransc = async (event) => {
+          const onAddTransaction = async (event) => {
             event.preventDefault();
-            await onAddTransaction(
-              transactionName,
-              transactionType,
-              transactionCategory,
-              transactionAmount,
-              transactionDate
-            );
+              if (transactionName !== "" &&
+                transactionType !== "" &&
+                transactionCategory !== "" &&
+                transactionAmount!== "" &&
+                transactionDate !== "") {
+                  let formatDate
+                  if (transactionDate !== "") {
+                    const parsedDate = parse(transactionDate , "yyyy-MM-dd", new Date());
+                    formatDate = format(parsedDate, "yyyy-MM-dd'T'HH:mm:ssxxx");
+                  }
+                  const updateData = {name: transactionName,
+                    type: transactionType,
+                    category: transactionCategory,
+                    amount: transactionAmount,
+                    date: formatDate , user_id: userId}
+                    await addTransactionToDatabase(updateData)
+                }
+                else {
+                  alert("All Input Fields are required?");
+                }
               setTransactionName("")
               setTransactionAmount("")
               setTransactionCategory("null")
@@ -133,7 +148,7 @@ const AddTransactions = () => {
           return (
             showTransactionPopup && (
               <div className="add-transactions">
-                <form onSubmit={addTransc} className="add-form-crd">
+                <form onSubmit={onAddTransaction} className="add-form-crd">
                   <div className="frm-head">
                     {!transactionSuccessMssg && (
                       <div className="hed-crd">

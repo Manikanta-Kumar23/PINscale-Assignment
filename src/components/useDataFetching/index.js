@@ -10,11 +10,8 @@ const apiStatus = {
 const useDataFetching = (url , options) => {
     const [data , setData] = useState([])
     const [isLoading , setIsLoading] = useState(apiStatus.initial)
-    useEffect(() => {
-        setIsLoading(apiStatus.inProgress)
-        const option = options
-        async function fetchData() {
-            const res = await fetch(url , option)
+    const fetchData = async ()  => {
+        const res = await fetch(url , options)
                 const data = await res.json()
                 if (res.ok) {
                     setData(data)
@@ -23,7 +20,9 @@ const useDataFetching = (url , options) => {
                 else {
                     setIsLoading(apiStatus.rej)
                 }
-            }
+    }
+    useEffect(() => {
+        setIsLoading(apiStatus.inProgress)
         fetchData()
         
   // eslint-disable-next-line react-hooks/exhaustive-deps

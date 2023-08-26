@@ -1,12 +1,9 @@
-import Cookies from "js-cookie";
-
 import { withRouter } from "react-router-dom";
+import Cookies from "js-cookie";
+import { HiMenu } from "react-icons/hi";
+import { Link } from "react-router-dom";
 
 import ResourceContext from "../../context/ResourceContext";
-
-import { HiMenu } from "react-icons/hi";
-
-import { Link } from "react-router-dom";
 
 import "./index.css";
 

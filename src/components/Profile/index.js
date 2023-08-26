@@ -1,14 +1,10 @@
-import SideBar from "../SideBar";
-
-import Navbar from "../Navbar";
-
-import useDataFetching from "../DataFetching";
-
 import { ThreeDots } from "react-loader-spinner";
 
 import FailureView from "../FailureView";
-
-import useUserId from "../UserId";
+import SideBar from "../SideBar";
+import Navbar from "../Navbar";
+import useDataFetching from "../useDataFetching";
+import useUserId from "../useUserId";
 
 import "./index.css";
 
@@ -111,7 +107,7 @@ const Profile = () => {
   const userId = useUserId()
   let url;
     let options;
-    if (parseInt(userId) !== 3) {
+    if ((userId) !== "3") {
       url = "https://bursting-gelding-24.hasura.app/api/rest/profile";
       options = {
         method: "GET",

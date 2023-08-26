@@ -1,32 +1,20 @@
 import { useState } from "react";
-
-import AddTransactions from "./components/AddTransactions";
-
-import UpdateTransactions from "./components/UpdateTransactions";
-
 import { Switch, Route, withRouter } from "react-router-dom";
-
-import { format, parse, parseISO } from "date-fns";
-
-import useDataFetching from "./components/DataFetching";
-
-import Login from "./components/Login";
-
-import Home from "./components/Home";
-
-import Transactions from "./components/Transactions";
-
-import Profile from "./components/Profile";
-
-import AuthenticateRoute from "./components/AuthenticateRoute";
-
-import ResourceContext from "./context/ResourceContext";
-
-import NotFound from "./components/NotFound";
-
-import useUserId from "./components/UserId"
+import { format, parseISO } from "date-fns";
 
 import "./App.css";
+import AddTransactions from "./components/AddTransactions";
+import UpdateTransactions from "./components/UpdateTransactions";
+import useDataFetching from "./components/useDataFetching";
+import Login from "./components/Login";
+import Home from "./components/Home";
+import Transactions from "./components/Transactions";
+import Profile from "./components/Profile";
+import AuthenticateRoute from "./components/AuthenticateRoute";
+import NotFound from "./components/NotFound";
+import useUserId from "./components/useUserId"
+import ResourceContext from "./context/ResourceContext";
+
 
 const apiStatus = {
   res: "SUCCESS",
@@ -132,17 +120,13 @@ const  App = () => {
   const [updateTransacList , setUpdateTransacList] = useState([])
   const [showSidebar , setShowSidebar] = useState(false)
   const [updateSuccessMssg , setUpdateSuccessMssg] = useState(false)
-  const [updateTransactionName , setUpdateTransactionName] = useState("")
-  const [updateTransactionType , setUpdateTransactionType] = useState("")
-  const [updateTransactionCategory , setUpdateTransactionCategory] = useState("")
-  const [updateTransactionAmount , setUpdateTransactionAmount] = useState("")
-  const [updateTransactionDate , setUpdateTransactionDate] = useState("")
 
-  const apiUrls = [{userUrl: "https://bursting-gelding-24.hasura.app/api/rest/profile"} , {transactionsUrl:"https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=100&offset=0"}]
+  const userUrl = "https://bursting-gelding-24.hasura.app/api/rest/profile"
+  const transactionsUrl ="https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=100&offset=0"
   let apiOptions = {method: "GET" , headers: {"content-type": "application/json",
   "x-hasura-admin-secret":
     "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",}}
-    if (parseInt(userId) !== 3) {
+    if ((userId) !== "3") {
       apiOptions = {...apiOptions , headers: {...apiOptions.headers , "x-hasura-role": "user",
       "x-hasura-user-id": `${userId}`,}}
     }
@@ -150,7 +134,7 @@ const  App = () => {
       apiOptions = {...apiOptions , headers: {...apiOptions.headers , "x-hasura-role": "admin"}}
     }
 
-    const transactionDataApi = useDataFetching(apiUrls[1].transactionsUrl , apiOptions)
+    const transactionDataApi = useDataFetching(transactionsUrl , apiOptions)
     const transactionIsLoading = transactionDataApi.isLoading
     if (transactionIsLoading === apiStatus.res) {
       transactionList = transactionDataApi.data.transactions.map((each) => {
@@ -166,7 +150,7 @@ const  App = () => {
       })
     }
 
-    const userDataApi = useDataFetching(apiUrls[0].userUrl, apiOptions)
+    const userDataApi = useDataFetching(userUrl, apiOptions)
     const isLoading = userDataApi.isLoading
     let userList = []
     if (isLoading === apiStatus.res) {
@@ -266,34 +250,6 @@ const  App = () => {
     }
   };
 
-  const onAddTransaction = (name, type, category, amount, date) => {
-    if (
-      name !== "" &&
-      type !== "" &&
-      category !== "" &&
-      amount !== "" &&
-      date !== ""
-    ) {
-      let formatDate;
-      if (date !== "") {
-        const parsedDate = parse(date, "yyyy-MM-dd", new Date());
-        formatDate = format(parsedDate, "yyyy-MM-dd'T'HH:mm:ssxxx");
-      }
-      const updateData = {
-        name,
-        type,
-        category,
-        amount,
-        date: formatDate,
-        user_id: userId,
-      };
-
-      addTransactionToDatabase(updateData);
-    } else {
-      alert("All Input Fields are required?");
-    }
-  };
-
   const onClickEdit = async (id) => {
     const url = `https://bursting-gelding-24.hasura.app/api/rest/delete-transaction?id=${id}`;
     const options = {
@@ -312,56 +268,39 @@ const  App = () => {
       const updateList = transactionList.filter(
         (each) => each.id === data.delete_transactions_by_pk.id
       );
-      const { transactionName, type, category, amount, date } = updateList[0];
-      const formatDate = format(parseISO(date), "yyyy-MM-dd");
-        setUpdateTransacList(updateList[0])
+      const list = updateList[0];
+      const formatDate = format(parseISO(list.date), "yyyy-MM-dd");
+      const updatedList = {...list , date: formatDate}
+        setUpdateTransacList(updatedList)
         setShowUpdatePopup(true)
-        setUpdateTransactionName(transactionName)
-        setUpdateTransactionType(type)
-        setUpdateTransactionCategory(category)
-        setUpdateTransactionAmount(amount)
-        setUpdateTransactionDate(formatDate)
     }
   };
 
   const updateTransactionNameValue = (value) => {
     const updateTransactionName = value;
-      setUpdateTransactionName(updateTransactionName)
+    setUpdateTransacList({...updateTransacList , transactionName: updateTransactionName })
   };
 
   const updateTransactionTypeValue = (value) => {
     const updateTransactionType = value;
-      setUpdateTransactionType(updateTransactionType)
+    setUpdateTransacList({...updateTransacList , type: updateTransactionType})
   };
 
   const updateTransactionCategoryValue = (value) => {
     const updateTransactionCategory = value;
-      setUpdateTransactionCategory(updateTransactionCategory)
+    setUpdateTransacList({...updateTransacList , category:updateTransactionCategory})
   };
 
   const updateTransactionAmountValue = (value) => {
     const updateTransactionAmount = value;
-      setUpdateTransactionAmount(updateTransactionAmount)
+    setUpdateTransacList({...updateTransacList , amount: updateTransactionAmount})
   };
 
   const updateTransactionDateValue = (value) => {
     const updateTransactionDate = value;
-      setUpdateTransactionDate(updateTransactionDate)
+    setUpdateTransacList({...updateTransacList , date: updateTransactionDate})
   };
 
-  const onUpdateTransaction = (name, type, category, amount, date) => {
-    const parsedDate = parse(date, "yyyy-MM-dd", new Date());
-    const formatDate = format(parsedDate, "yyyy-MM-dd'T'HH:mm:ssxxx");
-    const updateData = {
-      id: updateTransacList.id,
-      name,
-      type,
-      category,
-      amount,
-      date: formatDate,
-    };
-    updateTransactionToDatabase(updateData);
-  };
 
     return (
       <ResourceContext.Provider
@@ -374,18 +313,13 @@ const  App = () => {
           transactionList,
           onDeleteTransaction: onDeleteTransaction,
           onCancel: onCancel,
-          onAddTransaction: onAddTransaction,
+          addTransactionToDatabase: addTransactionToDatabase,
           transactionSuccessMssg,
           onClickEdit: onClickEdit,
           showUpdatePopup,
           updateTransacList,
-          onUpdateTransaction: onUpdateTransaction,
+          updateTransactionToDatabase: updateTransactionToDatabase,
           imagesUrl,
-          updateTransactionName,
-          updateTransactionType,
-          updateTransactionCategory,
-          updateTransactionAmount,
-          updateTransactionDate,
           updateTransactionNameValue: updateTransactionNameValue,
           updateTransactionTypeValue: updateTransactionTypeValue,
           updateTransactionCategoryValue: updateTransactionCategoryValue,

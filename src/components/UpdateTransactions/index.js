@@ -1,10 +1,8 @@
 import { useState } from "react";
+import { format, parseISO , parse } from "date-fns";
+import { RxCross2 } from "react-icons/rx";
 
 import ResourceContext from "../../context/ResourceContext";
-
-import { format, parseISO } from "date-fns";
-
-import { RxCross2 } from "react-icons/rx";
 
 import "./index.css";
 
@@ -87,28 +85,22 @@ const UpdateTransactions = () => {
           const {
             showUpdatePopup,
             onCancel,
-            onUpdateTransaction,
-            updateTransactionName,
-            updateTransactionType,
-            updateTransactionCategory,
-            updateTransactionAmount,
-            updateTransactionDate,
+            updateTransacList ,
             updateTransactionNameValue,
             updateTransactionTypeValue,
             updateTransactionCategoryValue,
             updateTransactionAmountValue,
             updateTransactionDateValue,
             updateSuccessMssg,
+            updateTransactionToDatabase
           } = value;
-          const updateTransc = (event) => {
+          const onUpdateTransaction = async (event) => {
             event.preventDefault();
-            onUpdateTransaction(
-              updateTransactionName,
-              updateTransactionType,
-              updateTransactionCategory,
-              updateTransactionAmount,
-              updateTransactionDate
-            );
+            const parsedDate = parse(updateTransacList.date, "yyyy-MM-dd", new Date());
+            const formatDate = format(parsedDate, "yyyy-MM-dd'T'HH:mm:ssxxx");
+            const data = {...updateTransacList , 
+            date: formatDate}
+            updateTransactionToDatabase(data)
           };
           const nameChange = (event) => {
             updateTransactionNameValue(event.target.value);
@@ -131,7 +123,7 @@ const UpdateTransactions = () => {
           return (
             showUpdatePopup && (
               <div className="add-transactions">
-                <form onSubmit={updateTransc} className="add-form-crd">
+                <form onSubmit={onUpdateTransaction} className="add-form-crd">
                   <div className="frm-head">
                     {!updateSuccessMssg && (
                       <div className="hed-crd">
@@ -160,7 +152,7 @@ const UpdateTransactions = () => {
                             className="add-transc-name"
                             onBlur={onBlurName}
                             onChange={nameChange}
-                            value={updateTransactionName}
+                            value={updateTransacList.transactionName}
                             type="text"
                             id="transc-name"
                             placeholder="Enter Name"
@@ -175,7 +167,7 @@ const UpdateTransactions = () => {
                           </label>
                           <select
                             onBlur={onBlurType}
-                            value={updateTransactionType}
+                            value={updateTransacList.transactionType}
                             onChange={typeChange}
                             className="add-transc-name"
                             id="transc-type"
@@ -197,7 +189,7 @@ const UpdateTransactions = () => {
                           <select
                             onChange={catChange}
                             onBlur={onBlurCat}
-                            value={updateTransactionCategory}
+                            value={updateTransacList.transactionCategory}
                             className="add-transc-name"
                             id="transc-type"
                           >
@@ -216,7 +208,7 @@ const UpdateTransactions = () => {
                           <input
                             onBlur={onBlurAmount}
                             onChange={amntChange}
-                            value={updateTransactionAmount}
+                            value={updateTransacList.transactionAmount}
                             className="add-transc-name"
                             type="number"
                             id="transc-amount"
@@ -234,7 +226,7 @@ const UpdateTransactions = () => {
                             onBlur={onBlurDate}
                             onChange={dateChange}
                             value={format(
-                              parseISO(updateTransactionDate),
+                              parseISO(updateTransacList.transactionDate),
                               "yyyy-MM-dd"
                             )}
                             className="add-transc-name"
