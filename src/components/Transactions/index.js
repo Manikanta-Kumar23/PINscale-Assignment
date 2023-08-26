@@ -1,10 +1,10 @@
-import { Component } from "react";
+import { useState } from "react";
 
 import Popup from "reactjs-popup";
 
 import ResourceContext from "../../context/ResourceContext";
 
-import Cookies from "js-cookie";
+import useUserId from "../UserId";
 
 import SideBar from "../SideBar";
 
@@ -45,34 +45,20 @@ const transactionType = [
   { name: "Credit", id: "credit" },
 ];
 
-class Transactions extends Component {
-  state = {
-    isLoading: apiStatus.initial,
-    activeTypeId: transactionType[0].id,
-    transactionList: [],
-    showPopup: true,
+const Transactions = () => {
+  const [activeTypeId , setActiveTypeId] = useState(transactionType[0].id)
+  const [showPopup , setShowPopup] = useState(true)
+  const userId = useUserId()
+
+  const changeTypeId = (id) => {
+      setActiveTypeId(id)
   };
 
-  componentDidMount() {
-    const { allTransaction } = this.context;
-    allTransaction();
-  }
-
-  changeTypeId = (id) => {
-    this.setState({
-      activeTypeId: id,
-    });
+  const changePopup = () => {
+      setShowPopup(s => !s)
   };
 
-  changePopup = () => {
-    this.setState((prevState) => ({
-      showPopup: !prevState.showPopup,
-    }));
-  };
-
-  transactiondata = () => {
-    const { activeTypeId, showPopup } = this.state;
-    const userId = Cookies.get("id");
+  const transactiondata = () => {
     return (
       <ResourceContext.Consumer>
         {(value) => {
@@ -215,7 +201,7 @@ class Transactions extends Component {
                                     modal
                                     trigger={
                                       <button
-                                        onClick={this.changePopup}
+                                        onClick={changePopup}
                                         className="edit-btn"
                                         type="button"
                                       >
@@ -331,8 +317,6 @@ class Transactions extends Component {
     );
   };
 
-  render() {
-    const { activeTypeId } = this.state;
     return (
       <div className="home-bg">
         <SideBar />
@@ -341,20 +325,17 @@ class Transactions extends Component {
           <ul className="transactiontype-crd">
             {transactionType.map((each) => (
               <TransactionType
-                changeTypeId={this.changeTypeId}
+                changeTypeId={changeTypeId}
                 list={each}
                 key={each.id}
                 isActive={activeTypeId === each.id}
               />
             ))}
           </ul>
-          <div className="main-content">{this.transactiondata()}</div>
+          <div className="main-content">{transactiondata()}</div>
         </div>
       </div>
     );
-  }
 }
-
-Transactions.contextType = ResourceContext;
 
 export default Transactions;

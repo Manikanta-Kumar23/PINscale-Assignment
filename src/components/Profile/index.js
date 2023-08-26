@@ -1,14 +1,14 @@
-import { Component } from "react";
-
 import SideBar from "../SideBar";
 
 import Navbar from "../Navbar";
 
-import Cookies from "js-cookie";
+import useDataFetching from "../DataFetching";
 
 import { ThreeDots } from "react-loader-spinner";
 
 import FailureView from "../FailureView";
+
+import useUserId from "../UserId";
 
 import "./index.css";
 
@@ -107,19 +107,9 @@ const imagesUrl = [
   },
 ];
 
-class Profile extends Component {
-  state = { userList: [], isLoading: apiStatus.initial, admin: false };
-
-  componentDidMount() {
-    this.userDetails();
-  }
-
-  userDetails = async () => {
-    const userId = Cookies.get("id");
-    this.setState({
-      isLoading: apiStatus.inProgress,
-    });
-    let url;
+const Profile = () => {
+  const userId = useUserId()
+  let url;
     let options;
     if (parseInt(userId) !== 3) {
       url = "https://bursting-gelding-24.hasura.app/api/rest/profile";
@@ -145,40 +135,13 @@ class Profile extends Component {
         },
       };
     }
-    const res = await fetch(url, options);
-    const data = await res.json();
-    if (res.ok) {
-      const userList = data.users.map((each) => {
-        return {
-          name: each.name,
-          email: each.email,
-          country: each.country,
-          city: each.city,
-          id: each.id,
-          dateOfBirth: each.date_of_birth,
-          permanentAddress: each.permanent_address,
-          postalCode: each.postal_code,
-          presentAddress: each.present_address,
-        };
-      });
-      this.setState({
-        userList,
-        isLoading: apiStatus.res,
-      });
-    } else {
-      this.setState({
-        isLoading: apiStatus.rej,
-      });
-    }
-  };
+    const profileData = useDataFetching(url , options)
 
-  userData = () => {
-    const { userList, isLoading } = this.state;
-    console.log(imagesUrl[0].url);
-    const userId = Cookies.get("id");
+  const userData = () => {
     const id = parseInt(userId);
-    switch (isLoading) {
+    switch (profileData.isLoading) {
       case apiStatus.res:
+        const userList = profileData.data.users
         return (
           <div className="user-data">
             <img
@@ -319,18 +282,15 @@ class Profile extends Component {
         return null;
     }
   };
-
-  render() {
     return (
       <div className="home-bg">
         <SideBar />
         <div className="home-content">
           <Navbar />
-          <div className="main-content">{this.userData()}</div>
+          <div className="main-content">{userData()}</div>
         </div>
       </div>
     );
-  }
 }
 
 export default Profile;

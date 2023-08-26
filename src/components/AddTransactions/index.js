@@ -1,8 +1,6 @@
-import { Component } from "react";
+import {useState } from "react";
 
 import ResourceContext from "../../context/ResourceContext";
-
-import { format, parseISO } from "date-fns";
 
 import { RxCross2 } from "react-icons/rx";
 
@@ -15,168 +13,133 @@ const transactionCategoryTypes = [
   { name: "Food", value: "food" },
   { name: "Gaming", value: "gaming" },
   { name: "Others", value: "others" },
-  { name: "Transfer", value: "transfer" },
 ];
 
-class UpdateTransactions extends Component {
-  state = {
-    nameErr: false,
-    nameErrMssg: "",
-    catErr: false,
-    catErrMssg: "",
-    amntErr: false,
-    amntErrMssg: "",
-    dateErr: false,
-    dateErrMssg: "",
-    typeErr: false,
-    typeErrMssg: "",
+const AddTransactions = () => {
+  const [transactionName  ,setTransactionName] = useState("")
+  const [transactionType , setTransactionType] = useState("")
+  const [transactionDate , setTransactionDate] = useState("")
+  const [transactionAmount , setTransactionAmount] = useState("")
+  const [transactionCategory , setTransactionCategory] = useState("")
+  const [nameErr , setNameErr] = useState(false)
+  const [nameErrMssg , setNameErrMssg] = useState("")
+  const [catErr , setCatErr] = useState(false)
+  const [catErrMssg , setCatErrMssg] = useState("")
+  const [amntErr , setAmntErr] = useState(false)
+  const [amntErrMssg , setAmntErrMssg] = useState("")
+  const [dateErr , setDateErr] = useState(false)
+  const [dateErrMssg , setDateErrMssg] = useState("")
+  const [typeErr , setTypeErr] = useState(false)
+  const [typeErrMssg ,setTypeErrMssg]  =useState("")
+
+  const onTransactionName = (event) => {
+      setTransactionName(event.target.value)
   };
 
-  onBlurName = (event) => {
+  const onTransactionType = (event) => {
+      setTransactionType(event.target.value)
+  };
+
+  const onTransactionCategory = (event) => {
+      setTransactionCategory(event.target.value)
+  };
+
+  const onTransactionAmount = (event) => {
+      setTransactionAmount(event.target.value)
+  };
+
+  const onTransactionDate = (event) => {
+      setTransactionDate(event.target.value)
+  };
+
+  const onBlurName = (event) => {
     if (event.target.value === "") {
-      this.setState({
-        nameErr: true,
-        nameErrMssg: "*Required",
-      });
+        setNameErr(true)
+        setNameErrMssg("*Required")
     } else if (event.target.value.length > 30) {
-      this.setState({
-        nameErr: true,
-        nameErrMssg: "Max limit 30 Characters",
-      });
+        setNameErr(true)
+        setNameErrMssg("Max limit 30 Characters")
     } else {
-      this.setState({
-        nameErr: false,
-      });
+        setNameErr(false)
     }
   };
 
-  onBlurCat = (event) => {
+  const onBlurCat = (event) => {
     if (event.target.value === "null") {
-      this.setState({
-        catErr: true,
-        catErrMssg: "*Required",
-      });
+        setCatErr(true)
+        setCatErrMssg("*Required")
     } else {
-      this.setState({
-        catErr: false,
-      });
+        setCatErr(false)
     }
   };
 
-  onBlurType = (event) => {
+  const onBlurType = (event) => {
     if (event.target.value === "null") {
-      this.setState({
-        typeErr: true,
-        typeErrMssg: "*Required",
-      });
+        setTypeErr(true)
+        setTypeErrMssg("*Required")
     } else {
-      this.setState({
-        typeErr: false,
-      });
+        setTypeErr(false)
     }
   };
 
-  onBlurAmount = (event) => {
+  const onBlurAmount = (event) => {
     if (event.target.value === "") {
-      this.setState({
-        amntErr: true,
-        amntErrMssg: "*Required",
-      });
+        setAmntErr(true)
+        setAmntErrMssg("*Required")
     } else if (parseInt(event.target.value) === 0) {
-      this.setState({
-        amntErr: true,
-        amntErrMssg: "Amount should be > 0",
-      });
+        setAmntErr(true)
+        setAmntErrMssg("Amount should be > 0")
     } else {
-      this.setState({
-        amntErr: false,
-      });
+        setAmntErr(false)
     }
   };
 
-  onBlurDate = (event) => {
+  const onBlurDate = (event) => {
     if (event.target.value === "") {
-      this.setState({
-        dateErr: true,
-        dateErrMssg: "*Required",
-      });
+        setDateErr(true)
+        setDateErrMssg("*Required")
     } else {
-      this.setState({
-        dateErr: false,
-      });
+        setDateErr(false)
     }
   };
 
-  render() {
     return (
       <ResourceContext.Consumer>
         {(value) => {
           const {
-            showUpdatePopup,
+            showTransactionPopup,
             onCancel,
-            onUpdateTransaction,
-            updateTransactionName,
-            updateTransactionType,
-            updateTransactionCategory,
-            updateTransactionAmount,
-            updateTransactionDate,
-            updateTransactionNameValue,
-            updateTransactionTypeValue,
-            updateTransactionCategoryValue,
-            updateTransactionAmountValue,
-            updateTransactionDateValue,
-            updateSuccessMssg,
+            onAddTransaction,
+            transactionSuccessMssg,
           } = value;
-          const {
-            nameErr,
-            nameErrMssg,
-            catErr,
-            catErrMssg,
-            typeErr,
-            typeErrMssg,
-            dateErr,
-            dateErrMssg,
-            amntErr,
-            amntErrMssg,
-          } = this.state;
-          const updateTransc = (event) => {
+          const addTransc = async (event) => {
             event.preventDefault();
-            onUpdateTransaction(
-              updateTransactionName,
-              updateTransactionType,
-              updateTransactionCategory,
-              updateTransactionAmount,
-              updateTransactionDate
+            await onAddTransaction(
+              transactionName,
+              transactionType,
+              transactionCategory,
+              transactionAmount,
+              transactionDate
             );
-          };
-          const nameChange = (event) => {
-            updateTransactionNameValue(event.target.value);
-          };
-          const typeChange = (event) => {
-            updateTransactionTypeValue(event.target.value);
-          };
-          const catChange = (event) => {
-            updateTransactionCategoryValue(event.target.value);
-          };
-          const amntChange = (event) => {
-            updateTransactionAmountValue(event.target.value);
-          };
-          const dateChange = (event) => {
-            updateTransactionDateValue(event.target.value);
+              setTransactionName("")
+              setTransactionAmount("")
+              setTransactionCategory("null")
+              setTransactionType("null")
+              setTransactionDate("")
           };
           const close = () => {
             onCancel();
           };
           return (
-            showUpdatePopup && (
+            showTransactionPopup && (
               <div className="add-transactions">
-                <form onSubmit={updateTransc} className="add-form-crd">
+                <form onSubmit={addTransc} className="add-form-crd">
                   <div className="frm-head">
-                    {!updateSuccessMssg && (
+                    {!transactionSuccessMssg && (
                       <div className="hed-crd">
-                        <h1 className="heading">Update Transaction</h1>
+                        <h1 className="heading">Add Transaction</h1>
                         <p className="para">
-                          You can update your transaction here.
+                          You can add your transaction here.
                         </p>
                       </div>
                     )}
@@ -188,7 +151,7 @@ class UpdateTransactions extends Component {
                       <RxCross2 color="#718EBF" size="19" />
                     </button>
                   </div>
-                  {updateSuccessMssg === false ? (
+                  {transactionSuccessMssg === false ? (
                     <>
                       <div className="data-crd">
                         <div className="label-crd">
@@ -197,9 +160,9 @@ class UpdateTransactions extends Component {
                           </label>
                           <input
                             className="add-transc-name"
-                            onBlur={this.onBlurName}
-                            onChange={nameChange}
-                            value={updateTransactionName}
+                            onBlur={onBlurName}
+                            onChange={onTransactionName}
+                            value={transactionName}
                             type="text"
                             id="transc-name"
                             placeholder="Enter Name"
@@ -213,9 +176,9 @@ class UpdateTransactions extends Component {
                             Transaction Type
                           </label>
                           <select
-                            onBlur={this.onBlurType}
-                            value={updateTransactionType}
-                            onChange={typeChange}
+                            onBlur={onBlurType}
+                            value={transactionType}
+                            onChange={onTransactionType}
                             className="add-transc-name"
                             id="transc-type"
                           >
@@ -234,9 +197,9 @@ class UpdateTransactions extends Component {
                             Transaction Category
                           </label>
                           <select
-                            onChange={catChange}
-                            onBlur={this.onBlurCat}
-                            value={updateTransactionCategory}
+                            onChange={onTransactionCategory}
+                            onBlur={onBlurCat}
+                            value={transactionCategory}
                             className="add-transc-name"
                             id="transc-type"
                           >
@@ -245,7 +208,6 @@ class UpdateTransactions extends Component {
                                 {each.name}
                               </option>
                             ))}
-                            >
                           </select>
                           {catErr && <p className="transc-err">{catErrMssg}</p>}
                         </div>
@@ -254,9 +216,9 @@ class UpdateTransactions extends Component {
                             Amount
                           </label>
                           <input
-                            onBlur={this.onBlurAmount}
-                            onChange={amntChange}
-                            value={updateTransactionAmount}
+                            onBlur={onBlurAmount}
+                            onChange={onTransactionAmount}
+                            value={transactionAmount}
                             className="add-transc-name"
                             type="number"
                             id="transc-amount"
@@ -271,12 +233,9 @@ class UpdateTransactions extends Component {
                             Date
                           </label>
                           <input
-                            onBlur={this.onBlurDate}
-                            onChange={dateChange}
-                            value={format(
-                              parseISO(updateTransactionDate),
-                              "yyyy-MM-dd"
-                            )}
+                            onBlur={onBlurDate}
+                            onChange={onTransactionDate}
+                            value={transactionDate}
                             className="add-transc-name"
                             type="date"
                             id="transc-date"
@@ -288,13 +247,13 @@ class UpdateTransactions extends Component {
                         </div>
                       </div>
                       <button className="add-transaction-btn" type="submit">
-                        Update Transaction
+                        Add Transaction
                       </button>
                     </>
                   ) : (
                     <div className="add-suc-crd">
                       <h1 className="add-suc">
-                        Transaction Updated Successfully
+                        Transaction Added Successfully
                       </h1>
                     </div>
                   )}
@@ -305,7 +264,6 @@ class UpdateTransactions extends Component {
         }}
       </ResourceContext.Consumer>
     );
-  }
 }
 
-export default UpdateTransactions;
+export default AddTransactions;
