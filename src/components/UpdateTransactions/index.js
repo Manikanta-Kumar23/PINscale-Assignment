@@ -3,7 +3,7 @@ import { format, parseISO , parse } from "date-fns";
 import { RxCross2 } from "react-icons/rx";
 
 import ResourceContext from "../../context/ResourceContext";
-
+import useUserId from "../useUserId";
 import "./index.css";
 
 const transactionCategoryTypes = [
@@ -27,6 +27,7 @@ const UpdateTransactions = () => {
   const [dateErrMssg , setDateErrMssg] = useState("")
   const [typeErr , setTypeErr] = useState(false)
   const [typeErrMssg ,setTypeErrMssg]  =useState("")
+  const userId = useUserId()
 
   const onBlurName = (event) => {
     if (event.target.value === "") {
@@ -100,7 +101,21 @@ const UpdateTransactions = () => {
             const formatDate = format(parsedDate, "yyyy-MM-dd'T'HH:mm:ssxxx");
             const data = {...updateTransacList , 
             date: formatDate}
-            updateTransactionToDatabase(data)
+            const url = "https://bursting-gelding-24.hasura.app/api/rest/update-transaction"
+            const options =  {
+              method: "POST",
+              headers: {
+                "content-type": "application/json",
+                "x-hasura-admin-secret":
+                  "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
+                "x-hasura-role": "user",
+                "x-hasura-user-id": `${userId}`,
+              },
+              body: JSON.stringify(data),
+            };
+            const res = await fetch(url, options);
+            const updateDdata = await res.json()
+            updateTransactionToDatabase(updateDdata)
           };
           const nameChange = (event) => {
             updateTransactionNameValue(event.target.value);

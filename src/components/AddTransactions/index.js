@@ -131,7 +131,23 @@ const AddTransactions = () => {
                     category: transactionCategory,
                     amount: transactionAmount,
                     date: formatDate , user_id: userId}
-                    await addTransactionToDatabase(updateData)
+                  const url = "https://bursting-gelding-24.hasura.app/api/rest/add-transaction"
+                  const options =  {
+                    method: "POST",
+                    headers: {
+                      "content-type": "application/json",
+                      "x-hasura-admin-secret":
+                        "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
+                      "x-hasura-role": "user",
+                      "x-hasura-user-id": `${userId}`,
+                    },
+                    body: JSON.stringify(updateData),
+                  }
+                  const res = await fetch(url, options);
+                  const data = await res.json();
+                  if (res.ok) {
+                    addTransactionToDatabase(data.insert_transactions_one)
+                  }
                 }
                 else {
                   alert("All Input Fields are required?");

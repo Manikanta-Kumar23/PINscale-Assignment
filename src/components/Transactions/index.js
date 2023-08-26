@@ -67,12 +67,49 @@ const Transactions = () => {
                   (a, b) => new Date(b.date) - new Date(a.date)
                 )
               : filterList.sort((a, b) => new Date(b.date) - new Date(a.date));
-          const onDelete = (event) => {
-            onDeleteTransaction(event.target.value);
+          const onDelete = async (event) => {
+            const options = {
+              method: "DELETE",
+              headers: {
+                "content-type": "application/json",
+                "x-hasura-admin-secret":
+                  "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
+                "x-hasura-role": "user",
+                "x-hasura-user-id": `${userId}`,
+              },
+            };
+            const url = `https://bursting-gelding-24.hasura.app/api/rest/delete-transaction?id=${event.target.value}`;
+            const res = await fetch(url, options);
+            const data = await res.json();
+            if (res.ok) {
+              const trnsacId = data.delete_transactions_by_pk.id;
+              const updateList = transactionList.filter((each) => each.id !== trnsacId);
+              onDeleteTransaction(updateList);
+            }
           };
-          const onEdit = (event) => {
-            onClickEdit(event.target.value);
-          };
+          const onEdit = async (event) => {
+            const url = `https://bursting-gelding-24.hasura.app/api/rest/delete-transaction?id=${event.target.value}`;
+            const options = {
+              method: "DELETE",
+              headers: {
+                "content-type": "application/json",
+                "x-hasura-admin-secret":
+                  "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
+                "x-hasura-role": "user",
+                "x-hasura-user-id": `${userId}`,
+              },
+            };
+            const res = await fetch(url, options);
+            const data = await res.json();
+            if (res.ok) {
+              const updateList = transactionList.filter(
+                (each) => each.id === data.delete_transactions_by_pk.id
+              );
+              const list = updateList[0];
+              const formatDate = format(parseISO(list.date), "yyyy-MM-dd");
+              const updatedList = {...list , date: formatDate}
+            onClickEdit(updatedList);
+          }}
           switch (transactionIsLoading) {
             case apiStatus.res:
               let allUsersList;
@@ -167,7 +204,7 @@ const Transactions = () => {
                                   : `-$${each.amount}`
                               }`}
                             </td>
-                            {parseInt(userId) !== 3 && (
+                            {(userId) !== "3" && (
                               <>
                                 <td>
                                   <button
