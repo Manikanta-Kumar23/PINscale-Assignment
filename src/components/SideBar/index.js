@@ -3,7 +3,7 @@ import Popup from "reactjs-popup";
 import { FiLogOut } from "react-icons/fi";
 import Cookies from "js-cookie";
 
-import useUserId from "../useUserId";
+import useUserId from "../../hooks/useUserId";
 import SideBarContents from "../SideBarContents";
 import ResourceContext from "../../context/ResourceContext";
 

@@ -8,8 +8,8 @@ import { HiOutlinePencil } from "react-icons/hi";
 import { IoWarningOutline } from "react-icons/io5";
 import { RiDeleteBin6Line } from "react-icons/ri";
 
-import useUserId from "../useUserId";
-import useDataFetching from "../useDataFetching";
+import useUserId from "../../hooks/useUserId";
+import useDataFetching from "../../hooks/useDataFetching";
 import ResourceContext from "../../context/ResourceContext";
 import FailureView from "../FailureView";
 import TransactionOverviewChart from "../TransactionOverviewChart";

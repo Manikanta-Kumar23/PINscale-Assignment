@@ -3,7 +3,7 @@ import { RxCross2 } from "react-icons/rx";
 import { format, parse} from "date-fns";
 
 import ResourceContext from "../../context/ResourceContext";
-import useUserId from "../useUserId";
+import useUserId from "../../hooks/useUserId";
 
 import "./index.css";
 

@@ -3,8 +3,8 @@ import { ThreeDots } from "react-loader-spinner";
 import FailureView from "../FailureView";
 import SideBar from "../SideBar";
 import Navbar from "../Navbar";
-import useDataFetching from "../useDataFetching";
-import useUserId from "../useUserId";
+import useDataFetching from "../../hooks/useDataFetching";
+import useUserId from "../../hooks/useUserId";
 
 import "./index.css";
 

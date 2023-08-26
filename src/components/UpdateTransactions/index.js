@@ -3,7 +3,7 @@ import { format, parseISO , parse } from "date-fns";
 import { RxCross2 } from "react-icons/rx";
 
 import ResourceContext from "../../context/ResourceContext";
-import useUserId from "../useUserId";
+import useUserId from "../../hooks/useUserId";
 import "./index.css";
 
 const transactionCategoryTypes = [

@@ -4,14 +4,14 @@ import { Switch, Route, withRouter } from "react-router-dom";
 import "./App.css";
 import AddTransactions from "./components/AddTransactions";
 import UpdateTransactions from "./components/UpdateTransactions";
-import useDataFetching from "./components/useDataFetching";
+import useDataFetching from "./hooks/useDataFetching";
 import Login from "./components/Login";
 import Home from "./components/Home";
 import Transactions from "./components/Transactions";
 import Profile from "./components/Profile";
 import AuthenticateRoute from "./components/AuthenticateRoute";
 import NotFound from "./components/NotFound";
-import useUserId from "./components/useUserId"
+import useUserId from "./hooks/useUserId"
 import ResourceContext from "./context/ResourceContext";
 
 

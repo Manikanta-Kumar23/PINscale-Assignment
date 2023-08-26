@@ -11,7 +11,7 @@ import { RxCross2 } from "react-icons/rx";
 import Popup from "reactjs-popup";
 
 import ResourceContext from "../../context/ResourceContext";
-import useUserId from "../useUserId";
+import useUserId from "../../hooks/useUserId";
 import SideBar from "../SideBar";
 import Navbar from "../Navbar";
 import TransactionType from "../TransactionType";
