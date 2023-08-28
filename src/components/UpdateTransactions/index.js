@@ -32,14 +32,14 @@ const UpdateTransactions = () => {
     showUpdatePopup,
     onCancel,
     updateTransacList ,
-    updateTransactionNameValue,
-    updateTransactionTypeValue,
-    updateTransactionCategoryValue,
-    updateTransactionAmountValue,
-    updateTransactionDateValue,
     updateSuccessMssg,
-    updateTransactionToDatabase  , apiCall
+    updateTransactionToDatabase
   } = useContext(ResourceContext)
+  const [transactionName  ,setTransactionName] = useState(updateTransacList.transactionName)
+  const [transactionType , setTransactionType] = useState(updateTransacList.type)
+  const [transactionDate , setTransactionDate] = useState(updateTransacList.date)
+  const [transactionAmount , setTransactionAmount] = useState(updateTransacList.amount)
+  const [transactionCategory , setTransactionCategory] = useState(updateTransacList.category)
 
   const onBlurName = (event) => {
     if (event.target.value === "") {
@@ -112,22 +112,21 @@ const UpdateTransactions = () => {
             const res = await fetch(url, options);
             const updateDdata = await res.json()
             updateTransactionToDatabase(updateDdata)
-            apiCall()
           };
           const nameChange = (event) => {
-            updateTransactionNameValue(event.target.value);
+           setTransactionName(event.target.value);
           };
           const typeChange = (event) => {
-            updateTransactionTypeValue(event.target.value);
+            setTransactionType(event.target.value);
           };
           const catChange = (event) => {
-            updateTransactionCategoryValue(event.target.value);
+            setTransactionCategory(event.target.value);
           };
           const amntChange = (event) => {
-            updateTransactionAmountValue(event.target.value);
+            setTransactionAmount(event.target.value);
           };
           const dateChange = (event) => {
-            updateTransactionDateValue(event.target.value);
+            setTransactionDate(event.target.value);
           };
           const close = () => {
             onCancel();
@@ -164,7 +163,7 @@ const UpdateTransactions = () => {
                             className="add-transc-name"
                             onBlur={onBlurName}
                             onChange={nameChange}
-                            value={updateTransacList.transactionName}
+                            value={transactionName}
                             type="text"
                             id="transc-name"
                             placeholder="Enter Name"
@@ -179,7 +178,7 @@ const UpdateTransactions = () => {
                           </label>
                           <select
                             onBlur={onBlurType}
-                            value={updateTransacList.transactionType}
+                            value={transactionType}
                             onChange={typeChange}
                             className="add-transc-name"
                             id="transc-type"
@@ -201,7 +200,7 @@ const UpdateTransactions = () => {
                           <select
                             onChange={catChange}
                             onBlur={onBlurCat}
-                            value={updateTransacList.transactionCategory}
+                            value={transactionCategory}
                             className="add-transc-name"
                             id="transc-type"
                           >
@@ -220,7 +219,7 @@ const UpdateTransactions = () => {
                           <input
                             onBlur={onBlurAmount}
                             onChange={amntChange}
-                            value={updateTransacList.transactionAmount}
+                            value={transactionAmount}
                             className="add-transc-name"
                             type="number"
                             id="transc-amount"
@@ -238,7 +237,7 @@ const UpdateTransactions = () => {
                             onBlur={onBlurDate}
                             onChange={dateChange}
                             value={format(
-                              parseISO(updateTransacList.transactionDate),
+                              parseISO(transactionDate),
                               "yyyy-MM-dd"
                             )}
                             className="add-transc-name"

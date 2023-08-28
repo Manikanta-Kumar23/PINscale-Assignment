@@ -37,7 +37,7 @@ const AddTransactions = () => {
     showTransactionPopup,
     onCancel,
     transactionSuccessMssg,
-    addTransactionToDatabase , apiCall
+    addTransactionToDatabase
   } = useContext(ResourceContext)
 
   const onTransactionName = (event) => {
@@ -143,17 +143,16 @@ const AddTransactions = () => {
                   const data = await res.json();
                   if (res.ok) {
                     addTransactionToDatabase(data.insert_transactions_one)
+                    setTransactionName("")
+                    setTransactionAmount("")
+                    setTransactionCategory("null")
+                    setTransactionType("null")
+                    setTransactionDate("")
                   }
                 }
                 else {
                   alert("All Input Fields are required?");
                 }
-              setTransactionName("")
-              setTransactionAmount("")
-              setTransactionCategory("null")
-              setTransactionType("null")
-              setTransactionDate("")
-              apiCall()
           };
           const close = () => {
             onCancel();

@@ -213,32 +213,6 @@ const  App = () => {
         setShowUpdatePopup(true)
   };
 
-  const updateTransactionNameValue = (value) => {
-    const updateTransactionName = value;
-    setUpdateTransacList({...updateTransacList , transactionName: updateTransactionName })
-  };
-
-  const updateTransactionTypeValue = (value) => {
-    const updateTransactionType = value;
-    setUpdateTransacList({...updateTransacList , type: updateTransactionType})
-  };
-
-  const updateTransactionCategoryValue = (value) => {
-    const updateTransactionCategory = value;
-    setUpdateTransacList({...updateTransacList , category:updateTransactionCategory})
-  };
-
-  const updateTransactionAmountValue = (value) => {
-    const updateTransactionAmount = value;
-    setUpdateTransacList({...updateTransacList , amount: updateTransactionAmount})
-  };
-
-  const updateTransactionDateValue = (value) => {
-    const updateTransactionDate = value;
-    setUpdateTransacList({...updateTransacList , date: updateTransactionDate})
-  };
-
-
     return (
       <ResourceContext.Provider
         value={{
@@ -257,11 +231,6 @@ const  App = () => {
           updateTransacList,
           updateTransactionToDatabase: updateTransactionToDatabase,
           imagesUrl,
-          updateTransactionNameValue: updateTransactionNameValue,
-          updateTransactionTypeValue: updateTransactionTypeValue,
-          updateTransactionCategoryValue: updateTransactionCategoryValue,
-          updateTransactionAmountValue: updateTransactionAmountValue,
-          updateTransactionDateValue: updateTransactionDateValue,
           updateSuccessMssg,
           showSidebar,
           onShow: onShow,
