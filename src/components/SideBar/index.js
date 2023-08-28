@@ -1,18 +1,14 @@
-import { Component } from "react";
-
 import { withRouter } from "react-router-dom";
-
-import ResourceContext from "../../context/ResourceContext";
-
 import Popup from "reactjs-popup";
-
 import { FiLogOut } from "react-icons/fi";
-
-import SideBarContents from "../SideBarContents";
-
 import Cookies from "js-cookie";
 
+import useUserId from "../../hooks/useUserId";
+import SideBarContents from "../SideBarContents";
+import ResourceContext from "../../context/ResourceContext";
+
 import "./index.css";
+import { useContext } from "react";
 
 const sideBarContents = [
   {
@@ -44,35 +40,23 @@ const sideBarContents = [
   },
 ];
 
-class SideBar extends Component {
-  state = { activeTab: sideBarContents[0].id };
+const SideBar = (props) => {
+  const userId = useUserId()
+  const { userList, isLoading, imagesUrl } = useContext(ResourceContext)
 
-  onTabChange = (id) => {
-    this.setState({
-      activeTab: id,
-    });
-  };
-
-  onLogout = () => {
-    const { history } = this.props;
+  const onLogout = () => {
+    const { history } = props;
     Cookies.remove("id");
     history.replace("/login");
   };
 
-  onHome = () => {
-    const { history } = this.props;
+  const toHome = () => {
+    const { history } = props;
     history.push("/");
   };
-
-  render() {
-    return (
-      <ResourceContext.Consumer>
-        {(value) => {
           let name = "Username";
           let email = "Email";
-          const userId = Cookies.get("id");
-          const { location } = this.props;
-          const { userList, isLoading, imagesUrl } = value;
+          const { location } = props;
           if (isLoading === "SUCCESS") {
             name = userList[0].name;
             email = userList[0].email;
@@ -80,7 +64,7 @@ class SideBar extends Component {
           return (
             <div className="sidebar-card">
               <img
-                onClick={this.onHome}
+                onClick={toHome}
                 alt="logo"
                 className="sidebar-logo"
                 src="https://res.cloudinary.com/djwve85r0/image/upload/v1690624094/Company_logo.png"
@@ -90,7 +74,6 @@ class SideBar extends Component {
                   <SideBarContents
                     list={each}
                     key={each.id}
-                    onTabChange={this.onTabChange}
                     isActive={each.link === location.pathname}
                   />
                 ))}
@@ -140,7 +123,7 @@ class SideBar extends Component {
                           </p>
                           <div className="btn-crd">
                             <button
-                              onClick={this.onLogout}
+                              onClick={onLogout}
                               className="s-btn"
                               type="button"
                             >
@@ -162,10 +145,6 @@ class SideBar extends Component {
               </div>
             </div>
           );
-        }}
-      </ResourceContext.Consumer>
-    );
-  }
 }
 
 export default withRouter(SideBar);

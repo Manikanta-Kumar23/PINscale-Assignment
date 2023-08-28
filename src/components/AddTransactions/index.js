@@ -1,8 +1,9 @@
-import { Component } from "react";
+import {useContext, useState } from "react";
+import { RxCross2 } from "react-icons/rx";
+import { format, parse} from "date-fns";
 
 import ResourceContext from "../../context/ResourceContext";
-
-import { RxCross2 } from "react-icons/rx";
+import useUserId from "../../hooks/useUserId";
 
 import "./index.css";
 
@@ -15,174 +16,143 @@ const transactionCategoryTypes = [
   { name: "Others", value: "others" },
 ];
 
-class AddTransactions extends Component {
-  state = {
-    transactionName: "",
-    transactionType: "",
-    transactionDate: "",
-    transactionAmount: "",
-    transactionCategory: "",
-    nameErr: false,
-    nameErrMssg: "",
-    catErr: false,
-    catErrMssg: "",
-    amntErr: false,
-    amntErrMssg: "",
-    dateErr: false,
-    dateErrMssg: "",
-    typeErr: false,
-    typeErrMssg: "",
+const AddTransactions = () => {
+  const [transactionName  ,setTransactionName] = useState("")
+  const [transactionType , setTransactionType] = useState("")
+  const [transactionDate , setTransactionDate] = useState("")
+  const [transactionAmount , setTransactionAmount] = useState("")
+  const [transactionCategory , setTransactionCategory] = useState("")
+  const [nameErr , setNameErr] = useState(false)
+  const [nameErrMssg , setNameErrMssg] = useState("")
+  const [catErr , setCatErr] = useState(false)
+  const [catErrMssg , setCatErrMssg] = useState("")
+  const [amntErr , setAmntErr] = useState(false)
+  const [amntErrMssg , setAmntErrMssg] = useState("")
+  const [dateErr , setDateErr] = useState(false)
+  const [dateErrMssg , setDateErrMssg] = useState("")
+  const [typeErr , setTypeErr] = useState(false)
+  const [typeErrMssg ,setTypeErrMssg]  =useState("")
+  const userId = useUserId()
+  const {
+    showTransactionPopup,
+    onCancel,
+    transactionSuccessMssg,
+    addTransactionToDatabase
+  } = useContext(ResourceContext)
+
+  const onTransactionName = (event) => {
+      setTransactionName(event.target.value)
   };
 
-  onTransactionName = (event) => {
-    this.setState({
-      transactionName: event.target.value,
-    });
+  const onTransactionType = (event) => {
+      setTransactionType(event.target.value)
   };
 
-  onTransactionType = (event) => {
-    this.setState({
-      transactionType: event.target.value,
-    });
+  const onTransactionCategory = (event) => {
+      setTransactionCategory(event.target.value)
   };
 
-  onTransactionCategory = (event) => {
-    this.setState({
-      transactionCategory: event.target.value,
-    });
+  const onTransactionAmount = (event) => {
+      setTransactionAmount(event.target.value)
   };
 
-  onTransactionAmount = (event) => {
-    this.setState({
-      transactionAmount: event.target.value,
-    });
+  const onTransactionDate = (event) => {
+      setTransactionDate(event.target.value)
   };
 
-  onTransactionDate = (event) => {
-    this.setState({
-      transactionDate: event.target.value,
-    });
-  };
-
-  onBlurName = (event) => {
+  const onBlurName = (event) => {
     if (event.target.value === "") {
-      this.setState({
-        nameErr: true,
-        nameErrMssg: "*Required",
-      });
+        setNameErr(true)
+        setNameErrMssg("*Required")
     } else if (event.target.value.length > 30) {
-      this.setState({
-        nameErr: true,
-        nameErrMssg: "Max limit 30 Characters",
-      });
+        setNameErr(true)
+        setNameErrMssg("Max limit 30 Characters")
     } else {
-      this.setState({
-        nameErr: false,
-      });
+        setNameErr(false)
     }
   };
 
-  onBlurCat = (event) => {
+  const onBlurCat = (event) => {
     if (event.target.value === "null") {
-      this.setState({
-        catErr: true,
-        catErrMssg: "*Required",
-      });
+        setCatErr(true)
+        setCatErrMssg("*Required")
     } else {
-      this.setState({
-        catErr: false,
-      });
+        setCatErr(false)
     }
   };
 
-  onBlurType = (event) => {
+  const onBlurType = (event) => {
     if (event.target.value === "null") {
-      this.setState({
-        typeErr: true,
-        typeErrMssg: "*Required",
-      });
+        setTypeErr(true)
+        setTypeErrMssg("*Required")
     } else {
-      this.setState({
-        typeErr: false,
-      });
+        setTypeErr(false)
     }
   };
 
-  onBlurAmount = (event) => {
+  const onBlurAmount = (event) => {
     if (event.target.value === "") {
-      this.setState({
-        amntErr: true,
-        amntErrMssg: "*Required",
-      });
+        setAmntErr(true)
+        setAmntErrMssg("*Required")
     } else if (parseInt(event.target.value) === 0) {
-      this.setState({
-        amntErr: true,
-        amntErrMssg: "Amount should be > 0",
-      });
+        setAmntErr(true)
+        setAmntErrMssg("Amount should be > 0")
     } else {
-      this.setState({
-        amntErr: false,
-      });
+        setAmntErr(false)
     }
   };
 
-  onBlurDate = (event) => {
-    console.log(event.target.value);
+  const onBlurDate = (event) => {
     if (event.target.value === "") {
-      this.setState({
-        dateErr: true,
-        dateErrMssg: "*Required",
-      });
+        setDateErr(true)
+        setDateErrMssg("*Required")
     } else {
-      this.setState({
-        dateErr: false,
-      });
+        setDateErr(false)
     }
   };
-
-  render() {
-    return (
-      <ResourceContext.Consumer>
-        {(value) => {
-          const {
-            showTransactionPopup,
-            onCancel,
-            onAddTransaction,
-            transactionSuccessMssg,
-          } = value;
-          const {
-            transactionName,
-            transactionType,
-            transactionCategory,
-            transactionAmount,
-            transactionDate,
-            nameErr,
-            nameErrMssg,
-            catErr,
-            catErrMssg,
-            typeErr,
-            typeErrMssg,
-            dateErr,
-            dateErrMssg,
-            amntErr,
-            amntErrMssg,
-          } = this.state;
-          const addTransc = async (event) => {
+      const onAddTransaction = async (event) => {
             event.preventDefault();
-            await onAddTransaction(
-              transactionName,
-              transactionType,
-              transactionCategory,
-              transactionAmount,
-              transactionDate
-            );
-            this.setState({
-              transactionName: "",
-              transactionAmount: "",
-              transactionCategory: "null",
-              transactionType: "null",
-              transactionDate: "",
-            });
+              if (transactionName !== "" &&
+                transactionType !== "" &&
+                transactionCategory !== "" &&
+                transactionAmount!== "" &&
+                transactionDate !== "") {
+                  let formatDate
+                  if (transactionDate !== "") {
+                    const parsedDate = parse(transactionDate , "yyyy-MM-dd", new Date());
+                    formatDate = format(parsedDate, "yyyy-MM-dd'T'HH:mm:ssxxx");
+                  }
+                  const updateData = {name: transactionName,
+                    type: transactionType,
+                    category: transactionCategory,
+                    amount: transactionAmount,
+                    date: formatDate , user_id: userId}
+                  const url = "https://bursting-gelding-24.hasura.app/api/rest/add-transaction"
+                  const options =  {
+                    method: "POST",
+                    headers: {
+                      "content-type": "application/json",
+                      "x-hasura-admin-secret":
+                        "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
+                      "x-hasura-role": "user",
+                      "x-hasura-user-id": `${userId}`,
+                    },
+                    body: JSON.stringify(updateData),
+                  }
+                  const res = await fetch(url, options);
+                  const data = await res.json();
+                  if (res.ok) {
+                    addTransactionToDatabase(data.insert_transactions_one)
+                    setTransactionName("")
+                    setTransactionAmount("")
+                    setTransactionCategory("null")
+                    setTransactionType("null")
+                    setTransactionDate("")
+                  }
+                }
+                else {
+                  alert("All Input Fields are required?");
+                }
           };
           const close = () => {
             onCancel();
@@ -190,7 +160,7 @@ class AddTransactions extends Component {
           return (
             showTransactionPopup && (
               <div className="add-transactions">
-                <form onSubmit={addTransc} className="add-form-crd">
+                <form onSubmit={onAddTransaction} className="add-form-crd">
                   <div className="frm-head">
                     {!transactionSuccessMssg && (
                       <div className="hed-crd">
@@ -217,8 +187,8 @@ class AddTransactions extends Component {
                           </label>
                           <input
                             className="add-transc-name"
-                            onBlur={this.onBlurName}
-                            onChange={this.onTransactionName}
+                            onBlur={onBlurName}
+                            onChange={onTransactionName}
                             value={transactionName}
                             type="text"
                             id="transc-name"
@@ -233,9 +203,9 @@ class AddTransactions extends Component {
                             Transaction Type
                           </label>
                           <select
-                            onBlur={this.onBlurType}
+                            onBlur={onBlurType}
                             value={transactionType}
-                            onChange={this.onTransactionType}
+                            onChange={onTransactionType}
                             className="add-transc-name"
                             id="transc-type"
                           >
@@ -254,8 +224,8 @@ class AddTransactions extends Component {
                             Transaction Category
                           </label>
                           <select
-                            onChange={this.onTransactionCategory}
-                            onBlur={this.onBlurCat}
+                            onChange={onTransactionCategory}
+                            onBlur={onBlurCat}
                             value={transactionCategory}
                             className="add-transc-name"
                             id="transc-type"
@@ -265,7 +235,6 @@ class AddTransactions extends Component {
                                 {each.name}
                               </option>
                             ))}
-                            >
                           </select>
                           {catErr && <p className="transc-err">{catErrMssg}</p>}
                         </div>
@@ -274,8 +243,8 @@ class AddTransactions extends Component {
                             Amount
                           </label>
                           <input
-                            onBlur={this.onBlurAmount}
-                            onChange={this.onTransactionAmount}
+                            onBlur={onBlurAmount}
+                            onChange={onTransactionAmount}
                             value={transactionAmount}
                             className="add-transc-name"
                             type="number"
@@ -291,8 +260,8 @@ class AddTransactions extends Component {
                             Date
                           </label>
                           <input
-                            onBlur={this.onBlurDate}
-                            onChange={this.onTransactionDate}
+                            onBlur={onBlurDate}
+                            onChange={onTransactionDate}
                             value={transactionDate}
                             className="add-transc-name"
                             type="date"
@@ -319,10 +288,6 @@ class AddTransactions extends Component {
               </div>
             )
           );
-        }}
-      </ResourceContext.Consumer>
-    );
-  }
 }
 
 export default AddTransactions;

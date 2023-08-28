@@ -1,36 +1,22 @@
-import { Component } from "react";
-
 import Popup from "reactjs-popup";
-
 import { parseISO, format } from "date-fns";
-
 import { ThreeDots } from "react-loader-spinner";
-
-import ResourceContext from "../../context/ResourceContext";
-
 import { RxCross2 } from "react-icons/rx";
-
 import { BiUpArrowCircle } from "react-icons/bi";
-
 import { BsArrowDownCircle } from "react-icons/bs";
-
 import { HiOutlinePencil } from "react-icons/hi";
-
 import { IoWarningOutline } from "react-icons/io5";
-
 import { RiDeleteBin6Line } from "react-icons/ri";
 
+import useUserId from "../../hooks/useUserId";
+import useDataFetching from "../../hooks/useDataFetching";
+import ResourceContext from "../../context/ResourceContext";
 import FailureView from "../FailureView";
-
 import TransactionOverviewChart from "../TransactionOverviewChart";
-
 import SideBar from "../SideBar";
-
 import Navbar from "../Navbar";
-
-import Cookies from "js-cookie";
-
 import "./index.css";
+import { useContext, useEffect } from "react";
 
 const apiStatus = {
   res: "SUCCESS",
@@ -39,113 +25,55 @@ const apiStatus = {
   initial: "",
 };
 
-class Home extends Component {
-  state = {
-    isLoading: apiStatus.initial,
-    creditData: [],
-    recentTransactions: [],
-    transcLoading: apiStatus.initial,
-    overviewLoading: apiStatus.initial,
-    overviewList: [],
-  };
+const Home = () => {
+  const userId = useUserId()
+  const {
+    showTransactionPopup,
+    userList,
+    onDeleteTransaction,
+    showUpdatePopup,
+    imagesUrl,
+    onClickEdit
+  } = useContext(ResourceContext)
 
-  componentDidMount() {
-    this.creditAndDebit();
-    this.recentTransactions();
-    this.transactionOverview();
-  }
+  let apiUrl = {creditUrl: "" , recentTransactionUrl:"" , overviewUrl : ""}
+  let apiOptions = {method: 'GET' , headers: {"content-type": "application/json",
+  "x-hasura-admin-secret":
+    "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",}}
 
-  creditAndDebit = async () => {
-    const userId = Cookies.get("id");
-    this.setState({
-      isLoading: apiStatus.inProgress,
-    });
-    let url;
-    let options;
-    if (parseInt(userId) !== 3) {
-      url =
-        "https://bursting-gelding-24.hasura.app/api/rest/credit-debit-totals";
-      options = {
-        method: "GET",
-        headers: {
-          "content-type": "application/json",
-          "x-hasura-admin-secret":
-            "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
-          "x-hasura-role": "user",
-          "x-hasura-user-id": `${userId}`,
-        },
-      };
-    } else {
-      url =
-        "https://bursting-gelding-24.hasura.app/api/rest/transaction-totals-admin";
-      options = {
-        method: "GET",
-        headers: {
-          "content-type": "application/json",
-          "x-hasura-admin-secret":
-            "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
-          "x-hasura-role": "admin",
-        },
-      };
+    if ((userId) !== "3") {
+      apiUrl = {...apiUrl , creditUrl:"https://bursting-gelding-24.hasura.app/api/rest/credit-debit-totals" ,
+                recentTransactionUrl: "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=3&offset=0" ,
+              overviewUrl: "https://bursting-gelding-24.hasura.app/api/rest/daywise-totals-7-days" }
+      apiOptions = {...apiOptions , headers: {...apiOptions.headers ,"x-hasura-role": "user",
+      "x-hasura-user-id": `${userId}`,}}
     }
-    const res = await fetch(url, options);
-    const data = await res.json();
-    if (res.ok && parseInt(userId) === 3) {
-      const creditData = data.transaction_totals_admin;
-      this.setState({
-        creditData,
-        isLoading: apiStatus.res,
-      });
-    } else if (res.ok && parseInt(userId) !== 3) {
-      const creditData = data.totals_credit_debit_transactions;
-      this.setState({
-        creditData,
-        isLoading: apiStatus.res,
-      });
-    } else {
-      this.setState({
-        isLoading: apiStatus.rej,
-      });
+    else {
+      apiUrl = {...apiUrl , creditUrl:"https://bursting-gelding-24.hasura.app/api/rest/transaction-totals-admin" ,
+                recentTransactionUrl: "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=3&offset=0" ,
+              overviewUrl: "https://bursting-gelding-24.hasura.app/api/rest/daywise-totals-last-7-days-admin" }
+      apiOptions = {...apiOptions , headers: {...apiOptions.headers ,"x-hasura-role": "admin",}}
     }
-  };
 
-  recentTransactions = async () => {
-    const userId = Cookies.get("id");
-    this.setState({
-      transcLoading: apiStatus.inProgress,
-    });
-    let url;
-    let options;
-    if (parseInt(userId) !== 3) {
-      url =
-        "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=3&offset=0";
-      options = {
-        method: "GET",
-        headers: {
-          "content-type": "application/json",
-          "x-hasura-admin-secret":
-            "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
-          "x-hasura-role": "user",
-          "x-hasura-user-id": `${userId}`,
-        },
-      };
-    } else {
-      url =
-        "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=3&offset=0";
-      options = {
-        method: "GET",
-        headers: {
-          "content-type": "application/json",
-          "x-hasura-admin-secret":
-            "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
-          "x-hasura-role": "admin",
-        },
-      };
+    let creditData
+    const {data: creditedData , isLoading , fetchData: homeCreditData} = useDataFetching()
+    useEffect(() => {
+      homeCreditData(apiUrl.creditUrl , apiOptions)
+    } , [])
+    if (isLoading === apiStatus.res && (userId) !== "3") {
+      creditData = creditedData.totals_credit_debit_transactions
     }
-    const res = await fetch(url, options);
-    const data = await res.json();
-    if (res.ok) {
-      const transactionData = data.transactions.map((each) => {
+    else if (isLoading === apiStatus.res && (userId) === "3") {
+      creditData = creditedData.transaction_totals_admin
+    }
+
+    const {data: recentTransactionsDataList , isLoading: transcLoading , fetchData :recentTransactionsData} = useDataFetching()
+    let recentTransactionsList
+    useEffect(() => {
+      recentTransactionsData(apiUrl.recentTransactionUrl , apiOptions)
+    } , [])
+    if (transcLoading === apiStatus.res) {
+      recentTransactionsList = recentTransactionsDataList.transactions.map((each) => {
         return {
           transactionName: each.transaction_name,
           userId: each.user_id,
@@ -156,79 +84,27 @@ class Home extends Component {
           date: each.date,
         };
       });
-      this.setState({
-        transcLoading: apiStatus.res,
-        recentTransactions: transactionData,
-      });
-    } else {
-      this.setState({
-        transcLoading: apiStatus.rej,
-      });
     }
-  };
 
-  transactionOverview = async () => {
-    const userId = Cookies.get("id");
-    this.setState({
-      overviewLoading: apiStatus.inProgress,
-    });
-    let url;
-    let options;
-    if (parseInt(userId) !== 3) {
-      url =
-        "https://bursting-gelding-24.hasura.app/api/rest/daywise-totals-7-days";
-      options = {
-        method: "GET",
-        headers: {
-          "content-type": "application/json",
-          "x-hasura-admin-secret":
-            "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
-          "x-hasura-role": "user",
-          "x-hasura-user-id": `${userId}`,
-        },
-      };
-    } else {
-      url =
-        "https://bursting-gelding-24.hasura.app/api/rest/daywise-totals-last-7-days-admin";
-      options = {
-        method: "GET",
-        headers: {
-          "content-type": "application/json",
-          "x-hasura-admin-secret":
-            "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
-          "x-hasura-role": "admin",
-        },
-      };
+    const {data: overviewDataList , isLoading: overviewLoading  , fetchData: overviewData} = useDataFetching()
+    let overviewList
+    useEffect(() => {
+      overviewData(apiUrl.overviewUrl , apiOptions)
+    } , [])
+    if (overviewLoading === apiStatus.res && (userId) !== "3") {
+      overviewList = overviewDataList.last_7_days_transactions_credit_debit_totals
     }
-    const res = await fetch(url, options);
-    const data = await res.json();
-    if (res.ok && parseInt(userId) !== 3) {
-      const overviewList = data.last_7_days_transactions_credit_debit_totals;
-      this.setState({
-        overviewLoading: apiStatus.res,
-        overviewList,
-      });
-    } else if (res.ok && parseInt(userId) === 3) {
-      const overviewList = data.last_7_days_transactions_totals_admin;
-      this.setState({
-        overviewList,
-        overviewLoading: apiStatus.res,
-      });
-    } else {
-      this.setState({
-        overviewLoading: apiStatus.rej,
-      });
+    else if (overviewLoading === apiStatus.res && (userId) === "3") {
+      overviewList = overviewDataList.last_7_days_transactions_totals_admin;
     }
-  };
 
-  totalCreditAndDebit = () => {
-    const { creditData, isLoading } = this.state;
+  const renderTotalCreditAndDebit = () => {
     switch (isLoading) {
       case apiStatus.res:
         let credit = 0;
         let debit = 0;
         creditData.map((each) => {
-          if (each.type === "credit") {
+          if (each.type.toLowerCase() === "credit") {
             credit += each.sum;
             return credit;
           } else {
@@ -257,7 +133,7 @@ class Home extends Component {
                 <div className="cost-card">
                   <h1
                     className={`cost ${
-                      each.type === "Debit" ? "debit-cost" : null
+                      each.type.toLocaleLowerCase() === "debit" ? "debit-cost" : null
                     }`}
                   >
                     ${each.cost}
@@ -301,31 +177,56 @@ class Home extends Component {
     }
   };
 
-  threeTransactions = () => {
-    const { transcLoading, recentTransactions } = this.state;
-    const userId = Cookies.get("id");
-    recentTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-    return (
-      <ResourceContext.Consumer>
-        {(value) => {
-          const {
-            showTransactionPopup,
-            userList,
-            onDeleteTransaction,
-            showUpdatePopup,
-            imagesUrl,
-            onClickEdit,
-          } = value;
-          const deleteTransc = (event) => {
-            onDeleteTransaction(event.target.value);
+  const renderThreeTransactions = () => {
+          const deleteTransc = async (event) => {
+            const options = {
+              method: "DELETE",
+              headers: {
+                "content-type": "application/json",
+                "x-hasura-admin-secret":
+                  "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
+                "x-hasura-role": "user",
+                "x-hasura-user-id": `${userId}`,
+              },
+            };
+            const url = `https://bursting-gelding-24.hasura.app/api/rest/delete-transaction?id=${event.target.value}`;
+            const res = await fetch(url, options);
+            const data = await res.json();
+            if (res.ok) {
+              const trnsacId = data.delete_transactions_by_pk.id;
+              const updateList = recentTransactionsList.filter((each) => each.id !== trnsacId);
+              onDeleteTransaction(updateList);
+            }
           };
 
-          const updateTransac = (event) => {
-            onClickEdit(event.target.value);
+          const updateTransac = async (event) => {
+            const url = `https://bursting-gelding-24.hasura.app/api/rest/delete-transaction?id=${event.target.value}`;
+            const options = {
+              method: "DELETE",
+              headers: {
+                "content-type": "application/json",
+                "x-hasura-admin-secret":
+                  "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
+                "x-hasura-role": "user",
+                "x-hasura-user-id": `${userId}`,
+              },
+            };
+            const res = await fetch(url, options);
+            const data = await res.json();
+            if (res.ok) {
+              const updateList = recentTransactionsList.filter(
+                (each) => each.id === data.delete_transactions_by_pk.id
+              );
+              const list = updateList[0];
+              const formatDate = format(parseISO(list.date), "yyyy-MM-dd");
+              const updatedList = {...list , date: formatDate}
+            onClickEdit(updatedList);
+          }
           };
           switch (transcLoading) {
             case apiStatus.res:
               let allUsersList;
+              recentTransactionsList.sort((a, b) => new Date(b.date) - new Date(a.date));
               if (parseInt(userId) === 3) {
                 allUsersList = userList.map((each) => ({
                   name: each.name,
@@ -339,7 +240,7 @@ class Home extends Component {
                     <table className="table">
                       <thead className="head">
                         <tr className="head-card">
-                          {parseInt(userId) === 3 && <th>User Name</th>}
+                          {(userId) === "3" && <th>User Name</th>}
                           <th>Transaction Name</th>
                           <th>Category</th>
                           <th>Date</th>
@@ -348,12 +249,12 @@ class Home extends Component {
                       </thead>
                       {!showTransactionPopup && !showUpdatePopup && (
                         <tbody className="body">
-                          {recentTransactions.map((each) => (
+                          {recentTransactionsList.map((each) => (
                             <tr key={each.id}>
-                              {parseInt(userId) === 3 && (
+                              {(userId) === "3" && (
                                 <td>
                                   <div className="usr-icn-crd">
-                                    {parseInt(userId) === 3 ? (
+                                    {(userId) === "3" ? (
                                       each.type.toLowerCase() === "credit" ? (
                                         <BiUpArrowCircle
                                           color="#16DBAA"
@@ -384,7 +285,7 @@ class Home extends Component {
                               )}
                               <td>
                                 <div className="align">
-                                  {parseInt(userId) !== 3 ? (
+                                  {(userId) !== "3" ? (
                                     each.type.toLowerCase() === "credit" ? (
                                       <BiUpArrowCircle
                                         color="#16DBAA"
@@ -421,7 +322,7 @@ class Home extends Component {
                                     : `-$${each.amount}`
                                 }`}
                               </td>
-                              {parseInt(userId) !== 3 && (
+                              {(userId) !== "3" && (
                                 <>
                                   <td>
                                     <button
@@ -540,17 +441,9 @@ class Home extends Component {
             default:
               return null;
           }
-        }}
-      </ResourceContext.Consumer>
-    );
   };
 
-  transactionOverviewCharts = () => {
-    const { overviewLoading, overviewList } = this.state;
-    return (
-      <ResourceContext.Consumer>
-        {(value) => {
-          const { showTransactionPopup, showUpdatePopup } = value;
+  const renderTransactionOverviewCharts = () => {
           switch (overviewLoading) {
             case apiStatus.res:
               return (
@@ -587,26 +480,20 @@ class Home extends Component {
             default:
               return null;
           }
-        }}
-      </ResourceContext.Consumer>
-    );
   };
-
-  render() {
     return (
       <div className="home-bg">
         <SideBar />
         <div className="home-content">
           <Navbar />
           <div className="main-content">
-            {this.totalCreditAndDebit()}
-            {this.threeTransactions()}
-            {this.transactionOverviewCharts()}
+            {renderTotalCreditAndDebit()}
+            {renderThreeTransactions()}
+            {renderTransactionOverviewCharts()}
           </div>
         </div>
       </div>
     );
-  }
 }
 
 export default Home;

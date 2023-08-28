@@ -1,17 +1,18 @@
+import { withRouter } from "react-router-dom"
+import { HiMenu } from "react-icons/hi";
+import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
-
-import { withRouter } from "react-router-dom";
 
 import ResourceContext from "../../context/ResourceContext";
 
-import { HiMenu } from "react-icons/hi";
-
-import { Link } from "react-router-dom";
-
 import "./index.css";
+import { useContext } from "react";
+import useUserId from "../../hooks/useUserId";
 
 const Navbar = (props) => {
-  const userId = Cookies.get("id");
+  const userId = useUserId()
+  const { onClickTransaction, onShow, showSidebar } = useContext(ResourceContext)
+
   const { location } = props;
   const { pathname } = location;
   let navName = "Accounts";
@@ -38,10 +39,6 @@ const Navbar = (props) => {
   const dashboardColor = dashboardActive ? "nav-active" : null;
   const transColor = transActive ? "nav-active" : null;
   const profileColor = profileActive ? "nav-active" : null;
-  return (
-    <ResourceContext.Consumer>
-      {(value) => {
-        const { onClickTransaction, onShow, showSidebar } = value;
         const onAdd = () => {
           onClickTransaction();
         };
@@ -84,9 +81,6 @@ const Navbar = (props) => {
             )}
           </>
         );
-      }}
-    </ResourceContext.Consumer>
-  );
 };
 
 export default withRouter(Navbar);

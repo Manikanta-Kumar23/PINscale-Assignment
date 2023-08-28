@@ -1,11 +1,9 @@
-import { Component } from "react";
-
-import ResourceContext from "../../context/ResourceContext";
-
-import { format, parseISO } from "date-fns";
-
+import { useContext, useState } from "react";
+import { format, parseISO , parse } from "date-fns";
 import { RxCross2 } from "react-icons/rx";
 
+import ResourceContext from "../../context/ResourceContext";
+import useUserId from "../../hooks/useUserId";
 import "./index.css";
 
 const transactionCategoryTypes = [
@@ -18,151 +16,117 @@ const transactionCategoryTypes = [
   { name: "Transfer", value: "transfer" },
 ];
 
-class UpdateTransactions extends Component {
-  state = {
-    nameErr: false,
-    nameErrMssg: "",
-    catErr: false,
-    catErrMssg: "",
-    amntErr: false,
-    amntErrMssg: "",
-    dateErr: false,
-    dateErrMssg: "",
-    typeErr: false,
-    typeErrMssg: "",
-  };
+const UpdateTransactions = () => {
+  const [nameErr , setNameErr] = useState(false)
+  const [nameErrMssg , setNameErrMssg] = useState("")
+  const [catErr , setCatErr] = useState(false)
+  const [catErrMssg , setCatErrMssg] = useState("")
+  const [amntErr , setAmntErr] = useState(false)
+  const [amntErrMssg , setAmntErrMssg] = useState("")
+  const [dateErr , setDateErr] = useState(false)
+  const [dateErrMssg , setDateErrMssg] = useState("")
+  const [typeErr , setTypeErr] = useState(false)
+  const [typeErrMssg ,setTypeErrMssg]  =useState("")
+  const userId = useUserId()
+  const {
+    showUpdatePopup,
+    onCancel,
+    updateTransacList ,
+    updateSuccessMssg,
+    updateTransactionToDatabase
+  } = useContext(ResourceContext)
+  const [transactionName  ,setTransactionName] = useState(updateTransacList.transactionName)
+  const [transactionType , setTransactionType] = useState(updateTransacList.type)
+  const [transactionDate , setTransactionDate] = useState(updateTransacList.date)
+  const [transactionAmount , setTransactionAmount] = useState(updateTransacList.amount)
+  const [transactionCategory , setTransactionCategory] = useState(updateTransacList.category)
 
-  onBlurName = (event) => {
+  const onBlurName = (event) => {
     if (event.target.value === "") {
-      this.setState({
-        nameErr: true,
-        nameErrMssg: "*Required",
-      });
+        setNameErr(true)
+        setNameErrMssg("*Required")
     } else if (event.target.value.length > 30) {
-      this.setState({
-        nameErr: true,
-        nameErrMssg: "Max limit 30 Characters",
-      });
+        setNameErr(true)
+        setNameErrMssg("Max limit 30 Characters")
     } else {
-      this.setState({
-        nameErr: false,
-      });
+        setNameErr(false)
     }
   };
 
-  onBlurCat = (event) => {
+  const onBlurCat = (event) => {
     if (event.target.value === "null") {
-      this.setState({
-        catErr: true,
-        catErrMssg: "*Required",
-      });
+        setCatErr(true)
+        setCatErrMssg("*Required")
     } else {
-      this.setState({
-        catErr: false,
-      });
+        setCatErr(false)
     }
   };
 
-  onBlurType = (event) => {
+  const onBlurType = (event) => {
     if (event.target.value === "null") {
-      this.setState({
-        typeErr: true,
-        typeErrMssg: "*Required",
-      });
+        setTypeErr(true)
+        setTypeErrMssg("*Required")
     } else {
-      this.setState({
-        typeErr: false,
-      });
+        setTypeErr(false)
     }
   };
 
-  onBlurAmount = (event) => {
+  const onBlurAmount = (event) => {
     if (event.target.value === "") {
-      this.setState({
-        amntErr: true,
-        amntErrMssg: "*Required",
-      });
+        setAmntErr(true)
+        setAmntErrMssg("*Required")
     } else if (parseInt(event.target.value) === 0) {
-      this.setState({
-        amntErr: true,
-        amntErrMssg: "Amount should be > 0",
-      });
+        setAmntErr(true)
+        setAmntErrMssg("Amount should be > 0")
     } else {
-      this.setState({
-        amntErr: false,
-      });
+        setAmntErr(false)
     }
   };
 
-  onBlurDate = (event) => {
+  const onBlurDate = (event) => {
     if (event.target.value === "") {
-      this.setState({
-        dateErr: true,
-        dateErrMssg: "*Required",
-      });
+        setDateErr(true)
+        setDateErrMssg("*Required")
     } else {
-      this.setState({
-        dateErr: false,
-      });
+        setDateErr(false)
     }
   };
-
-  render() {
-    return (
-      <ResourceContext.Consumer>
-        {(value) => {
-          const {
-            showUpdatePopup,
-            onCancel,
-            onUpdateTransaction,
-            updateTransactionName,
-            updateTransactionType,
-            updateTransactionCategory,
-            updateTransactionAmount,
-            updateTransactionDate,
-            updateTransactionNameValue,
-            updateTransactionTypeValue,
-            updateTransactionCategoryValue,
-            updateTransactionAmountValue,
-            updateTransactionDateValue,
-            updateSuccessMssg,
-          } = value;
-          const {
-            nameErr,
-            nameErrMssg,
-            catErr,
-            catErrMssg,
-            typeErr,
-            typeErrMssg,
-            dateErr,
-            dateErrMssg,
-            amntErr,
-            amntErrMssg,
-          } = this.state;
-          const updateTransc = (event) => {
+          const onUpdateTransaction = async (event) => {
             event.preventDefault();
-            onUpdateTransaction(
-              updateTransactionName,
-              updateTransactionType,
-              updateTransactionCategory,
-              updateTransactionAmount,
-              updateTransactionDate
-            );
+            const parsedDate = parse(updateTransacList.date, "yyyy-MM-dd", new Date());
+            const formatDate = format(parsedDate, "yyyy-MM-dd'T'HH:mm:ssxxx");
+            const data = {...updateTransacList , 
+            date: formatDate}
+            const url = "https://bursting-gelding-24.hasura.app/api/rest/update-transaction"
+            const options =  {
+              method: "POST",
+              headers: {
+                "content-type": "application/json",
+                "x-hasura-admin-secret":
+                  "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
+                "x-hasura-role": "user",
+                "x-hasura-user-id": `${userId}`,
+              },
+              body: JSON.stringify(data),
+            };
+            const res = await fetch(url, options);
+            const updateDdata = await res.json()
+            updateTransactionToDatabase(updateDdata)
           };
           const nameChange = (event) => {
-            updateTransactionNameValue(event.target.value);
+           setTransactionName(event.target.value);
           };
           const typeChange = (event) => {
-            updateTransactionTypeValue(event.target.value);
+            setTransactionType(event.target.value);
           };
           const catChange = (event) => {
-            updateTransactionCategoryValue(event.target.value);
+            setTransactionCategory(event.target.value);
           };
           const amntChange = (event) => {
-            updateTransactionAmountValue(event.target.value);
+            setTransactionAmount(event.target.value);
           };
           const dateChange = (event) => {
-            updateTransactionDateValue(event.target.value);
+            setTransactionDate(event.target.value);
           };
           const close = () => {
             onCancel();
@@ -170,7 +134,7 @@ class UpdateTransactions extends Component {
           return (
             showUpdatePopup && (
               <div className="add-transactions">
-                <form onSubmit={updateTransc} className="add-form-crd">
+                <form onSubmit={onUpdateTransaction} className="add-form-crd">
                   <div className="frm-head">
                     {!updateSuccessMssg && (
                       <div className="hed-crd">
@@ -197,9 +161,9 @@ class UpdateTransactions extends Component {
                           </label>
                           <input
                             className="add-transc-name"
-                            onBlur={this.onBlurName}
+                            onBlur={onBlurName}
                             onChange={nameChange}
-                            value={updateTransactionName}
+                            value={transactionName}
                             type="text"
                             id="transc-name"
                             placeholder="Enter Name"
@@ -213,8 +177,8 @@ class UpdateTransactions extends Component {
                             Transaction Type
                           </label>
                           <select
-                            onBlur={this.onBlurType}
-                            value={updateTransactionType}
+                            onBlur={onBlurType}
+                            value={transactionType}
                             onChange={typeChange}
                             className="add-transc-name"
                             id="transc-type"
@@ -235,8 +199,8 @@ class UpdateTransactions extends Component {
                           </label>
                           <select
                             onChange={catChange}
-                            onBlur={this.onBlurCat}
-                            value={updateTransactionCategory}
+                            onBlur={onBlurCat}
+                            value={transactionCategory}
                             className="add-transc-name"
                             id="transc-type"
                           >
@@ -245,7 +209,6 @@ class UpdateTransactions extends Component {
                                 {each.name}
                               </option>
                             ))}
-                            >
                           </select>
                           {catErr && <p className="transc-err">{catErrMssg}</p>}
                         </div>
@@ -254,9 +217,9 @@ class UpdateTransactions extends Component {
                             Amount
                           </label>
                           <input
-                            onBlur={this.onBlurAmount}
+                            onBlur={onBlurAmount}
                             onChange={amntChange}
-                            value={updateTransactionAmount}
+                            value={transactionAmount}
                             className="add-transc-name"
                             type="number"
                             id="transc-amount"
@@ -271,10 +234,10 @@ class UpdateTransactions extends Component {
                             Date
                           </label>
                           <input
-                            onBlur={this.onBlurDate}
+                            onBlur={onBlurDate}
                             onChange={dateChange}
                             value={format(
-                              parseISO(updateTransactionDate),
+                              parseISO(transactionDate),
                               "yyyy-MM-dd"
                             )}
                             className="add-transc-name"
@@ -302,10 +265,7 @@ class UpdateTransactions extends Component {
               </div>
             )
           );
-        }}
-      </ResourceContext.Consumer>
-    );
-  }
+
 }
 
 export default UpdateTransactions;

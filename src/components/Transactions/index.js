@@ -1,33 +1,19 @@
-import { Component } from "react";
-
+import { useContext, useEffect, useState } from "react";
+import { parseISO, format } from "date-fns";
+import { ThreeDots } from "react-loader-spinner";
+import { HiOutlinePencil } from "react-icons/hi";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { IoWarningOutline } from "react-icons/io5";
+import { BiUpArrowCircle } from "react-icons/bi";
+import { BsArrowDownCircle } from "react-icons/bs";
+import FailureView from "../FailureView";
+import { RxCross2 } from "react-icons/rx";
 import Popup from "reactjs-popup";
 
 import ResourceContext from "../../context/ResourceContext";
-
-import Cookies from "js-cookie";
-
+import useUserId from "../../hooks/useUserId";
 import SideBar from "../SideBar";
-
 import Navbar from "../Navbar";
-
-import { parseISO, format } from "date-fns";
-
-import { ThreeDots } from "react-loader-spinner";
-
-import { HiOutlinePencil } from "react-icons/hi";
-
-import { RiDeleteBin6Line } from "react-icons/ri";
-
-import { IoWarningOutline } from "react-icons/io5";
-
-import { BiUpArrowCircle } from "react-icons/bi";
-
-import { BsArrowDownCircle } from "react-icons/bs";
-
-import FailureView from "../FailureView";
-
-import { RxCross2 } from "react-icons/rx";
-
 import TransactionType from "../TransactionType";
 
 import "./index.css";
@@ -45,47 +31,34 @@ const transactionType = [
   { name: "Credit", id: "credit" },
 ];
 
-class Transactions extends Component {
-  state = {
-    isLoading: apiStatus.initial,
-    activeTypeId: transactionType[0].id,
-    transactionList: [],
-    showPopup: true,
+const Transactions = () => {
+  const [activeTypeId , setActiveTypeId] = useState(transactionType[0].id)
+  const [showPopup , setShowPopup] = useState(true)
+  const userId = useUserId()
+  const {
+    transactionList,
+    transactionIsLoading,
+    onDeleteTransaction,
+    showTransactionPopup,
+    onClickEdit,
+    userList,
+    showUpdatePopup,
+    imagesUrl, apiCall
+  } = useContext(ResourceContext)
+
+  const changeTypeId = (id) => {
+      setActiveTypeId(id)
   };
 
-  componentDidMount() {
-    const { allTransaction } = this.context;
-    allTransaction();
-  }
-
-  changeTypeId = (id) => {
-    this.setState({
-      activeTypeId: id,
-    });
+  const changePopup = () => {
+      setShowPopup(s => !s)
   };
 
-  changePopup = () => {
-    this.setState((prevState) => ({
-      showPopup: !prevState.showPopup,
-    }));
-  };
+  useEffect(() => {
+    apiCall()
+  } , [])
 
-  transactiondata = () => {
-    const { activeTypeId, showPopup } = this.state;
-    const userId = Cookies.get("id");
-    return (
-      <ResourceContext.Consumer>
-        {(value) => {
-          const {
-            transactionList,
-            transactionIsLoading,
-            onDeleteTransaction,
-            showTransactionPopup,
-            onClickEdit,
-            userList,
-            showUpdatePopup,
-            imagesUrl,
-          } = value;
+  const renderTransactiondata = () => {
           const filterList = transactionList.filter(
             (each) => each.type.toLowerCase() === activeTypeId
           );
@@ -95,12 +68,49 @@ class Transactions extends Component {
                   (a, b) => new Date(b.date) - new Date(a.date)
                 )
               : filterList.sort((a, b) => new Date(b.date) - new Date(a.date));
-          const onDelete = (event) => {
-            onDeleteTransaction(event.target.value);
+          const onDelete = async (event) => {
+            const options = {
+              method: "DELETE",
+              headers: {
+                "content-type": "application/json",
+                "x-hasura-admin-secret":
+                  "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
+                "x-hasura-role": "user",
+                "x-hasura-user-id": `${userId}`,
+              },
+            };
+            const url = `https://bursting-gelding-24.hasura.app/api/rest/delete-transaction?id=${event.target.value}`;
+            const res = await fetch(url, options);
+            const data = await res.json();
+            if (res.ok) {
+              const trnsacId = data.delete_transactions_by_pk.id;
+              const updateList = transactionList.filter((each) => each.id !== trnsacId);
+              onDeleteTransaction(updateList);
+            }
           };
-          const onEdit = (event) => {
-            onClickEdit(event.target.value);
-          };
+          const onEdit = async (event) => {
+            const url = `https://bursting-gelding-24.hasura.app/api/rest/delete-transaction?id=${event.target.value}`;
+            const options = {
+              method: "DELETE",
+              headers: {
+                "content-type": "application/json",
+                "x-hasura-admin-secret":
+                  "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
+                "x-hasura-role": "user",
+                "x-hasura-user-id": `${userId}`,
+              },
+            };
+            const res = await fetch(url, options);
+            const data = await res.json();
+            if (res.ok) {
+              const updateList = transactionList.filter(
+                (each) => each.id === data.delete_transactions_by_pk.id
+              );
+              const list = updateList[0];
+              const formatDate = format(parseISO(list.date), "yyyy-MM-dd");
+              const updatedList = {...list , date: formatDate}
+            onClickEdit(updatedList);
+          }}
           switch (transactionIsLoading) {
             case apiStatus.res:
               let allUsersList;
@@ -195,7 +205,7 @@ class Transactions extends Component {
                                   : `-$${each.amount}`
                               }`}
                             </td>
-                            {parseInt(userId) !== 3 && (
+                            {(userId) !== "3" && (
                               <>
                                 <td>
                                   <button
@@ -215,7 +225,7 @@ class Transactions extends Component {
                                     modal
                                     trigger={
                                       <button
-                                        onClick={this.changePopup}
+                                        onClick={changePopup}
                                         className="edit-btn"
                                         type="button"
                                       >
@@ -326,13 +336,9 @@ class Transactions extends Component {
             default:
               return null;
           }
-        }}
-      </ResourceContext.Consumer>
-    );
+        ;
   };
 
-  render() {
-    const { activeTypeId } = this.state;
     return (
       <div className="home-bg">
         <SideBar />
@@ -341,20 +347,17 @@ class Transactions extends Component {
           <ul className="transactiontype-crd">
             {transactionType.map((each) => (
               <TransactionType
-                changeTypeId={this.changeTypeId}
+                changeTypeId={changeTypeId}
                 list={each}
                 key={each.id}
                 isActive={activeTypeId === each.id}
               />
             ))}
           </ul>
-          <div className="main-content">{this.transactiondata()}</div>
+          <div className="main-content">{renderTransactiondata()}</div>
         </div>
       </div>
     );
-  }
 }
-
-Transactions.contextType = ResourceContext;
 
 export default Transactions;
