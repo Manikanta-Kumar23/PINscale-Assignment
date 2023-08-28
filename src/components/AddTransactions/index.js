@@ -1,4 +1,4 @@
-import {useState } from "react";
+import {useContext, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { format, parse} from "date-fns";
 
@@ -33,6 +33,12 @@ const AddTransactions = () => {
   const [typeErr , setTypeErr] = useState(false)
   const [typeErrMssg ,setTypeErrMssg]  =useState("")
   const userId = useUserId()
+  const {
+    showTransactionPopup,
+    onCancel,
+    transactionSuccessMssg,
+    addTransactionToDatabase
+  } = useContext(ResourceContext)
 
   const onTransactionName = (event) => {
       setTransactionName(event.target.value)
@@ -104,17 +110,7 @@ const AddTransactions = () => {
         setDateErr(false)
     }
   };
-
-    return (
-      <ResourceContext.Consumer>
-        {(value) => {
-          const {
-            showTransactionPopup,
-            onCancel,
-            transactionSuccessMssg,
-            addTransactionToDatabase
-          } = value;
-          const onAddTransaction = async (event) => {
+      const onAddTransaction = async (event) => {
             event.preventDefault();
               if (transactionName !== "" &&
                 transactionType !== "" &&
@@ -292,9 +288,6 @@ const AddTransactions = () => {
               </div>
             )
           );
-        }}
-      </ResourceContext.Consumer>
-    );
 }
 
 export default AddTransactions;

@@ -1,8 +1,8 @@
-import Cookies from "js-cookie";
+import useUserId from "../../hooks/useUserId";
 import { Redirect, Route } from "react-router-dom";
 
 const AuthenticateRoute = (props) => {
-  const userId = Cookies.get("id");
+  const userId = useUserId()
   if (userId === undefined) {
     return <Redirect to="/login" />;
   }

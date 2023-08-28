@@ -8,6 +8,7 @@ import SideBarContents from "../SideBarContents";
 import ResourceContext from "../../context/ResourceContext";
 
 import "./index.css";
+import { useContext } from "react";
 
 const sideBarContents = [
   {
@@ -41,6 +42,8 @@ const sideBarContents = [
 
 const SideBar = (props) => {
   const userId = useUserId()
+  const { userList, isLoading, imagesUrl } = useContext(ResourceContext)
+
   const onLogout = () => {
     const { history } = this.props;
     Cookies.remove("id");
@@ -51,14 +54,9 @@ const SideBar = (props) => {
     const { history } = props;
     history.push("/");
   };
-
-    return (
-      <ResourceContext.Consumer>
-        {(value) => {
           let name = "Username";
           let email = "Email";
           const { location } = props;
-          const { userList, isLoading, imagesUrl } = value;
           if (isLoading === "SUCCESS") {
             name = userList[0].name;
             email = userList[0].email;
@@ -147,9 +145,6 @@ const SideBar = (props) => {
               </div>
             </div>
           );
-        }}
-      </ResourceContext.Consumer>
-    );
 }
 
 export default withRouter(SideBar);

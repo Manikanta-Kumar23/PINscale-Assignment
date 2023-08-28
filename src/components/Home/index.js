@@ -16,6 +16,7 @@ import TransactionOverviewChart from "../TransactionOverviewChart";
 import SideBar from "../SideBar";
 import Navbar from "../Navbar";
 import "./index.css";
+import { useContext, useEffect } from "react";
 
 const apiStatus = {
   res: "SUCCESS",
@@ -26,6 +27,15 @@ const apiStatus = {
 
 const Home = () => {
   const userId = useUserId()
+  const {
+    showTransactionPopup,
+    userList,
+    onDeleteTransaction,
+    showUpdatePopup,
+    imagesUrl,
+    onClickEdit
+  } = useContext(ResourceContext)
+
   let apiUrl = {creditUrl: "" , recentTransactionUrl:"" , overviewUrl : ""}
   let apiOptions = {method: 'GET' , headers: {"content-type": "application/json",
   "x-hasura-admin-secret":
@@ -45,21 +55,25 @@ const Home = () => {
       apiOptions = {...apiOptions , headers: {...apiOptions.headers ,"x-hasura-role": "admin",}}
     }
 
-    const homeCreditData = useDataFetching(apiUrl.creditUrl , apiOptions)
-    const isLoading = homeCreditData.isLoading
     let creditData
+    const {data: creditedData , isLoading , fetchData: homeCreditData} = useDataFetching()
+    useEffect(() => {
+      homeCreditData(apiUrl.creditUrl , apiOptions)
+    } , [])
     if (isLoading === apiStatus.res && (userId) !== "3") {
-      creditData = homeCreditData.data.totals_credit_debit_transactions
+      creditData = creditedData.totals_credit_debit_transactions
     }
     else if (isLoading === apiStatus.res && (userId) === "3") {
-      creditData = homeCreditData.data.transaction_totals_admin
+      creditData = creditedData.transaction_totals_admin
     }
 
-    const recentTransactionsData = useDataFetching(apiUrl.recentTransactionUrl , apiOptions)
-    const transcLoading = recentTransactionsData.isLoading
+    const {data: recentTransactionsDataList , isLoading: transcLoading , fetchData :recentTransactionsData} = useDataFetching()
     let recentTransactionsList
+    useEffect(() => {
+      recentTransactionsData(apiUrl.recentTransactionUrl , apiOptions)
+    } , [])
     if (transcLoading === apiStatus.res) {
-      recentTransactionsList = recentTransactionsData.data.transactions.map((each) => {
+      recentTransactionsList = recentTransactionsDataList.transactions.map((each) => {
         return {
           transactionName: each.transaction_name,
           userId: each.user_id,
@@ -72,17 +86,19 @@ const Home = () => {
       });
     }
 
-    const overviewData = useDataFetching(apiUrl.overviewUrl , apiOptions)
-    const overviewLoading = overviewData.isLoading
-    let overviewList = []
+    const {data: overviewDataList , isLoading: overviewLoading  , fetchData: overviewData} = useDataFetching()
+    let overviewList
+    useEffect(() => {
+      overviewData(apiUrl.overviewUrl , apiOptions)
+    } , [])
     if (overviewLoading === apiStatus.res && (userId) !== "3") {
-      overviewList = overviewData.data.last_7_days_transactions_credit_debit_totals
+      overviewList = overviewDataList.last_7_days_transactions_credit_debit_totals
     }
     else if (overviewLoading === apiStatus.res && (userId) === "3") {
-      overviewList = overviewData.data.last_7_days_transactions_totals_admin;
+      overviewList = overviewDataList.last_7_days_transactions_totals_admin;
     }
 
-  const totalCreditAndDebit = () => {
+  const renderTotalCreditAndDebit = () => {
     switch (isLoading) {
       case apiStatus.res:
         let credit = 0;
@@ -161,18 +177,7 @@ const Home = () => {
     }
   };
 
-  const threeTransactions = () => {
-    return (
-      <ResourceContext.Consumer>
-        {(value) => {
-          const {
-            showTransactionPopup,
-            userList,
-            onDeleteTransaction,
-            showUpdatePopup,
-            imagesUrl,
-            onClickEdit,
-          } = value;
+  const renderThreeTransactions = () => {
           const deleteTransc = async (event) => {
             const options = {
               method: "DELETE",
@@ -436,16 +441,9 @@ const Home = () => {
             default:
               return null;
           }
-        }}
-      </ResourceContext.Consumer>
-    );
   };
 
-  const transactionOverviewCharts = () => {
-    return (
-      <ResourceContext.Consumer>
-        {(value) => {
-          const { showTransactionPopup, showUpdatePopup } = value;
+  const renderTransactionOverviewCharts = () => {
           switch (overviewLoading) {
             case apiStatus.res:
               return (
@@ -482,9 +480,6 @@ const Home = () => {
             default:
               return null;
           }
-        }}
-      </ResourceContext.Consumer>
-    );
   };
     return (
       <div className="home-bg">
@@ -492,9 +487,9 @@ const Home = () => {
         <div className="home-content">
           <Navbar />
           <div className="main-content">
-            {totalCreditAndDebit()}
-            {threeTransactions()}
-            {transactionOverviewCharts()}
+            {renderTotalCreditAndDebit()}
+            {renderThreeTransactions()}
+            {renderTransactionOverviewCharts()}
           </div>
         </div>
       </div>

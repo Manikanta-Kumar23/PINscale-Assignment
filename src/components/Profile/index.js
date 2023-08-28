@@ -7,6 +7,7 @@ import useDataFetching from "../../hooks/useDataFetching";
 import useUserId from "../../hooks/useUserId";
 
 import "./index.css";
+import { useEffect } from "react";
 
 const apiStatus = {
   res: "SUCCESS",
@@ -131,13 +132,16 @@ const Profile = () => {
         },
       };
     }
-    const profileData = useDataFetching(url , options)
+    const {data:userDataList , isLoading , fetchData:profileData} = useDataFetching()
+    useEffect(() =>{
+      profileData(url , options)
+    } , [])
 
-  const userData = () => {
+  const renderUserData = () => {
     const id = parseInt(userId);
-    switch (profileData.isLoading) {
+    switch (isLoading) {
       case apiStatus.res:
-        const userList = profileData.data.users
+        const userList = userDataList.users
         return (
           <div className="user-data">
             <img
@@ -283,7 +287,7 @@ const Profile = () => {
         <SideBar />
         <div className="home-content">
           <Navbar />
-          <div className="main-content">{userData()}</div>
+          <div className="main-content">{renderUserData()}</div>
         </div>
       </div>
     );

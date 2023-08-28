@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { format, parseISO , parse } from "date-fns";
 import { RxCross2 } from "react-icons/rx";
 
@@ -28,6 +28,18 @@ const UpdateTransactions = () => {
   const [typeErr , setTypeErr] = useState(false)
   const [typeErrMssg ,setTypeErrMssg]  =useState("")
   const userId = useUserId()
+  const {
+    showUpdatePopup,
+    onCancel,
+    updateTransacList ,
+    updateTransactionNameValue,
+    updateTransactionTypeValue,
+    updateTransactionCategoryValue,
+    updateTransactionAmountValue,
+    updateTransactionDateValue,
+    updateSuccessMssg,
+    updateTransactionToDatabase
+  } = useContext(ResourceContext)
 
   const onBlurName = (event) => {
     if (event.target.value === "") {
@@ -79,22 +91,6 @@ const UpdateTransactions = () => {
         setDateErr(false)
     }
   };
-
-    return (
-      <ResourceContext.Consumer>
-        {(value) => {
-          const {
-            showUpdatePopup,
-            onCancel,
-            updateTransacList ,
-            updateTransactionNameValue,
-            updateTransactionTypeValue,
-            updateTransactionCategoryValue,
-            updateTransactionAmountValue,
-            updateTransactionDateValue,
-            updateSuccessMssg,
-            updateTransactionToDatabase
-          } = value;
           const onUpdateTransaction = async (event) => {
             event.preventDefault();
             const parsedDate = parse(updateTransacList.date, "yyyy-MM-dd", new Date());
@@ -269,9 +265,6 @@ const UpdateTransactions = () => {
               </div>
             )
           );
-        }}
-      </ResourceContext.Consumer>
-    );
 
 }
 

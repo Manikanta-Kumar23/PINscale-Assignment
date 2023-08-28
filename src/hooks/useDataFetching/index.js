@@ -1,4 +1,4 @@
-import { useEffect,useState} from "react"
+import {useState} from "react"
 
 const apiStatus = {
     res: "SUCCESS",
@@ -7,11 +7,12 @@ const apiStatus = {
     initial: "",
   };
 
-const useDataFetching = (url , options) => {
+const useDataFetching = () => {
     const [data , setData] = useState([])
     const [isLoading , setIsLoading] = useState(apiStatus.initial)
-    const fetchData = async ()  => {
-        const res = await fetch(url , options)
+    const fetchData = async (url , options)  => {
+                setIsLoading(apiStatus.inProgress)
+                const res = await fetch(url , options)
                 const data = await res.json()
                 if (res.ok) {
                     setData(data)
@@ -21,13 +22,7 @@ const useDataFetching = (url , options) => {
                     setIsLoading(apiStatus.rej)
                 }
     }
-    useEffect(() => {
-        setIsLoading(apiStatus.inProgress)
-        fetchData()
-        
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-        } , []) 
-    return ({data , isLoading})
+    return ({data , isLoading , fetchData})
 }
 
 export default useDataFetching

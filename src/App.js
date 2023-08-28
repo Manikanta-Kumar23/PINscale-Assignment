@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Switch, Route, withRouter } from "react-router-dom";
 
 import "./App.css";
@@ -133,10 +133,12 @@ const  App = () => {
       apiOptions = {...apiOptions , headers: {...apiOptions.headers , "x-hasura-role": "admin"}}
     }
 
-    const transactionDataApi = useDataFetching(transactionsUrl , apiOptions)
-    const transactionIsLoading = transactionDataApi.isLoading
+    const {data: transactionDataList , isLoading: transactionIsLoading , fetchData: transactionDataApi} = useDataFetching()
+    useEffect(() => {
+      transactionDataApi(transactionsUrl , apiOptions)
+    } , [])
     if (transactionIsLoading === apiStatus.res) {
-      transactionList = transactionDataApi.data.transactions.map((each) => {
+      transactionList = transactionDataList.transactions.map((each) => {
         return ({
           transactionName: each.transaction_name , 
           category: each.category ,
@@ -149,11 +151,13 @@ const  App = () => {
       })
     }
 
-    const userDataApi = useDataFetching(userUrl, apiOptions)
-    const isLoading = userDataApi.isLoading
+    const {data: userDataList ,  isLoading , fetchData: userDataApi} = useDataFetching()
+    useEffect(() => {
+      userDataApi(userUrl, apiOptions)
+    } , [])
     let userList = []
     if (isLoading === apiStatus.res) {
-      userList = userDataApi.data.users.map((each) => {
+      userList = userDataList.users.map((each) => {
         return {
           name: each.name,
           email: each.email,
@@ -258,6 +262,7 @@ const  App = () => {
           updateSuccessMssg,
           showSidebar,
           onShow: onShow,
+          transactionDataApi: transactionDataApi
         }}
       >
         <UpdateTransactions />
