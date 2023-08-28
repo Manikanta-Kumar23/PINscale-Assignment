@@ -38,7 +38,7 @@ const UpdateTransactions = () => {
     updateTransactionAmountValue,
     updateTransactionDateValue,
     updateSuccessMssg,
-    updateTransactionToDatabase
+    updateTransactionToDatabase  , apiCall
   } = useContext(ResourceContext)
 
   const onBlurName = (event) => {
@@ -112,6 +112,7 @@ const UpdateTransactions = () => {
             const res = await fetch(url, options);
             const updateDdata = await res.json()
             updateTransactionToDatabase(updateDdata)
+            apiCall()
           };
           const nameChange = (event) => {
             updateTransactionNameValue(event.target.value);

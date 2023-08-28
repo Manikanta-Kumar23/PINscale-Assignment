@@ -37,7 +37,7 @@ const AddTransactions = () => {
     showTransactionPopup,
     onCancel,
     transactionSuccessMssg,
-    addTransactionToDatabase
+    addTransactionToDatabase , apiCall
   } = useContext(ResourceContext)
 
   const onTransactionName = (event) => {
@@ -153,6 +153,7 @@ const AddTransactions = () => {
               setTransactionCategory("null")
               setTransactionType("null")
               setTransactionDate("")
+              apiCall()
           };
           const close = () => {
             onCancel();

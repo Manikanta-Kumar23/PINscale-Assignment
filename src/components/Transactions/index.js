@@ -43,21 +43,8 @@ const Transactions = () => {
     onClickEdit,
     userList,
     showUpdatePopup,
-    imagesUrl,
-    transactionDataApi
+    imagesUrl, apiCall
   } = useContext(ResourceContext)
-
-  const transactionsUrl ="https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=100&offset=0"
-  let apiOptions = {method: "GET" , headers: {"content-type": "application/json",
-  "x-hasura-admin-secret":
-    "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",}}
-    if ((userId) !== "3") {
-      apiOptions = {...apiOptions , headers: {...apiOptions.headers , "x-hasura-role": "user",
-      "x-hasura-user-id": `${userId}`,}}
-    }
-    else {
-      apiOptions = {...apiOptions , headers: {...apiOptions.headers , "x-hasura-role": "admin"}}
-    }
 
   const changeTypeId = (id) => {
       setActiveTypeId(id)
@@ -68,7 +55,7 @@ const Transactions = () => {
   };
 
   useEffect(() => {
-    transactionDataApi(transactionsUrl , apiOptions)
+    apiCall()
   } , [])
 
   const renderTransactiondata = () => {

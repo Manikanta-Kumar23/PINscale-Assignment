@@ -45,7 +45,7 @@ const SideBar = (props) => {
   const { userList, isLoading, imagesUrl } = useContext(ResourceContext)
 
   const onLogout = () => {
-    const { history } = this.props;
+    const { history } = props;
     Cookies.remove("id");
     history.replace("/login");
   };

@@ -137,6 +137,9 @@ const  App = () => {
     useEffect(() => {
       transactionDataApi(transactionsUrl , apiOptions)
     } , [])
+    const apiCall = () => {
+      transactionDataApi(transactionsUrl , apiOptions)
+    }
     if (transactionIsLoading === apiStatus.res) {
       transactionList = transactionDataList.transactions.map((each) => {
         return ({
@@ -262,7 +265,7 @@ const  App = () => {
           updateSuccessMssg,
           showSidebar,
           onShow: onShow,
-          transactionDataApi: transactionDataApi
+          apiCall: apiCall
         }}
       >
         <UpdateTransactions />
