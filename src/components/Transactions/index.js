@@ -316,7 +316,7 @@ const Transactions = () => {
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
+                    justifyContent: "center"
                   }}
                   className="loader-container"
                 >
