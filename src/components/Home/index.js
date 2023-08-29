@@ -156,6 +156,7 @@ const Home = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              marginBottom: "13"
             }}
             className="loader-container"
           >
