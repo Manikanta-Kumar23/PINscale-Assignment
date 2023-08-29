@@ -8,7 +8,7 @@ import SideBarContents from "../SideBarContents";
 import ResourceContext from "../../context/ResourceContext";
 
 import "./index.css";
-import { useContext } from "react";
+import React ,{ useContext } from "react";
 
 const sideBarContents = [
   {
@@ -106,7 +106,7 @@ const SideBar = (props) => {
                     </button>
                   }
                 >
-                  {(close) => (
+                  { (
                     <div className="modal-card">
                       <div className="mssg-card">
                         <div className="out-icon">

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import React ,{ useState } from "react"
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 import { MdOutlineMail } from "react-icons/md";
@@ -7,13 +7,22 @@ import Cookies from "js-cookie";
 
 import "./index.css";
 
+interface eventType {
+  target: {
+    value: string
+  }
+}
+interface submitType {
+  preventDefault: () => void
+}
+
 const Login = () => {
   const [email , setEmail] = useState("")
     const [password ,setPassword] = useState("")
     const [errMssg, setErrMssg] = useState("")
     const [mailErr , setMailErr] = useState(false)
     const history = useHistory()
-    const onCheckMail = (event) => {
+    const onCheckMail = (event: eventType) => {
         if (event.target.value.endsWith("@gmail.com") === false &&
         event.target.value !== "") {
             setErrMssg("*Please provide a valid Email-Id")
@@ -25,19 +34,20 @@ const Login = () => {
         }
 
     }
-    const onSuccess = (id) => {
+    
+    const onSuccess = (id: string) => {
       setMailErr(false)
       setErrMssg("")
       Cookies.set("id", id, { expires: 23 });
       history.push("/")
     }
-    const onMailId = (event) => {
+    const onMailId = (event: eventType) => {
         setEmail(event.target.value)
     } 
-    const onPassword = (event) => {
+    const onPassword = (event: eventType) => {
         setPassword(event.target.value)
     }
-    const onLogin = async (event) => {
+    const onLogin = async (event: submitType) => {
         event.preventDefault()
         if (email !== "" && password !== "") {
           const userDetails = { email, password };

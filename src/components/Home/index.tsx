@@ -16,7 +16,41 @@ import TransactionOverviewChart from "../TransactionOverviewChart";
 import SideBar from "../SideBar";
 import Navbar from "../Navbar";
 import "./index.css";
-import { useContext, useEffect } from "react";
+import React , { useContext, useEffect } from "react";
+
+interface creditDataType {
+  sum: number
+  type: string
+}
+interface recentTransactionType {
+  transaction_name?: string
+  user_id?:number
+  amount: number
+  category: string
+  id: number
+  type: string
+  date: string
+  transactionName?: string
+  userId?: number
+}
+interface overviewType {
+  sum: number
+  type: string
+  date: string
+}
+interface usersType {
+  name: string
+  id: number
+}
+interface eventType {
+  target: {
+    value: string
+  }
+}
+interface imgUrlType {
+  url: string
+  id: string
+}
 
 const apiStatus = {
   res: "SUCCESS",
@@ -36,8 +70,25 @@ const Home = () => {
     onClickEdit
   } = useContext(ResourceContext)
 
-  let apiUrl = {creditUrl: "" , recentTransactionUrl:"" , overviewUrl : ""}
-  let apiOptions = {method: 'GET' , headers: {"content-type": "application/json",
+  interface urlType {
+    creditUrl: string
+    recentTransactionUrl: string
+    overviewUrl: string
+  }
+  interface headerType  {
+    "content-type": string
+    "x-hasura-admin-secret": string
+    "x-hasura-role"?: string
+    "x-hasura-user-id"?: string
+
+  }
+  interface optionsType  {
+    method: string
+    headers: headerType
+  }
+
+  let apiUrl: urlType = {creditUrl: "" , recentTransactionUrl:"" , overviewUrl : ""}
+  let apiOptions: optionsType = {method: 'GET' , headers: {"content-type": "application/json",
   "x-hasura-admin-secret":
     "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",}}
 
@@ -55,7 +106,7 @@ const Home = () => {
       apiOptions = {...apiOptions , headers: {...apiOptions.headers ,"x-hasura-role": "admin",}}
     }
 
-    let creditData
+    let creditData: creditDataType[] = []
     const {data: creditedData , isLoading , fetchData: homeCreditData} = useDataFetching()
     useEffect(() => {
       homeCreditData(apiUrl.creditUrl , apiOptions)
@@ -68,12 +119,12 @@ const Home = () => {
     }
 
     const {data: recentTransactionsDataList , isLoading: transcLoading , fetchData :recentTransactionsData} = useDataFetching()
-    let recentTransactionsList
+    let recentTransactionsList: recentTransactionType[] = []
     useEffect(() => {
       recentTransactionsData(apiUrl.recentTransactionUrl , apiOptions)
     } , [])
     if (transcLoading === apiStatus.res) {
-      recentTransactionsList = recentTransactionsDataList.transactions.map((each) => {
+      recentTransactionsList = recentTransactionsDataList.transactions.map((each: recentTransactionType) => {
         return {
           transactionName: each.transaction_name,
           userId: each.user_id,
@@ -87,7 +138,7 @@ const Home = () => {
     }
 
     const {data: overviewDataList , isLoading: overviewLoading  , fetchData: overviewData} = useDataFetching()
-    let overviewList
+    let overviewList: overviewType[] = []
     useEffect(() => {
       overviewData(apiUrl.overviewUrl , apiOptions)
     } , [])
@@ -166,8 +217,7 @@ const Home = () => {
               radius="9"
               color="#4D78FF"
               ariaLabel="loading"
-              wrapperStyle
-              wrapperClass
+              wrapperClass="true"
             />
           </div>
         );
@@ -179,7 +229,7 @@ const Home = () => {
   };
 
   const renderThreeTransactions = () => {
-          const deleteTransc = async (event) => {
+          const deleteTransc = async (event:React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
             const options = {
               method: "DELETE",
               headers: {
@@ -195,12 +245,12 @@ const Home = () => {
             const data = await res.json();
             if (res.ok) {
               const trnsacId = data.delete_transactions_by_pk.id;
-              const updateList = recentTransactionsList.filter((each) => each.id !== trnsacId);
+              const updateList: recentTransactionType[] = recentTransactionsList.filter((each) => each.id !== trnsacId);
               onDeleteTransaction(updateList);
             }
           };
 
-          const updateTransac = async (event) => {
+          const updateTransac = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
             const url = `https://bursting-gelding-24.hasura.app/api/rest/delete-transaction?id=${event.target.value}`;
             const options = {
               method: "DELETE",
@@ -226,14 +276,15 @@ const Home = () => {
           };
           switch (transcLoading) {
             case apiStatus.res:
-              let allUsersList;
+              let allUsersList: usersType[] = [];
               recentTransactionsList.sort((a, b) => new Date(b.date) - new Date(a.date));
               if (parseInt(userId) === 3) {
-                allUsersList = userList.map((each) => ({
+                allUsersList = userList.map((each: usersType) => ({
                   name: each.name,
-                  userId: each.id,
+                  id: each.id,
                 }));
               }
+              console.log(userList)
               return (
                 <div className="recent-card">
                   <h1 className="last-transc">Last Transaction</h1>
@@ -273,13 +324,13 @@ const Home = () => {
                                       alt="user-icon"
                                       src={
                                         imagesUrl.find(
-                                          (user) =>
+                                          (user: imgUrlType) =>
                                             parseInt(user.id) === each.userId
                                         )?.url
                                       }
                                     />
                                     {allUsersList.find(
-                                      (user) => user.userId === each.userId
+                                      (user) => user.id === each.userId
                                     )?.name || "N/A"}
                                   </div>
                                 </td>
@@ -353,7 +404,7 @@ const Home = () => {
                                         </button>
                                       }
                                     >
-                                      {(close) => (
+                                      { (
                                         <div className="modal-card">
                                           <div className="mssg-card">
                                             <div className="out-icon">
@@ -432,8 +483,7 @@ const Home = () => {
                     radius="9"
                     color="#4D78FF"
                     ariaLabel="loading"
-                    wrapperStyle
-                    wrapperClass
+                    wrapperClass= "true"
                   />
                 </div>
               );
@@ -471,8 +521,7 @@ const Home = () => {
                     radius="9"
                     color="#4D78FF"
                     ariaLabel="loading"
-                    wrapperStyle
-                    wrapperClass
+                    wrapperClass="true"
                   />
                 </div>
               );

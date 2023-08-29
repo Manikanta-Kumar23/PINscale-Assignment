@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import React , { useContext, useEffect, useState } from "react";
 import { parseISO, format } from "date-fns";
 import { ThreeDots } from "react-loader-spinner";
 import { HiOutlinePencil } from "react-icons/hi";
@@ -236,7 +236,7 @@ const Transactions = () => {
                                       </button>
                                     }
                                   >
-                                    {(close) => (
+                                    { (
                                       <div className="modal-card">
                                         <div className="mssg-card">
                                           {showPopup ? (

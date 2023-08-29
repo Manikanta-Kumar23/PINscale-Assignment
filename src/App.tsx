@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React ,{ useEffect, useState } from "react";
 import { Switch, Route, withRouter } from "react-router-dom";
 
 import "./App.css";
@@ -110,6 +110,44 @@ const imagesUrl = [
   },
 ];
 
+interface transactionType {
+  transaction_name?: string
+  user_id?:number
+  amount: number
+  category: string
+  id: number
+  type: string
+  date: string
+  transactionName?: string
+  userId?: number
+}
+interface headerType  {
+  "content-type": string
+  "x-hasura-admin-secret": string
+  "x-hasura-role"?: string
+  "x-hasura-user-id"?: string
+
+}
+interface optionsType  {
+  method: string
+  headers: headerType
+}
+interface userListType {
+  name: string
+  email: string
+  country: string | null
+  city: string
+  id: number
+  dateOfBirth?: string
+  date_of_birth?: string
+  permanentAddress?: string | null 
+  permanent_address?:string | null
+  postalCode?: string | null
+  postal_code?: string | null
+  presentAddress?: string | null
+  present_address?: string | null
+}
+
 const  App = () => {
   const userId = useUserId()
   let [transactionList , setTransactionList] = useState([])
@@ -122,7 +160,7 @@ const  App = () => {
 
   const userUrl = "https://bursting-gelding-24.hasura.app/api/rest/profile"
   const transactionsUrl ="https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=100&offset=0"
-  let apiOptions = {method: "GET" , headers: {"content-type": "application/json",
+  let apiOptions: optionsType = {method: "GET" , headers: {"content-type": "application/json",
   "x-hasura-admin-secret":
     "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",}}
     if ((userId) !== "3") {
@@ -141,7 +179,7 @@ const  App = () => {
       transactionDataApi(transactionsUrl , apiOptions)
     }
     if (transactionIsLoading === apiStatus.res) {
-      transactionList = transactionDataList.transactions.map((each) => {
+      transactionList = transactionDataList.transactions.map((each: transactionType) => {
         return ({
           transactionName: each.transaction_name , 
           category: each.category ,
@@ -160,7 +198,7 @@ const  App = () => {
     } , [])
     let userList = []
     if (isLoading === apiStatus.res) {
-      userList = userDataList.users.map((each) => {
+      userList = userDataList.users.map((each: userListType) => {
         return {
           name: each.name,
           email: each.email,

@@ -8,7 +8,7 @@ const apiStatus = {
   };
 
 const useDataFetching = () => {
-    const [data , setData] = useState([])
+    const [data , setData] = useState<any>([])
     const [isLoading , setIsLoading] = useState(apiStatus.initial)
     const fetchData = async (url , options)  => {
                 setIsLoading(apiStatus.inProgress)

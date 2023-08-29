@@ -7,7 +7,7 @@ import useDataFetching from "../../hooks/useDataFetching";
 import useUserId from "../../hooks/useUserId";
 
 import "./index.css";
-import { useEffect } from "react";
+import React , { useEffect } from "react";
 
 const apiStatus = {
   res: "SUCCESS",
