@@ -1,5 +1,5 @@
 import React from "react";
-interface transactionType {
+interface TransactionType {
   transaction_name?: string
   user_id?:string
   amount: string
@@ -10,11 +10,11 @@ interface transactionType {
   transactionName?: string
   userId?: string
 }
-interface imgUrlsType {
+interface ImgUrlsType {
   id: string
   url: string
 }
-interface userListType {
+interface UserListType {
   name: string
   email: string
   country: string | null
@@ -31,9 +31,9 @@ interface userListType {
 }
 
 const ResourceContext = React.createContext({
-  userList: [] as userListType[],
+  userList: [] as UserListType[],
   isLoading: "",
-  transactionList:  [] as transactionType[],
+  transactionList:  [] as TransactionType[],
   transactionIsLoading: "",
   onDeleteTransaction: (a: any) => {},
   onClickTransaction: () => {},
@@ -43,9 +43,9 @@ const ResourceContext = React.createContext({
   transactionSuccessMssg: false,
   onClickEdit: (a: any) => {},
   showUpdatePopup: false,
-  updateTransacList: {} as transactionType,
+  updateTransacList: {} as TransactionType,
   updateTransactionToDatabase: (a: any) => {},
-  imagesUrl: [] as imgUrlsType[],
+  imagesUrl: [] as ImgUrlsType[],
   showSidebar: false,
   onShow: () => {},
   updateSuccessMssg: false,

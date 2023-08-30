@@ -18,11 +18,14 @@ import Navbar from "../Navbar";
 import "./index.css";
 import  { useContext, useEffect } from "react";
 
-interface creditDataType {
+import {UrlType , OptionsType} from "../../types"
+import { apiStatus } from "../../constants";
+
+interface CreditDataType {
   sum: number
   type: string
 }
-interface recentTransactionType {
+interface RecentTransactionType {
   transaction_name?: string
   user_id?:number
   amount: number
@@ -33,26 +36,19 @@ interface recentTransactionType {
   transactionName?: string
   userId?: number
 }
-interface overviewType {
+interface OverviewType {
   sum: number
   type: string
   date: string
 }
-interface usersType {
+interface UsersType {
   name: string
   id: number
 }
-interface imgUrlType {
+interface ImgUrlType {
   url: string
   id: string
 }
-
-const apiStatus = {
-  res: "SUCCESS",
-  rej: "FAIL",
-  inProgress: "PENDING",
-  initial: "",
-};
 
 const Home = () => {
   const userId = useUserId()
@@ -65,25 +61,9 @@ const Home = () => {
     onClickEdit
   } = useContext(ResourceContext)
 
-  interface urlType {
-    creditUrl: string
-    recentTransactionUrl: string
-    overviewUrl: string
-  }
-  interface headerType  {
-    "content-type": string
-    "x-hasura-admin-secret": string
-    "x-hasura-role"?: string
-    "x-hasura-user-id"?: string
 
-  }
-  interface optionsType  {
-    method: string
-    headers: headerType
-  }
-
-  let apiUrl: urlType = {creditUrl: "" , recentTransactionUrl:"" , overviewUrl : ""}
-  let apiOptions: optionsType = {method: 'GET' , headers: {"content-type": "application/json",
+  let apiUrl: UrlType = {creditUrl: "" , recentTransactionUrl:"" , overviewUrl : ""}
+  let apiOptions: OptionsType = {method: 'GET' , headers: {"content-type": "application/json",
   "x-hasura-admin-secret":
     "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",}}
 
@@ -101,7 +81,7 @@ const Home = () => {
       apiOptions = {...apiOptions , headers: {...apiOptions.headers ,"x-hasura-role": "admin",}}
     }
 
-    let creditData: creditDataType[] = []
+    let creditData: CreditDataType[] = []
     const {data: creditedData , isLoading , fetchData: homeCreditData} = useDataFetching()
     useEffect(() => {
       homeCreditData(apiUrl.creditUrl , apiOptions)
@@ -114,12 +94,12 @@ const Home = () => {
     }
 
     const {data: recentTransactionsDataList , isLoading: transcLoading , fetchData :recentTransactionsData} = useDataFetching()
-    let recentTransactionsList: recentTransactionType[] = []
+    let recentTransactionsList: RecentTransactionType[] = []
     useEffect(() => {
       recentTransactionsData(apiUrl.recentTransactionUrl , apiOptions)
     } , [])
     if (transcLoading === apiStatus.res) {
-      recentTransactionsList = recentTransactionsDataList.transactions.map((each: recentTransactionType) => {
+      recentTransactionsList = recentTransactionsDataList.transactions.map((each: RecentTransactionType) => {
         return {
           transactionName: each.transaction_name,
           userId: each.user_id,
@@ -133,7 +113,7 @@ const Home = () => {
     }
 
     const {data: overviewDataList , isLoading: overviewLoading  , fetchData: overviewData} = useDataFetching()
-    let overviewList: overviewType[] = []
+    let overviewList: OverviewType[] = []
     useEffect(() => {
       overviewData(apiUrl.overviewUrl , apiOptions)
     } , [])
@@ -240,7 +220,7 @@ const Home = () => {
             const data = await res.json();
             if (res.ok) {
               const trnsacId = data.delete_transactions_by_pk.id;
-              const updateList: recentTransactionType[] = recentTransactionsList.filter((each) => each.id !== trnsacId);
+              const updateList: RecentTransactionType[] = recentTransactionsList.filter((each) => each.id !== trnsacId);
               onDeleteTransaction(updateList);
             }
           };
@@ -271,10 +251,10 @@ const Home = () => {
           };
           switch (transcLoading) {
             case apiStatus.res:
-              let allUsersList: usersType[] = [];
+              let allUsersList: UsersType[] = [];
               recentTransactionsList.sort((a, b) => new Date(b.date) < new Date(a.date)? -1:1);
               if ((userId) === "3") {
-                allUsersList = userList.map((each: usersType) => ({
+                allUsersList = userList.map((each: UsersType) => ({
                   name: each.name,
                   id: each.id,
                 }));
@@ -318,7 +298,7 @@ const Home = () => {
                                       alt="user-icon"
                                       src={
                                         imagesUrl.find(
-                                          (user: imgUrlType) =>
+                                          (user: ImgUrlType) =>
                                             parseInt(user.id) === each.userId
                                         )?.url
                                       }

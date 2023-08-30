@@ -13,8 +13,10 @@ import AuthenticateRoute from "./components/AuthenticateRoute";
 import NotFound from "./components/NotFound";
 import useUserId from "./hooks/useUserId"
 import ResourceContext from "./context/ResourceContext";
+import { OptionsType} from "./types"
+import { apiStatus, imagesUrl } from "./constants";
 
-interface transactionType {
+interface TransactionType {
   transaction_name?: string
   user_id?:string
   amount: string
@@ -25,18 +27,8 @@ interface transactionType {
   transactionName?: string
   userId?: string
 }
-interface headerType  {
-  "content-type": string
-  "x-hasura-admin-secret": string
-  "x-hasura-role"?: string
-  "x-hasura-user-id"?: string
 
-}
-interface optionsType  {
-  method: string
-  headers: headerType
-}
-interface userListType {
+interface UserListType {
   name: string
   email: string
   country: string | null
@@ -51,119 +43,25 @@ interface userListType {
   presentAddress?: string | null
   present_address?: string | null
 }
-interface imgUrlsType {
+interface ImgUrlsType {
   id: string
   url: string
 }
 
-const apiStatus = {
-  res: "SUCCESS",
-  rej: "FAIL",
-  inProgress: "PENDING",
-  initial: "",
-};
-
-const imagesUrl: imgUrlsType[] = [
-  {
-    id: "1",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866080/1_lpiuao.jpg",
-  },
-  {
-    id: "2",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/3_qucosn.png",
-  },
-  {
-    id: "3",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/2_eldytb.png",
-  },
-  {
-    id: "4",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/4_rcbfqe.jpg",
-  },
-  {
-    id: "5",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/5_eh0vcd.jpg",
-  },
-  {
-    id: "6",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/6_sjfjgn.png",
-  },
-  {
-    id: "7",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866077/8_db8inh.png",
-  },
-  {
-    id: "8",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866077/13_ndiaz0.jpg",
-  },
-  {
-    id: "9",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866077/7_yl58qh.png",
-  },
-  {
-    id: "10",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866077/9_jm7jij.png",
-  },
-  {
-    id: "11",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866077/10_dsqqep.png",
-  },
-  {
-    id: "12",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/15_p6p4f8.jpg",
-  },
-  {
-    id: "13",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866077/11_ttbomw.jpg",
-  },
-  {
-    id: "14",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/16_plswkt.jpg",
-  },
-  {
-    id: "15",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866079/14_f7spqo.jpg",
-  },
-  {
-    id: "16",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690771289/Group_206_lfmsk4.png",
-  },
-  {
-    id: "17",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866076/12_klifgi.jpg",
-  },
-];
 
 const  App = () => {
   const userId = useUserId()
-  let [transactionList , setTransactionList] = useState([] as transactionType[])
+  let [transactionList , setTransactionList] = useState([] as TransactionType[])
   const [showTransactionPopup , setShowTransactionPopup] = useState(false)
   const [transactionSuccessMssg , setTransactionSuccessMssg] = useState(false)
   const [showUpdatePopup , setShowUpdatePopup] = useState(false)
-  const [updateTransacList , setUpdateTransacList] = useState({} as transactionType)
+  const [updateTransacList , setUpdateTransacList] = useState({} as TransactionType)
   const [showSidebar , setShowSidebar] = useState(false)
   const [updateSuccessMssg , setUpdateSuccessMssg] = useState(false)
 
   const userUrl = "https://bursting-gelding-24.hasura.app/api/rest/profile"
   const transactionsUrl ="https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=100&offset=0"
-  let apiOptions: optionsType = {method: "GET" , headers: {"content-type": "application/json",
+  let apiOptions: OptionsType = {method: "GET" , headers: {"content-type": "application/json",
   "x-hasura-admin-secret":
     "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",}}
     if ((userId) !== "3") {
@@ -182,7 +80,7 @@ const  App = () => {
       transactionDataApi(transactionsUrl , apiOptions)
     }
     if (transactionIsLoading === apiStatus.res) {
-      transactionList = transactionDataList.transactions.map((each: transactionType) => {
+      transactionList = transactionDataList.transactions.map((each: TransactionType) => {
         return ({
           transactionName: each.transaction_name , 
           category: each.category ,
@@ -199,9 +97,9 @@ const  App = () => {
     useEffect(() => {
       userDataApi(userUrl, apiOptions)
     } , [])
-    let userList: userListType[] = []
+    let userList: UserListType[] = []
     if (isLoading === apiStatus.res) {
-      userList = userDataList.users.map((each: userListType) => {
+      userList = userDataList.users.map((each: UserListType) => {
         return {
           name: each.name,
           email: each.email,
@@ -227,7 +125,7 @@ const  App = () => {
     setShowUpdatePopup(false)
   };
 
-  const onDeleteTransaction = (data: transactionType[]) => {
+  const onDeleteTransaction = (data: TransactionType[]) => {
         setTransactionList(data)
     };
 
@@ -235,7 +133,7 @@ const  App = () => {
       setShowSidebar(s  => !s)
   };
 
-  const addTransactionToDatabase = async (data: transactionType) => {
+  const addTransactionToDatabase = async (data: TransactionType) => {
       setTransactionList((prevList) => {
         return  [
           ...prevList,
@@ -249,7 +147,7 @@ const  App = () => {
         setUpdateSuccessMssg(true)
   };
 
-  const onClickEdit = async (updatedList: transactionType) => {
+  const onClickEdit = async (updatedList: TransactionType) => {
         setUpdateTransacList(updatedList)
         setShowUpdatePopup(true)
   };

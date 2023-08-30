@@ -1,11 +1,5 @@
 import {useState} from "react"
-
-const apiStatus = {
-    res: "SUCCESS",
-    rej: "FAIL",
-    inProgress: "PENDING",
-    initial: "",
-  };
+import { apiStatus } from "../../constants";
 
 const useDataFetching = () => {
     const [data , setData] = useState<any>([])

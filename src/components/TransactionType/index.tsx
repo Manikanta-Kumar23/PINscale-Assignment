@@ -1,16 +1,16 @@
 import "./index.css";
 
-interface tabType {
+interface TabType {
   name: string
   id: string
 }
-interface componentProps {
-  list: tabType
+interface ComponentProps {
+  list: TabType
   changeTypeId: (id: string) => void
   isActive: boolean
 }
 
-const TransactionType = (props: componentProps) => {
+const TransactionType = (props: ComponentProps) => {
   const { list, changeTypeId, isActive } = props;
   const { name, id } = list;
   const typeId = () => {

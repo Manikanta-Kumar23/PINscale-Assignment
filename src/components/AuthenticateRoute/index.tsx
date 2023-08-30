@@ -1,7 +1,13 @@
 import useUserId from "../../hooks/useUserId";
 import { Redirect, Route } from "react-router-dom";
 
-const AuthenticateRoute = (props: any) => {
+interface RouteProps {
+  exact?: boolean
+  path: string
+  component: () => JSX.Element
+}
+
+const AuthenticateRoute = (props: RouteProps) => {
   const userId = useUserId()
   if (userId === undefined) {
     return <Redirect to="/login" />;

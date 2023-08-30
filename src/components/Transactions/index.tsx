@@ -15,14 +15,15 @@ import useUserId from "../../hooks/useUserId";
 import SideBar from "../SideBar";
 import Navbar from "../Navbar";
 import TransactionType from "../TransactionType";
+import { apiStatus } from "../../constants";
 
 import "./index.css";
 
-interface transactionTabType {
+interface TransactionTabType {
   name: string
   id: string
 }
-interface transactionType {
+interface TransactionTypes {
   transaction_name?: string
   user_id?:string
   amount: string
@@ -33,19 +34,12 @@ interface transactionType {
   transactionName?: string
   userId?: string
 }
-interface userListType {
+interface UserListType {
   name: string
   id: string | number
 }
 
-const apiStatus = {
-  res: "SUCCESS",
-  rej: "FAIL",
-  inProgress: "PENDING",
-  initial: "",
-};
-
-const transactionTypes: transactionTabType[] = [
+const transactionTypes: TransactionTabType[] = [
   { name: "All Transactions", id: "ALL TRANSACTIONS" },
   { name: "Debit", id: "debit" },
   { name: "Credit", id: "credit" },
@@ -80,7 +74,7 @@ const Transactions = () => {
 
   const renderTransactiondata = () => {
           const filterList = transactionList.filter(
-            (each: transactionType) =>  each.type.toLowerCase() === activeTypeId);
+            (each: TransactionTypes) =>  each.type.toLowerCase() === activeTypeId);
           const formatedTransactionList =
             activeTypeId === transactionTypes[0].id
               ? transactionList.sort(
@@ -103,7 +97,7 @@ const Transactions = () => {
             const data = await res.json();
             if (res.ok) {
               const trnsacId = data.delete_transactions_by_pk.id;
-              const updateList = transactionList.filter((each: transactionType) => each.id !== trnsacId);
+              const updateList = transactionList.filter((each: TransactionTypes) => each.id !== trnsacId);
               onDeleteTransaction(updateList);
             }
           };
@@ -123,7 +117,7 @@ const Transactions = () => {
             const data = await res.json();
             if (res.ok) {
               const updateList = transactionList.filter(
-                (each: transactionType) => each.id === data.delete_transactions_by_pk.id
+                (each: TransactionTypes) => each.id === data.delete_transactions_by_pk.id
               );
               const list = updateList[0];
               const formatDate = format(parseISO(list.date), "yyyy-MM-dd");
@@ -132,7 +126,7 @@ const Transactions = () => {
           }}
           switch (transactionIsLoading) {
             case apiStatus.res:
-              let allUsersList: userListType[];
+              let allUsersList: UserListType[];
               if ((userId) === "3") {
                 allUsersList = userList.map((each) => ({
                   name: each.name,

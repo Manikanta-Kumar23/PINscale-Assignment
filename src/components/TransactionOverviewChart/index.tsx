@@ -10,22 +10,22 @@ import {
 
 import "./index.css";
 
-interface chartType {
+interface ChartType {
   sum: number
   type: string
   date: string
 }
 
-interface chartProps {
-  data: chartType[]
+interface ChartProps {
+  data: ChartType[]
 }
-interface formatDataType {
+interface FormatDataType {
   date: string
   debit?: number
   credit?:number
 }
 
-const TransactionOverviewChart = (props: chartProps) => {
+const TransactionOverviewChart = (props: ChartProps) => {
   const DataFormatter = (number: number) => {
     if (number > 1000) {
       return `${(number / 1000).toString()}k`;
@@ -33,8 +33,8 @@ const TransactionOverviewChart = (props: chartProps) => {
     return number.toString();
   };
   const { data } = props;
-  const groupedData: formatDataType[] = data.reduce((acc: any, curr: any) => {
-    const existingGroup: any = acc.find((item: chartType) => item.date === curr.date);
+  const groupedData: FormatDataType[] = data.reduce((acc: any, curr: any) => {
+    const existingGroup: any = acc.find((item: ChartType) => item.date === curr.date);
     if (existingGroup) {
       existingGroup[curr.type] = curr.sum;
     } else {
