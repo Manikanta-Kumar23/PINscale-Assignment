@@ -1,4 +1,3 @@
-import React from "react";
 import { format, parseISO } from "date-fns";
 import {
   BarChart,
@@ -11,16 +10,31 @@ import {
 
 import "./index.css";
 
-const TransactionOverviewChart = (props) => {
-  const DataFormatter = (number) => {
+interface chartType {
+  sum: number
+  type: string
+  date: string
+}
+
+interface chartProps {
+  data: chartType[]
+}
+interface formatDataType {
+  date: string
+  debit?: number
+  credit?:number
+}
+
+const TransactionOverviewChart = (props: chartProps) => {
+  const DataFormatter = (number: number) => {
     if (number > 1000) {
       return `${(number / 1000).toString()}k`;
     }
     return number.toString();
   };
   const { data } = props;
-  const groupedData = data.reduce((acc, curr) => {
-    const existingGroup = acc.find((item) => item.date === curr.date);
+  const groupedData: formatDataType[] = data.reduce((acc: any, curr: any) => {
+    const existingGroup: any = acc.find((item: chartType) => item.date === curr.date);
     if (existingGroup) {
       existingGroup[curr.type] = curr.sum;
     } else {
@@ -90,7 +104,6 @@ const TransactionOverviewChart = (props) => {
                 fontSize: 12,
                 fontFamily: "Roboto",
                 margin: 5,
-                radius: [5, 5, 5, 5],
               }}
             />
             <Bar
@@ -98,15 +111,14 @@ const TransactionOverviewChart = (props) => {
               name="Debit"
               fill="#4D78FF"
               radius={[5, 5, 5, 5]}
-              barSize="20%"
+              barSize={20}
             />
             <Bar
               dataKey="credit"
               name="Credit"
               fill="#FCAA0B"
               radius={[5, 5, 5, 5]}
-              barSize="20%"
-              margin="3%"
+              barSize={20}
             />
           </BarChart>
         </ResponsiveContainer>

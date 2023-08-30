@@ -1,7 +1,16 @@
-import React from "react";
 import "./index.css";
 
-const TransactionType = (props) => {
+interface tabType {
+  name: string
+  id: string
+}
+interface componentProps {
+  list: tabType
+  changeTypeId: (id: string) => void
+  isActive: boolean
+}
+
+const TransactionType = (props: componentProps) => {
   const { list, changeTypeId, isActive } = props;
   const { name, id } = list;
   const typeId = () => {

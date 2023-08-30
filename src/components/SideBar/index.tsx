@@ -8,7 +8,7 @@ import SideBarContents from "../SideBarContents";
 import ResourceContext from "../../context/ResourceContext";
 
 import "./index.css";
-import React ,{ useContext } from "react";
+import  { useContext } from "react";
 
 const sideBarContents = [
   {
@@ -40,7 +40,7 @@ const sideBarContents = [
   },
 ];
 
-const SideBar = (props) => {
+const SideBar = (props: any) => {
   const userId = useUserId()
   const { userList, isLoading, imagesUrl } = useContext(ResourceContext)
 
@@ -54,8 +54,8 @@ const SideBar = (props) => {
     const { history } = props;
     history.push("/");
   };
-          let name = "Username";
-          let email = "Email";
+          let name : string = "Username";
+          let email : string= "Email";
           const { location } = props;
           if (isLoading === "SUCCESS") {
             name = userList[0].name;
@@ -85,16 +85,16 @@ const SideBar = (props) => {
                     alt="avatar"
                     src={
                       imagesUrl.find(
-                        (user) => parseInt(user.id) === parseInt(userId)
+                        (user) => (user.id) === (userId)
                       )?.url
                     }
                   />
                   <div className="mail-card">
                     <h1 className="usr-name">
-                      {parseInt(userId) !== 3 ? name : "Admin"}
+                      {(userId) !== "3" ? name : "Admin"}
                     </h1>
                     <p className="usr-mail">
-                      {parseInt(userId) !== 3 ? email : "admin@gmail.com"}
+                      {(userId) !== "3" ? email : "admin@gmail.com"}
                     </p>
                   </div>
                 </div>
@@ -132,7 +132,6 @@ const SideBar = (props) => {
                             <button
                               className="no-btn"
                               type="button"
-                              onClick={() => close()}
                             >
                               Cancel
                             </button>

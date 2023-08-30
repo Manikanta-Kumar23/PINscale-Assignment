@@ -1,9 +1,20 @@
-import React from "react";
 import { Link } from "react-router-dom";
 
 import "./index.css";
 
-const SideBarContents = (props) => {
+interface contentsType {
+  name: string
+  id: string
+  icon: string
+  activeIcon: string
+  link: string
+}
+interface sideBarProps {
+  list: contentsType
+  isActive: boolean
+}
+
+const SideBarContents = (props: sideBarProps) => {
   const { list, isActive } = props;
   const { name, icon, link, activeIcon } = list;
   const nameColor = isActive ? "sidebar-active" : null;

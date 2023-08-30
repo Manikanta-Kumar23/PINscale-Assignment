@@ -1,6 +1,6 @@
-import React , { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { parseISO, format } from "date-fns";
-import { ThreeDots } from "react-loader-spinner";
+import ThreeDots  from  'react-loader-spinner'
 import { HiOutlinePencil } from "react-icons/hi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { IoWarningOutline } from "react-icons/io5";
@@ -18,6 +18,26 @@ import TransactionType from "../TransactionType";
 
 import "./index.css";
 
+interface transactionTabType {
+  name: string
+  id: string
+}
+interface transactionType {
+  transaction_name?: string
+  user_id?:string
+  amount: string
+  category: string
+  id: string
+  type: string
+  date: string
+  transactionName?: string
+  userId?: string
+}
+interface userListType {
+  name: string
+  id: string | number
+}
+
 const apiStatus = {
   res: "SUCCESS",
   rej: "FAIL",
@@ -25,14 +45,14 @@ const apiStatus = {
   initial: "",
 };
 
-const transactionType = [
+const transactionTypes: transactionTabType[] = [
   { name: "All Transactions", id: "ALL TRANSACTIONS" },
   { name: "Debit", id: "debit" },
   { name: "Credit", id: "credit" },
 ];
 
 const Transactions = () => {
-  const [activeTypeId , setActiveTypeId] = useState(transactionType[0].id)
+  const [activeTypeId , setActiveTypeId] = useState(transactionTypes[0].id)
   const [showPopup , setShowPopup] = useState(true)
   const userId = useUserId()
   const {
@@ -46,7 +66,7 @@ const Transactions = () => {
     imagesUrl, apiCall
   } = useContext(ResourceContext)
 
-  const changeTypeId = (id) => {
+  const changeTypeId = (id: string) => {
       setActiveTypeId(id)
   };
 
@@ -60,15 +80,14 @@ const Transactions = () => {
 
   const renderTransactiondata = () => {
           const filterList = transactionList.filter(
-            (each) => each.type.toLowerCase() === activeTypeId
-          );
+            (each: transactionType) =>  each.type.toLowerCase() === activeTypeId);
           const formatedTransactionList =
-            activeTypeId === transactionType[0].id
+            activeTypeId === transactionTypes[0].id
               ? transactionList.sort(
-                  (a, b) => new Date(b.date) - new Date(a.date)
+                  (a, b) => new Date(b.date) < new Date(a.date) ? -1 : 1
                 )
-              : filterList.sort((a, b) => new Date(b.date) - new Date(a.date));
-          const onDelete = async (event) => {
+              : filterList.sort((a, b) => new Date(b.date) < new Date(a.date) ? -1 : 1);
+          const onDelete = async (event: any) => {
             const options = {
               method: "DELETE",
               headers: {
@@ -84,11 +103,11 @@ const Transactions = () => {
             const data = await res.json();
             if (res.ok) {
               const trnsacId = data.delete_transactions_by_pk.id;
-              const updateList = transactionList.filter((each) => each.id !== trnsacId);
+              const updateList = transactionList.filter((each: transactionType) => each.id !== trnsacId);
               onDeleteTransaction(updateList);
             }
           };
-          const onEdit = async (event) => {
+          const onEdit = async (event: any) => {
             const url = `https://bursting-gelding-24.hasura.app/api/rest/delete-transaction?id=${event.target.value}`;
             const options = {
               method: "DELETE",
@@ -104,7 +123,7 @@ const Transactions = () => {
             const data = await res.json();
             if (res.ok) {
               const updateList = transactionList.filter(
-                (each) => each.id === data.delete_transactions_by_pk.id
+                (each: transactionType) => each.id === data.delete_transactions_by_pk.id
               );
               const list = updateList[0];
               const formatDate = format(parseISO(list.date), "yyyy-MM-dd");
@@ -113,11 +132,11 @@ const Transactions = () => {
           }}
           switch (transactionIsLoading) {
             case apiStatus.res:
-              let allUsersList;
-              if (parseInt(userId) === 3) {
+              let allUsersList: userListType[];
+              if ((userId) === "3") {
                 allUsersList = userList.map((each) => ({
                   name: each.name,
-                  userId: each.id,
+                  id: each.id,
                 }));
               }
               return (
@@ -125,7 +144,7 @@ const Transactions = () => {
                   <table className="table">
                     <thead className="head">
                       <tr className="head-card">
-                        {parseInt(userId) === 3 && <th>User Name</th>}
+                        {((userId) === "3")  && <th>User Name</th>}
                         <th>Transaction Name</th>
                         <th>Category</th>
                         <th>Date</th>
@@ -136,10 +155,10 @@ const Transactions = () => {
                       <tbody className="body">
                         {formatedTransactionList.map((each) => (
                           <tr key={each.id}>
-                            {parseInt(userId) === 3 && (
+                            {((userId) === "3")  && (
                               <td>
                                 <div className="usr-icn-crd">
-                                  {parseInt(userId) === 3 ? (
+                                  {((userId) === "3") ? (
                                     each.type.toLowerCase() === "credit" ? (
                                       <BiUpArrowCircle
                                         color="#16DBAA"
@@ -158,19 +177,19 @@ const Transactions = () => {
                                     src={
                                       imagesUrl.find(
                                         (user) =>
-                                          parseInt(user.id) === each.userId
+                                          (user.id) === (each.userId)
                                       )?.url
                                     }
                                   />
                                   {allUsersList.find(
-                                    (user) => user.userId === each.userId
+                                    (user) => user.id === each.userId
                                   )?.name || "N/A"}
                                 </div>
                               </td>
                             )}
                             <td>
                               <div className="align">
-                                {parseInt(userId) !== 3 ? (
+                                {((userId) !== "3")  ? (
                                   each.type.toLowerCase() === "credit" ? (
                                     <BiUpArrowCircle
                                       color="#16DBAA"
@@ -271,7 +290,6 @@ const Transactions = () => {
                                                   <button
                                                     className="no-btn"
                                                     type="button"
-                                                    onClick={() => close()}
                                                   >
                                                     No, Leave it
                                                   </button>
@@ -288,7 +306,6 @@ const Transactions = () => {
                                           )}
                                           <button
                                             className="cancl-btn"
-                                            onClick={() => close()}
                                             type="button"
                                           >
                                             <RxCross2
@@ -323,11 +340,10 @@ const Transactions = () => {
                   <ThreeDots
                     height="80"
                     width="80"
-                    radius="9"
                     color="#4D78FF"
-                    ariaLabel="loading"
-                    wrapperStyle
-                    wrapperClass
+                    radius= {9}
+                    type="ThreeDots"
+                    visible={true}
                   />
                 </div>
               );
@@ -345,7 +361,7 @@ const Transactions = () => {
         <div className="home-content">
           <Navbar />
           <ul className="transactiontype-crd">
-            {transactionType.map((each) => (
+            {transactionTypes.map((each) => (
               <TransactionType
                 changeTypeId={changeTypeId}
                 list={each}

@@ -1,4 +1,4 @@
-import React , {useContext, useState } from "react";
+import  {useContext, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { format, parse} from "date-fns";
 
@@ -40,27 +40,7 @@ const AddTransactions = () => {
     addTransactionToDatabase
   } = useContext(ResourceContext)
 
-  const onTransactionName = (event) => {
-      setTransactionName(event.target.value)
-  };
-
-  const onTransactionType = (event) => {
-      setTransactionType(event.target.value)
-  };
-
-  const onTransactionCategory = (event) => {
-      setTransactionCategory(event.target.value)
-  };
-
-  const onTransactionAmount = (event) => {
-      setTransactionAmount(event.target.value)
-  };
-
-  const onTransactionDate = (event) => {
-      setTransactionDate(event.target.value)
-  };
-
-  const onBlurName = (event) => {
+  const onBlurName = (event: React.FocusEvent<HTMLInputElement>) => {
     if (event.target.value === "") {
         setNameErr(true)
         setNameErrMssg("*Required")
@@ -72,7 +52,7 @@ const AddTransactions = () => {
     }
   };
 
-  const onBlurCat = (event) => {
+  const onBlurCat = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (event.target.value === "null") {
         setCatErr(true)
         setCatErrMssg("*Required")
@@ -81,7 +61,7 @@ const AddTransactions = () => {
     }
   };
 
-  const onBlurType = (event) => {
+  const onBlurType = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (event.target.value === "null") {
         setTypeErr(true)
         setTypeErrMssg("*Required")
@@ -90,7 +70,7 @@ const AddTransactions = () => {
     }
   };
 
-  const onBlurAmount = (event) => {
+  const onBlurAmount = (event: React.FocusEvent<HTMLInputElement>) => {
     if (event.target.value === "") {
         setAmntErr(true)
         setAmntErrMssg("*Required")
@@ -102,7 +82,7 @@ const AddTransactions = () => {
     }
   };
 
-  const onBlurDate = (event) => {
+  const onBlurDate = (event: React.FocusEvent<HTMLInputElement>) => {
     if (event.target.value === "") {
         setDateErr(true)
         setDateErrMssg("*Required")
@@ -110,7 +90,7 @@ const AddTransactions = () => {
         setDateErr(false)
     }
   };
-      const onAddTransaction = async (event) => {
+      const onAddTransaction = async (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
               if (transactionName !== "" &&
                 transactionType !== "" &&
@@ -188,7 +168,7 @@ const AddTransactions = () => {
                           <input
                             className="add-transc-name"
                             onBlur={onBlurName}
-                            onChange={onTransactionName}
+                            onChange={(event)=> setTransactionName(event.target.value)}
                             value={transactionName}
                             type="text"
                             id="transc-name"
@@ -205,7 +185,7 @@ const AddTransactions = () => {
                           <select
                             onBlur={onBlurType}
                             value={transactionType}
-                            onChange={onTransactionType}
+                            onChange={(event)=> setTransactionType(event.target.value)}
                             className="add-transc-name"
                             id="transc-type"
                           >
@@ -224,7 +204,7 @@ const AddTransactions = () => {
                             Transaction Category
                           </label>
                           <select
-                            onChange={onTransactionCategory}
+                            onChange={(event)=> setTransactionCategory(event.target.value)}
                             onBlur={onBlurCat}
                             value={transactionCategory}
                             className="add-transc-name"
@@ -244,7 +224,7 @@ const AddTransactions = () => {
                           </label>
                           <input
                             onBlur={onBlurAmount}
-                            onChange={onTransactionAmount}
+                            onChange={(event)=> setTransactionAmount(event.target.value)}
                             value={transactionAmount}
                             className="add-transc-name"
                             type="number"
@@ -261,7 +241,7 @@ const AddTransactions = () => {
                           </label>
                           <input
                             onBlur={onBlurDate}
-                            onChange={onTransactionDate}
+                            onChange={(event)=> setTransactionDate(event.target.value)}
                             value={transactionDate}
                             className="add-transc-name"
                             type="date"

@@ -1,4 +1,4 @@
-import React ,{ useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Switch, Route, withRouter } from "react-router-dom";
 
 import "./App.css";
@@ -14,6 +14,47 @@ import NotFound from "./components/NotFound";
 import useUserId from "./hooks/useUserId"
 import ResourceContext from "./context/ResourceContext";
 
+interface transactionType {
+  transaction_name?: string
+  user_id?:string
+  amount: string
+  category: string
+  id: string
+  type: string
+  date: string
+  transactionName?: string
+  userId?: string
+}
+interface headerType  {
+  "content-type": string
+  "x-hasura-admin-secret": string
+  "x-hasura-role"?: string
+  "x-hasura-user-id"?: string
+
+}
+interface optionsType  {
+  method: string
+  headers: headerType
+}
+interface userListType {
+  name: string
+  email: string
+  country: string | null
+  city: string
+  id: number
+  dateOfBirth?: string
+  date_of_birth?: string
+  permanentAddress?: string | null 
+  permanent_address?:string | null
+  postalCode?: string | null
+  postal_code?: string | null
+  presentAddress?: string | null
+  present_address?: string | null
+}
+interface imgUrlsType {
+  id: string
+  url: string
+}
 
 const apiStatus = {
   res: "SUCCESS",
@@ -22,7 +63,7 @@ const apiStatus = {
   initial: "",
 };
 
-const imagesUrl = [
+const imagesUrl: imgUrlsType[] = [
   {
     id: "1",
     url:
@@ -110,51 +151,13 @@ const imagesUrl = [
   },
 ];
 
-interface transactionType {
-  transaction_name?: string
-  user_id?:number
-  amount: number
-  category: string
-  id: number
-  type: string
-  date: string
-  transactionName?: string
-  userId?: number
-}
-interface headerType  {
-  "content-type": string
-  "x-hasura-admin-secret": string
-  "x-hasura-role"?: string
-  "x-hasura-user-id"?: string
-
-}
-interface optionsType  {
-  method: string
-  headers: headerType
-}
-interface userListType {
-  name: string
-  email: string
-  country: string | null
-  city: string
-  id: number
-  dateOfBirth?: string
-  date_of_birth?: string
-  permanentAddress?: string | null 
-  permanent_address?:string | null
-  postalCode?: string | null
-  postal_code?: string | null
-  presentAddress?: string | null
-  present_address?: string | null
-}
-
 const  App = () => {
   const userId = useUserId()
-  let [transactionList , setTransactionList] = useState([])
+  let [transactionList , setTransactionList] = useState([] as transactionType[])
   const [showTransactionPopup , setShowTransactionPopup] = useState(false)
   const [transactionSuccessMssg , setTransactionSuccessMssg] = useState(false)
   const [showUpdatePopup , setShowUpdatePopup] = useState(false)
-  const [updateTransacList , setUpdateTransacList] = useState([])
+  const [updateTransacList , setUpdateTransacList] = useState({} as transactionType)
   const [showSidebar , setShowSidebar] = useState(false)
   const [updateSuccessMssg , setUpdateSuccessMssg] = useState(false)
 
@@ -196,7 +199,7 @@ const  App = () => {
     useEffect(() => {
       userDataApi(userUrl, apiOptions)
     } , [])
-    let userList = []
+    let userList: userListType[] = []
     if (isLoading === apiStatus.res) {
       userList = userDataList.users.map((each: userListType) => {
         return {
@@ -224,7 +227,7 @@ const  App = () => {
     setShowUpdatePopup(false)
   };
 
-  const onDeleteTransaction = (data) => {
+  const onDeleteTransaction = (data: transactionType[]) => {
         setTransactionList(data)
     };
 
@@ -232,7 +235,7 @@ const  App = () => {
       setShowSidebar(s  => !s)
   };
 
-  const addTransactionToDatabase = async (data) => {
+  const addTransactionToDatabase = async (data: transactionType) => {
       setTransactionList((prevList) => {
         return  [
           ...prevList,
@@ -246,7 +249,7 @@ const  App = () => {
         setUpdateSuccessMssg(true)
   };
 
-  const onClickEdit = async (updatedList) => {
+  const onClickEdit = async (updatedList: transactionType) => {
         setUpdateTransacList(updatedList)
         setShowUpdatePopup(true)
   };

@@ -9,8 +9,8 @@ const apiStatus = {
 
 const useDataFetching = () => {
     const [data , setData] = useState<any>([])
-    const [isLoading , setIsLoading] = useState(apiStatus.initial)
-    const fetchData = async (url , options)  => {
+    const [isLoading , setIsLoading] = useState<string>(apiStatus.initial)
+    const fetchData = async (url: string , options: object)  => {
                 setIsLoading(apiStatus.inProgress)
                 const res = await fetch(url , options)
                 const data = await res.json()

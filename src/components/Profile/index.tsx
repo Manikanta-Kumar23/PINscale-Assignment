@@ -1,4 +1,4 @@
-import { ThreeDots } from "react-loader-spinner";
+import ThreeDots  from "react-loader-spinner";
 
 import FailureView from "../FailureView";
 import SideBar from "../SideBar";
@@ -7,7 +7,7 @@ import useDataFetching from "../../hooks/useDataFetching";
 import useUserId from "../../hooks/useUserId";
 
 import "./index.css";
-import React , { useEffect } from "react";
+import { useEffect } from "react";
 
 const apiStatus = {
   res: "SUCCESS",
@@ -104,10 +104,22 @@ const imagesUrl = [
   },
 ];
 
+interface headerType  {
+  "content-type": string
+  "x-hasura-admin-secret": string
+  "x-hasura-role"?: string
+  "x-hasura-user-id"?: string
+
+}
+interface optionsType  {
+  method: string
+  headers: headerType
+}
+
 const Profile = () => {
   const userId = useUserId()
-  let url;
-    let options;
+  let url: string;
+    let options: optionsType;
     if ((userId) !== "3") {
       url = "https://bursting-gelding-24.hasura.app/api/rest/profile";
       options = {
@@ -138,7 +150,7 @@ const Profile = () => {
     } , [])
 
   const renderUserData = () => {
-    const id = parseInt(userId);
+    const id = (userId);
     switch (isLoading) {
       case apiStatus.res:
         const userList = userDataList.users
@@ -156,7 +168,7 @@ const Profile = () => {
                     Your Name
                   </label>
                   <p className="pro-name" id="ur-name">
-                    {id !== 3 ? userList[0].name : userList[2].name}
+                    {id !== "3" ? userList[0].name : userList[2].name}
                   </p>
                 </div>
                 <div className="pro-crd">
@@ -164,7 +176,7 @@ const Profile = () => {
                     User Name
                   </label>
                   <p className="pro-name" id="name">
-                    {id !== 3 ? userList[0].name : userList[2].name}
+                    {id !== "3" ? userList[0].name : userList[2].name}
                   </p>
                 </div>
               </div>
@@ -174,7 +186,7 @@ const Profile = () => {
                     Email
                   </label>
                   <p className="pro-name" id="email">
-                    {id !== 3 ? userList[0].email : userList[2].email}
+                    {id !== "3"? userList[0].email : userList[2].email}
                   </p>
                 </div>
                 <div className="pro-crd">
@@ -192,7 +204,7 @@ const Profile = () => {
                     Date Of Birth
                   </label>
                   <p className="pro-name" id="birth">
-                    {id !== 3
+                    {id !== "3"
                       ? userList[0].dateOfBirth
                       : userList[2].dateOfBirth}
                   </p>
@@ -202,7 +214,7 @@ const Profile = () => {
                     Present Address
                   </label>
                   <p className="pro-name" id="address">
-                    {id !== 3
+                    {id !== "3"
                       ? userList[0].presentAddress === null && "N/A"
                       : userList[2].presentAddress === null && "N/A"}
                   </p>
@@ -214,7 +226,7 @@ const Profile = () => {
                     Permanent Address
                   </label>
                   <p className="pro-name" id="prem-address">
-                    {id !== 3
+                    {id !== "3"
                       ? userList[0].permanentAddress === null && "N/A"
                       : userList[2].permanentAddress === null && "N/A"}
                   </p>
@@ -224,7 +236,7 @@ const Profile = () => {
                     City
                   </label>
                   <p className="pro-name" id="city">
-                    {id !== 3
+                    {id !== "3"
                       ? userList[0].city === null && "N/A"
                       : userList[2].city === null && "N/A"}
                   </p>
@@ -236,7 +248,7 @@ const Profile = () => {
                     Postal Code
                   </label>
                   <p className="pro-name" id="code">
-                    {id !== 3
+                    {id !== "3"
                       ? userList[0].postalCode === null && "N/A"
                       : userList[2].postalCode === null && "N/A"}
                   </p>
@@ -246,7 +258,7 @@ const Profile = () => {
                     Country
                   </label>
                   <p className="pro-name" id="country">
-                    {id !== 3
+                    {id !== "3"
                       ? userList[0].country === null && "N/A"
                       : userList[2].country === null && "N/A"}
                   </p>
@@ -268,11 +280,10 @@ const Profile = () => {
             <ThreeDots
               height="80"
               width="80"
-              radius="9"
+              radius={9}
               color="#4D78FF"
-              ariaLabel="loading"
-              wrapperStyle
-              wrapperClass
+              type="ThreeDots"
+              visible={true}
             />
           </div>
         );

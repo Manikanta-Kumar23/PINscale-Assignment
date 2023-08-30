@@ -1,6 +1,6 @@
 import Popup from "reactjs-popup";
 import { parseISO, format } from "date-fns";
-import { ThreeDots } from "react-loader-spinner";
+import ThreeDots  from "react-loader-spinner";
 import { RxCross2 } from "react-icons/rx";
 import { BiUpArrowCircle } from "react-icons/bi";
 import { BsArrowDownCircle } from "react-icons/bs";
@@ -16,7 +16,7 @@ import TransactionOverviewChart from "../TransactionOverviewChart";
 import SideBar from "../SideBar";
 import Navbar from "../Navbar";
 import "./index.css";
-import React , { useContext, useEffect } from "react";
+import  { useContext, useEffect } from "react";
 
 interface creditDataType {
   sum: number
@@ -41,11 +41,6 @@ interface overviewType {
 interface usersType {
   name: string
   id: number
-}
-interface eventType {
-  target: {
-    value: string
-  }
 }
 interface imgUrlType {
   url: string
@@ -214,10 +209,10 @@ const Home = () => {
             <ThreeDots
               height="80"
               width="80"
-              radius="9"
+              radius={9}
               color="#4D78FF"
-              ariaLabel="loading"
-              wrapperClass="true"
+              type="ThreeDots"
+              visible={true}
             />
           </div>
         );
@@ -229,7 +224,7 @@ const Home = () => {
   };
 
   const renderThreeTransactions = () => {
-          const deleteTransc = async (event:React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+          const deleteTransc = async (event:any) => {
             const options = {
               method: "DELETE",
               headers: {
@@ -250,7 +245,7 @@ const Home = () => {
             }
           };
 
-          const updateTransac = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+          const updateTransac = async (event: any) => {
             const url = `https://bursting-gelding-24.hasura.app/api/rest/delete-transaction?id=${event.target.value}`;
             const options = {
               method: "DELETE",
@@ -277,14 +272,13 @@ const Home = () => {
           switch (transcLoading) {
             case apiStatus.res:
               let allUsersList: usersType[] = [];
-              recentTransactionsList.sort((a, b) => new Date(b.date) - new Date(a.date));
-              if (parseInt(userId) === 3) {
+              recentTransactionsList.sort((a, b) => new Date(b.date) < new Date(a.date)? -1:1);
+              if ((userId) === "3") {
                 allUsersList = userList.map((each: usersType) => ({
                   name: each.name,
                   id: each.id,
                 }));
               }
-              console.log(userList)
               return (
                 <div className="recent-card">
                   <h1 className="last-transc">Last Transaction</h1>
@@ -436,7 +430,6 @@ const Home = () => {
                                                 <button
                                                   className="no-btn"
                                                   type="button"
-                                                  onClick={() => close()}
                                                 >
                                                   No, Leave it
                                                 </button>
@@ -444,7 +437,6 @@ const Home = () => {
                                             </div>
                                             <button
                                               className="cancl-btn"
-                                              onClick={() => close()}
                                               type="button"
                                             >
                                               <RxCross2
@@ -480,10 +472,10 @@ const Home = () => {
                   <ThreeDots
                     height="80"
                     width="80"
-                    radius="9"
+                    radius={9}
                     color="#4D78FF"
-                    ariaLabel="loading"
-                    wrapperClass= "true"
+                    type="ThreeDots"
+                    visible={true}
                   />
                 </div>
               );
@@ -518,10 +510,10 @@ const Home = () => {
                   <ThreeDots
                     height="80"
                     width="80"
-                    radius="9"
+                    radius={9}
                     color="#4D78FF"
-                    ariaLabel="loading"
-                    wrapperClass="true"
+                    type="ThreeDots"
+                    visible={true}
                   />
                 </div>
               );

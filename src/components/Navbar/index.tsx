@@ -1,15 +1,14 @@
-import { withRouter } from "react-router-dom"
+import { withRouter , Link } from "react-router-dom"
 import { HiMenu } from "react-icons/hi";
-import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 
 import ResourceContext from "../../context/ResourceContext";
 
 import "./index.css";
-import React , { useContext } from "react";
+import  { useContext } from "react";
 import useUserId from "../../hooks/useUserId";
 
-const Navbar = (props) => {
+const Navbar = (props: any) => {
   const userId = useUserId()
   const { onClickTransaction, onShow, showSidebar } = useContext(ResourceContext)
 
@@ -19,7 +18,7 @@ const Navbar = (props) => {
   let dashboardActive = true;
   let transActive = false;
   let profileActive = false;
-  if ("/transactions" === pathname && parseInt(userId) === 3) {
+  if ("/transactions" === pathname && (userId) === "3") {
     navName = "All Transactions";
     transActive = true;
     dashboardActive = false;
@@ -54,7 +53,7 @@ const Navbar = (props) => {
           <>
             <nav className={`nav ${border}`}>
               <h1 className="nav-name">{navName}</h1>
-              {parseInt(userId) !== 3 && (
+              {(userId) !== "3" && (
                 <button onClick={onAdd} type="button" className="transc-btn">
                   + Transactions
                 </button>

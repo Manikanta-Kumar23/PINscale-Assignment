@@ -1,9 +1,8 @@
-import React from "react";
 import { withRouter } from "react-router-dom";
 
 import "./index.css";
 
-const NotFound = (props) => {
+const NotFound = (props: any) => {
   const { history } = props;
   const onHome = () => {
     history.push("/");
