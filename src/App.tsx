@@ -4,6 +4,7 @@ import { Switch, Route, withRouter } from "react-router-dom";
 import "./App.css";
 import AddTransactions from "./components/AddTransactions";
 import UpdateTransactions from "./components/UpdateTransactions";
+import DeleteTransaction from "./components/DeleteTransactions";
 import useDataFetching from "./hooks/useDataFetching";
 import Login from "./components/Login";
 import Home from "./components/Home";
@@ -43,10 +44,6 @@ interface UserListType {
   presentAddress?: string | null
   present_address?: string | null
 }
-interface ImgUrlsType {
-  id: string
-  url: string
-}
 
 
 const  App = () => {
@@ -58,6 +55,9 @@ const  App = () => {
   const [updateTransacList , setUpdateTransacList] = useState({} as TransactionType)
   const [showSidebar , setShowSidebar] = useState(false)
   const [updateSuccessMssg , setUpdateSuccessMssg] = useState(false)
+  const [showDeletePopup , setShowDeletePopup] = useState(false)
+  const [deleteTransacId , setDeleteTransacId] = useState("")
+  const [logoutPopup , setLogoutPopup] = useState(false)
 
   const userUrl = "https://bursting-gelding-24.hasura.app/api/rest/profile"
   const transactionsUrl ="https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=100&offset=0"
@@ -117,13 +117,22 @@ const  App = () => {
   const onClickTransaction = () => {
       setShowTransactionPopup(true)
   };
+  const onClickDelete = (id: string) => {
+    setDeleteTransacId(id)
+    setShowDeletePopup(true)
+  }
 
   const onCancel = () => {
     setUpdateSuccessMssg(false)
     setShowTransactionPopup(false)
     setTransactionSuccessMssg(false)
     setShowUpdatePopup(false)
+    setShowDeletePopup(false)
+    setLogoutPopup(false)
   };
+  const onLogClick = () => {
+    setLogoutPopup(true)
+  }
 
   const onDeleteTransaction = (data: TransactionType[]) => {
         setTransactionList(data)
@@ -173,11 +182,17 @@ const  App = () => {
           updateSuccessMssg,
           showSidebar,
           onShow: onShow,
-          apiCall: apiCall
+          apiCall: apiCall,
+          showDeletePopup,
+          onClickDelete ,
+          deleteTransacId , 
+          logoutPopup ,
+          onLogClick
         }}
       >
         <UpdateTransactions />
         <AddTransactions />
+        <DeleteTransaction />
         <Switch>
           <Route exact path="/login" component={Login} />
           <AuthenticateRoute exact path="/" component={Home} />

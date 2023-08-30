@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 
 const useUserId = () => {
-    const userID = Cookies.get("id")
+    const userID: string | undefined = Cookies.get("id")
     return userID
 }
 

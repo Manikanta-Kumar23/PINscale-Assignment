@@ -37,7 +37,7 @@ const AddTransactions = () => {
     showTransactionPopup,
     onCancel,
     transactionSuccessMssg,
-    addTransactionToDatabase
+    addTransactionToDatabase 
   } = useContext(ResourceContext)
 
   const onBlurName = (event: React.FocusEvent<HTMLInputElement>) => {

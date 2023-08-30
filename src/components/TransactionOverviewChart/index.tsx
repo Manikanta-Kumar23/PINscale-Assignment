@@ -36,9 +36,9 @@ const TransactionOverviewChart = (props: ChartProps) => {
   const groupedData: FormatDataType[] = data.reduce((acc: any, curr: any) => {
     const existingGroup: any = acc.find((item: ChartType) => item.date === curr.date);
     if (existingGroup) {
-      existingGroup[curr.type] = curr.sum;
+      existingGroup[curr.type.toLowerCase()] = curr.sum;
     } else {
-      acc.push({ date: curr.date, [curr.type]: curr.sum });
+      acc.push({ date: curr.date, [curr.type.toLowerCase()]: curr.sum });
     }
     return acc;
   }, []);

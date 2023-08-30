@@ -1,7 +1,5 @@
 import { withRouter } from "react-router-dom";
-import Popup from "reactjs-popup";
 import { FiLogOut } from "react-icons/fi";
-import Cookies from "js-cookie";
 
 import useUserId from "../../hooks/useUserId";
 import SideBarContents from "../SideBarContents";
@@ -42,18 +40,15 @@ const sideBarContents = [
 
 const SideBar = (props: any) => {
   const userId = useUserId()
-  const { userList, isLoading, imagesUrl } = useContext(ResourceContext)
-
-  const onLogout = () => {
-    const { history } = props;
-    Cookies.remove("id");
-    history.replace("/login");
-  };
+  const { userList, isLoading, imagesUrl  , onLogClick} = useContext(ResourceContext)
 
   const toHome = () => {
     const { history } = props;
     history.push("/");
   };
+  const onLogout = () => {
+    onLogClick()
+  }
           let name : string = "Username";
           let email : string= "Email";
           const { location } = props;
@@ -98,49 +93,9 @@ const SideBar = (props: any) => {
                     </p>
                   </div>
                 </div>
-                <Popup
-                  modal
-                  trigger={
-                    <button className="logout-btn" type="button">
+                    <button onClick={onLogout} className="logout-btn" type="button">
                       <FiLogOut />
                     </button>
-                  }
-                >
-                  { (
-                    <div className="modal-card">
-                      <div className="mssg-card">
-                        <div className="out-icon">
-                          <span className="bg-clr">
-                            <FiLogOut color="#D97706" size="21" />
-                          </span>
-                        </div>
-                        <div className="text-card">
-                          <h1 className="logout-name">
-                            Are you sure you want to Logout?
-                          </h1>
-                          <p className="cnfrm-txt">
-                            Click Yes to logout or else Cancel
-                          </p>
-                          <div className="btn-crd">
-                            <button
-                              onClick={onLogout}
-                              className="s-btn"
-                              type="button"
-                            >
-                              Yes,Logout
-                            </button>
-                            <button
-                              className="no-btn"
-                              type="button"
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </Popup>
               </div>
             </div>
           );

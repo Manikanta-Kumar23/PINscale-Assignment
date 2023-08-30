@@ -49,7 +49,12 @@ const ResourceContext = React.createContext({
   showSidebar: false,
   onShow: () => {},
   updateSuccessMssg: false,
-  apiCall: () => {}
+  apiCall: () => {},
+  showDeletePopup: false,
+  onClickDelete: (a: any) => {} ,
+  deleteTransacId: "" ,
+  logoutPopup: false ,
+  onLogClick: () => {}
 });
 
 export default ResourceContext;
