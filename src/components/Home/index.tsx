@@ -1,11 +1,8 @@
-import Popup from "reactjs-popup";
 import { parseISO, format } from "date-fns";
-import { ThreeDots } from "react-loader-spinner";
-import { RxCross2 } from "react-icons/rx";
+import ThreeDots  from "react-loader-spinner";
 import { BiUpArrowCircle } from "react-icons/bi";
 import { BsArrowDownCircle } from "react-icons/bs";
 import { HiOutlinePencil } from "react-icons/hi";
-import { IoWarningOutline } from "react-icons/io5";
 import { RiDeleteBin6Line } from "react-icons/ri";
 
 import useUserId from "../../hooks/useUserId";
@@ -16,28 +13,54 @@ import TransactionOverviewChart from "../TransactionOverviewChart";
 import SideBar from "../SideBar";
 import Navbar from "../Navbar";
 import "./index.css";
-import { useContext, useEffect } from "react";
+import  { useContext, useEffect } from "react";
 
-const apiStatus = {
-  res: "SUCCESS",
-  rej: "FAIL",
-  inProgress: "PENDING",
-  initial: "",
-};
+import {UrlType , OptionsType} from "../../types"
+import { apiStatus } from "../../constants";
+
+interface CreditDataType {
+  sum: number
+  type: string
+}
+interface RecentTransactionType {
+  transaction_name?: string
+  user_id?:number
+  amount: number
+  category: string
+  id: number
+  type: string
+  date: string
+  transactionName?: string
+  userId?: number
+}
+interface OverviewType {
+  sum: number
+  type: string
+  date: string
+}
+interface UsersType {
+  name: string
+  id: number
+}
+interface ImgUrlType {
+  url: string
+  id: string
+}
 
 const Home = () => {
   const userId = useUserId()
   const {
     showTransactionPopup,
     userList,
-    onDeleteTransaction,
+    showDeletePopup,
     showUpdatePopup,
     imagesUrl,
-    onClickEdit
+    onClickEdit , onClickDelete , logoutPopup
   } = useContext(ResourceContext)
 
-  let apiUrl = {creditUrl: "" , recentTransactionUrl:"" , overviewUrl : ""}
-  let apiOptions = {method: 'GET' , headers: {"content-type": "application/json",
+
+  let apiUrl: UrlType = {creditUrl: "" , recentTransactionUrl:"" , overviewUrl : ""}
+  let apiOptions: OptionsType = {method: 'GET' , headers: {"content-type": "application/json",
   "x-hasura-admin-secret":
     "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",}}
 
@@ -55,7 +78,7 @@ const Home = () => {
       apiOptions = {...apiOptions , headers: {...apiOptions.headers ,"x-hasura-role": "admin",}}
     }
 
-    let creditData
+    let creditData: CreditDataType[] = []
     const {data: creditedData , isLoading , fetchData: homeCreditData} = useDataFetching()
     useEffect(() => {
       homeCreditData(apiUrl.creditUrl , apiOptions)
@@ -68,12 +91,12 @@ const Home = () => {
     }
 
     const {data: recentTransactionsDataList , isLoading: transcLoading , fetchData :recentTransactionsData} = useDataFetching()
-    let recentTransactionsList
+    let recentTransactionsList: RecentTransactionType[] = []
     useEffect(() => {
       recentTransactionsData(apiUrl.recentTransactionUrl , apiOptions)
     } , [])
     if (transcLoading === apiStatus.res) {
-      recentTransactionsList = recentTransactionsDataList.transactions.map((each) => {
+      recentTransactionsList = recentTransactionsDataList.transactions.map((each: RecentTransactionType) => {
         return {
           transactionName: each.transaction_name,
           userId: each.user_id,
@@ -87,7 +110,7 @@ const Home = () => {
     }
 
     const {data: overviewDataList , isLoading: overviewLoading  , fetchData: overviewData} = useDataFetching()
-    let overviewList
+    let overviewList: OverviewType[] = []
     useEffect(() => {
       overviewData(apiUrl.overviewUrl , apiOptions)
     } , [])
@@ -163,11 +186,10 @@ const Home = () => {
             <ThreeDots
               height="80"
               width="80"
-              radius="9"
+              radius={9}
               color="#4D78FF"
-              ariaLabel="loading"
-              wrapperStyle
-              wrapperClass
+              type="ThreeDots"
+              visible={true}
             />
           </div>
         );
@@ -179,28 +201,11 @@ const Home = () => {
   };
 
   const renderThreeTransactions = () => {
-          const deleteTransc = async (event) => {
-            const options = {
-              method: "DELETE",
-              headers: {
-                "content-type": "application/json",
-                "x-hasura-admin-secret":
-                  "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
-                "x-hasura-role": "user",
-                "x-hasura-user-id": `${userId}`,
-              },
-            };
-            const url = `https://bursting-gelding-24.hasura.app/api/rest/delete-transaction?id=${event.target.value}`;
-            const res = await fetch(url, options);
-            const data = await res.json();
-            if (res.ok) {
-              const trnsacId = data.delete_transactions_by_pk.id;
-              const updateList = recentTransactionsList.filter((each) => each.id !== trnsacId);
-              onDeleteTransaction(updateList);
-            }
-          };
+          const onChangePopUp = (event: any) => {
+            onClickDelete(event.target.value)
+          }
 
-          const updateTransac = async (event) => {
+          const updateTransac = async (event: any) => {
             const url = `https://bursting-gelding-24.hasura.app/api/rest/delete-transaction?id=${event.target.value}`;
             const options = {
               method: "DELETE",
@@ -226,12 +231,12 @@ const Home = () => {
           };
           switch (transcLoading) {
             case apiStatus.res:
-              let allUsersList;
-              recentTransactionsList.sort((a, b) => new Date(b.date) - new Date(a.date));
-              if (parseInt(userId) === 3) {
-                allUsersList = userList.map((each) => ({
+              let allUsersList: UsersType[] = [];
+              recentTransactionsList.sort((a, b) => new Date(b.date) < new Date(a.date)? -1:1);
+              if ((userId) === "3") {
+                allUsersList = userList.map((each: UsersType) => ({
                   name: each.name,
-                  userId: each.id,
+                  id: each.id,
                 }));
               }
               return (
@@ -248,7 +253,7 @@ const Home = () => {
                           <th>Amount</th>
                         </tr>
                       </thead>
-                      {!showTransactionPopup && !showUpdatePopup && (
+                      {!showTransactionPopup && !showUpdatePopup && !showDeletePopup && !logoutPopup &&(
                         <tbody className="body">
                           {recentTransactionsList.map((each) => (
                             <tr key={each.id}>
@@ -273,13 +278,13 @@ const Home = () => {
                                       alt="user-icon"
                                       src={
                                         imagesUrl.find(
-                                          (user) =>
+                                          (user: ImgUrlType) =>
                                             parseInt(user.id) === each.userId
                                         )?.url
                                       }
                                     />
                                     {allUsersList.find(
-                                      (user) => user.userId === each.userId
+                                      (user) => user.id === each.userId
                                     )?.name || "N/A"}
                                   </div>
                                 </td>
@@ -339,10 +344,9 @@ const Home = () => {
                                     </button>
                                   </td>
                                   <td>
-                                    <Popup
-                                      modal
-                                      trigger={
                                         <button
+                                        onClick={onChangePopUp}
+                                        value={each.id}
                                           className="edit-btn"
                                           type="button"
                                         >
@@ -351,60 +355,6 @@ const Home = () => {
                                             size="15 "
                                           />
                                         </button>
-                                      }
-                                    >
-                                      {(close) => (
-                                        <div className="modal-card">
-                                          <div className="mssg-card">
-                                            <div className="out-icon">
-                                              <span className="bg-clr">
-                                                <IoWarningOutline
-                                                  color="#D97706"
-                                                  size="21"
-                                                />
-                                              </span>
-                                            </div>
-                                            <div className="text-card">
-                                              <h1 className="logout-name">
-                                                Are you sure you want to Delete?
-                                              </h1>
-                                              <p className="cnfrm-txt">
-                                                This transaction will be deleted
-                                                immediately. You can’t undo this
-                                                action.
-                                              </p>
-                                              <div className="btn-crd">
-                                                <button
-                                                  onClick={deleteTransc}
-                                                  value={each.id}
-                                                  className="s-btn"
-                                                  type="button"
-                                                >
-                                                  Yes, Delete
-                                                </button>
-                                                <button
-                                                  className="no-btn"
-                                                  type="button"
-                                                  onClick={() => close()}
-                                                >
-                                                  No, Leave it
-                                                </button>
-                                              </div>
-                                            </div>
-                                            <button
-                                              className="cancl-btn"
-                                              onClick={() => close()}
-                                              type="button"
-                                            >
-                                              <RxCross2
-                                                color="#718EBF"
-                                                size="17"
-                                              />
-                                            </button>
-                                          </div>
-                                        </div>
-                                      )}
-                                    </Popup>
                                   </td>
                                 </>
                               )}
@@ -429,11 +379,10 @@ const Home = () => {
                   <ThreeDots
                     height="80"
                     width="80"
-                    radius="9"
+                    radius={9}
                     color="#4D78FF"
-                    ariaLabel="loading"
-                    wrapperStyle
-                    wrapperClass
+                    type="ThreeDots"
+                    visible={true}
                   />
                 </div>
               );
@@ -450,7 +399,7 @@ const Home = () => {
               return (
                 <div className="chart-card">
                   <h1 className="overview">Debit & Credit Overview</h1>
-                  {!showTransactionPopup && !showUpdatePopup && (
+                  {!showTransactionPopup && !showUpdatePopup && !showDeletePopup && !logoutPopup &&(
                     <TransactionOverviewChart data={overviewList} />
                   )}
                 </div>
@@ -468,11 +417,10 @@ const Home = () => {
                   <ThreeDots
                     height="80"
                     width="80"
-                    radius="9"
+                    radius={9}
                     color="#4D78FF"
-                    ariaLabel="loading"
-                    wrapperStyle
-                    wrapperClass
+                    type="ThreeDots"
+                    visible={true}
                   />
                 </div>
               );

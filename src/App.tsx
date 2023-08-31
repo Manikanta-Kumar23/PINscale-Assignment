@@ -4,6 +4,7 @@ import { Switch, Route, withRouter } from "react-router-dom";
 import "./App.css";
 import AddTransactions from "./components/AddTransactions";
 import UpdateTransactions from "./components/UpdateTransactions";
+import DeleteTransaction from "./components/DeleteTransactions";
 import useDataFetching from "./hooks/useDataFetching";
 import Login from "./components/Login";
 import Home from "./components/Home";
@@ -13,116 +14,54 @@ import AuthenticateRoute from "./components/AuthenticateRoute";
 import NotFound from "./components/NotFound";
 import useUserId from "./hooks/useUserId"
 import ResourceContext from "./context/ResourceContext";
+import { OptionsType} from "./types"
+import { apiStatus, imagesUrl } from "./constants";
 
+interface TransactionType {
+  transaction_name?: string
+  user_id?:string
+  amount: string
+  category: string
+  id: string
+  type: string
+  date: string
+  transactionName?: string
+  userId?: string
+}
 
-const apiStatus = {
-  res: "SUCCESS",
-  rej: "FAIL",
-  inProgress: "PENDING",
-  initial: "",
-};
+interface UserListType {
+  name: string
+  email: string
+  country: string | null
+  city: string
+  id: number
+  dateOfBirth?: string
+  date_of_birth?: string
+  permanentAddress?: string | null 
+  permanent_address?:string | null
+  postalCode?: string | null
+  postal_code?: string | null
+  presentAddress?: string | null
+  present_address?: string | null
+}
 
-const imagesUrl = [
-  {
-    id: "1",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866080/1_lpiuao.jpg",
-  },
-  {
-    id: "2",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/3_qucosn.png",
-  },
-  {
-    id: "3",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/2_eldytb.png",
-  },
-  {
-    id: "4",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/4_rcbfqe.jpg",
-  },
-  {
-    id: "5",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/5_eh0vcd.jpg",
-  },
-  {
-    id: "6",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/6_sjfjgn.png",
-  },
-  {
-    id: "7",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866077/8_db8inh.png",
-  },
-  {
-    id: "8",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866077/13_ndiaz0.jpg",
-  },
-  {
-    id: "9",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866077/7_yl58qh.png",
-  },
-  {
-    id: "10",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866077/9_jm7jij.png",
-  },
-  {
-    id: "11",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866077/10_dsqqep.png",
-  },
-  {
-    id: "12",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/15_p6p4f8.jpg",
-  },
-  {
-    id: "13",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866077/11_ttbomw.jpg",
-  },
-  {
-    id: "14",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/16_plswkt.jpg",
-  },
-  {
-    id: "15",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866079/14_f7spqo.jpg",
-  },
-  {
-    id: "16",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690771289/Group_206_lfmsk4.png",
-  },
-  {
-    id: "17",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866076/12_klifgi.jpg",
-  },
-];
 
 const  App = () => {
   const userId = useUserId()
-  let [transactionList , setTransactionList] = useState([])
+  let [transactionList , setTransactionList] = useState([] as TransactionType[])
   const [showTransactionPopup , setShowTransactionPopup] = useState(false)
   const [transactionSuccessMssg , setTransactionSuccessMssg] = useState(false)
   const [showUpdatePopup , setShowUpdatePopup] = useState(false)
-  const [updateTransacList , setUpdateTransacList] = useState([])
+  const [updateTransacList , setUpdateTransacList] = useState({} as TransactionType)
   const [showSidebar , setShowSidebar] = useState(false)
   const [updateSuccessMssg , setUpdateSuccessMssg] = useState(false)
+  const [showDeletePopup , setShowDeletePopup] = useState(false)
+  const [deleteTransacId , setDeleteTransacId] = useState("")
+  const [logoutPopup , setLogoutPopup] = useState(false)
 
   const userUrl = "https://bursting-gelding-24.hasura.app/api/rest/profile"
   const transactionsUrl ="https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=100&offset=0"
-  let apiOptions = {method: "GET" , headers: {"content-type": "application/json",
+  let apiOptions: OptionsType = {method: "GET" , headers: {"content-type": "application/json",
   "x-hasura-admin-secret":
     "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",}}
     if ((userId) !== "3") {
@@ -141,7 +80,7 @@ const  App = () => {
       transactionDataApi(transactionsUrl , apiOptions)
     }
     if (transactionIsLoading === apiStatus.res) {
-      transactionList = transactionDataList.transactions.map((each) => {
+      transactionList = transactionDataList.transactions.map((each: TransactionType) => {
         return ({
           transactionName: each.transaction_name , 
           category: each.category ,
@@ -158,9 +97,9 @@ const  App = () => {
     useEffect(() => {
       userDataApi(userUrl, apiOptions)
     } , [])
-    let userList = []
+    let userList: UserListType[] = []
     if (isLoading === apiStatus.res) {
-      userList = userDataList.users.map((each) => {
+      userList = userDataList.users.map((each: UserListType) => {
         return {
           name: each.name,
           email: each.email,
@@ -178,15 +117,27 @@ const  App = () => {
   const onClickTransaction = () => {
       setShowTransactionPopup(true)
   };
+  const onClickDelete = (id: string) => {
+    setDeleteTransacId(id)
+    setShowDeletePopup(true)
+  }
 
   const onCancel = () => {
     setUpdateSuccessMssg(false)
     setShowTransactionPopup(false)
     setTransactionSuccessMssg(false)
     setShowUpdatePopup(false)
+    setShowDeletePopup(false)
+    setLogoutPopup(false)
   };
+  const onLogClick = () => {
+    setLogoutPopup(true)
+  }
+  const logoutPop = () => {
+    setLogoutPopup(false)
+  }
 
-  const onDeleteTransaction = (data) => {
+  const onDeleteTransaction = (data: TransactionType[]) => {
         setTransactionList(data)
     };
 
@@ -194,7 +145,7 @@ const  App = () => {
       setShowSidebar(s  => !s)
   };
 
-  const addTransactionToDatabase = async (data) => {
+  const addTransactionToDatabase = async (data: TransactionType) => {
       setTransactionList((prevList) => {
         return  [
           ...prevList,
@@ -204,11 +155,21 @@ const  App = () => {
       setTransactionSuccessMssg(true)
   };
 
-  const updateTransactionToDatabase = async () => {
+  const updateTransactionToDatabase = async (data: TransactionType) => {
+    const list = transactionList.map((each) => {
+      if (each.id === data.id) {
+        return ({...each , ...data})
+      }
+      return each
+    })
+    console.log(list)
+    setTransactionList((prevList) => {
+      return [...prevList , data]
+    })
         setUpdateSuccessMssg(true)
   };
 
-  const onClickEdit = async (updatedList) => {
+  const onClickEdit = async (updatedList: TransactionType) => {
         setUpdateTransacList(updatedList)
         setShowUpdatePopup(true)
   };
@@ -234,11 +195,18 @@ const  App = () => {
           updateSuccessMssg,
           showSidebar,
           onShow: onShow,
-          apiCall: apiCall
+          apiCall: apiCall,
+          showDeletePopup,
+          onClickDelete ,
+          deleteTransacId , 
+          logoutPopup ,
+          onLogClick ,
+          logoutPop
         }}
       >
         <UpdateTransactions />
         <AddTransactions />
+        <DeleteTransaction />
         <Switch>
           <Route exact path="/login" component={Login} />
           <AuthenticateRoute exact path="/" component={Home} />

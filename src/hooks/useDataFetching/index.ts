@@ -1,16 +1,10 @@
 import {useState} from "react"
-
-const apiStatus = {
-    res: "SUCCESS",
-    rej: "FAIL",
-    inProgress: "PENDING",
-    initial: "",
-  };
+import { apiStatus } from "../../constants";
 
 const useDataFetching = () => {
-    const [data , setData] = useState([])
-    const [isLoading , setIsLoading] = useState(apiStatus.initial)
-    const fetchData = async (url , options)  => {
+    const [data , setData] = useState<any>([])
+    const [isLoading , setIsLoading] = useState<string>(apiStatus.initial)
+    const fetchData = async (url: string , options: object)  => {
                 setIsLoading(apiStatus.inProgress)
                 const res = await fetch(url , options)
                 const data = await res.json()

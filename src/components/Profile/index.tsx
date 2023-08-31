@@ -1,113 +1,20 @@
-import { ThreeDots } from "react-loader-spinner";
+import ThreeDots  from "react-loader-spinner";
 
 import FailureView from "../FailureView";
 import SideBar from "../SideBar";
 import Navbar from "../Navbar";
 import useDataFetching from "../../hooks/useDataFetching";
 import useUserId from "../../hooks/useUserId";
+import {OptionsType} from "../../types"
+import { imagesUrl  ,apiStatus } from "../../constants";
 
 import "./index.css";
 import { useEffect } from "react";
 
-const apiStatus = {
-  res: "SUCCESS",
-  rej: "FAIL",
-  inProgress: "PENDING",
-  initial: "",
-};
-
-const imagesUrl = [
-  {
-    id: "1",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866080/1_lpiuao.jpg",
-  },
-  {
-    id: "2",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/3_qucosn.png",
-  },
-  {
-    id: "3",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/2_eldytb.png",
-  },
-  {
-    id: "4",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/4_rcbfqe.jpg",
-  },
-  {
-    id: "5",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/5_eh0vcd.jpg",
-  },
-  {
-    id: "6",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/6_sjfjgn.png",
-  },
-  {
-    id: "7",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866077/8_db8inh.png",
-  },
-  {
-    id: "8",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866077/13_ndiaz0.jpg",
-  },
-  {
-    id: "9",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866077/7_yl58qh.png",
-  },
-  {
-    id: "10",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866077/9_jm7jij.png",
-  },
-  {
-    id: "11",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866077/10_dsqqep.png",
-  },
-  {
-    id: "12",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/15_p6p4f8.jpg",
-  },
-  {
-    id: "13",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866077/11_ttbomw.jpg",
-  },
-  {
-    id: "14",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866078/16_plswkt.jpg",
-  },
-  {
-    id: "15",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866079/14_f7spqo.jpg",
-  },
-  {
-    id: "16",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690771289/Group_206_lfmsk4.png",
-  },
-  {
-    id: "17",
-    url:
-      "https://res.cloudinary.com/djwve85r0/image/upload/v1690866076/12_klifgi.jpg",
-  },
-];
-
 const Profile = () => {
   const userId = useUserId()
-  let url;
-    let options;
+  let url: string;
+    let options: OptionsType;
     if ((userId) !== "3") {
       url = "https://bursting-gelding-24.hasura.app/api/rest/profile";
       options = {
@@ -138,7 +45,7 @@ const Profile = () => {
     } , [])
 
   const renderUserData = () => {
-    const id = parseInt(userId);
+    const id = (userId);
     switch (isLoading) {
       case apiStatus.res:
         const userList = userDataList.users
@@ -156,7 +63,7 @@ const Profile = () => {
                     Your Name
                   </label>
                   <p className="pro-name" id="ur-name">
-                    {id !== 3 ? userList[0].name : userList[2].name}
+                    {id !== "3" ? userList[0].name : userList[2].name}
                   </p>
                 </div>
                 <div className="pro-crd">
@@ -164,7 +71,7 @@ const Profile = () => {
                     User Name
                   </label>
                   <p className="pro-name" id="name">
-                    {id !== 3 ? userList[0].name : userList[2].name}
+                    {id !== "3" ? userList[0].name : userList[2].name}
                   </p>
                 </div>
               </div>
@@ -174,7 +81,7 @@ const Profile = () => {
                     Email
                   </label>
                   <p className="pro-name" id="email">
-                    {id !== 3 ? userList[0].email : userList[2].email}
+                    {id !== "3"? userList[0].email : userList[2].email}
                   </p>
                 </div>
                 <div className="pro-crd">
@@ -192,7 +99,7 @@ const Profile = () => {
                     Date Of Birth
                   </label>
                   <p className="pro-name" id="birth">
-                    {id !== 3
+                    {id !== "3"
                       ? userList[0].dateOfBirth
                       : userList[2].dateOfBirth}
                   </p>
@@ -202,7 +109,7 @@ const Profile = () => {
                     Present Address
                   </label>
                   <p className="pro-name" id="address">
-                    {id !== 3
+                    {id !== "3"
                       ? userList[0].presentAddress === null && "N/A"
                       : userList[2].presentAddress === null && "N/A"}
                   </p>
@@ -214,7 +121,7 @@ const Profile = () => {
                     Permanent Address
                   </label>
                   <p className="pro-name" id="prem-address">
-                    {id !== 3
+                    {id !== "3"
                       ? userList[0].permanentAddress === null && "N/A"
                       : userList[2].permanentAddress === null && "N/A"}
                   </p>
@@ -224,7 +131,7 @@ const Profile = () => {
                     City
                   </label>
                   <p className="pro-name" id="city">
-                    {id !== 3
+                    {id !== "3"
                       ? userList[0].city === null && "N/A"
                       : userList[2].city === null && "N/A"}
                   </p>
@@ -236,7 +143,7 @@ const Profile = () => {
                     Postal Code
                   </label>
                   <p className="pro-name" id="code">
-                    {id !== 3
+                    {id !== "3"
                       ? userList[0].postalCode === null && "N/A"
                       : userList[2].postalCode === null && "N/A"}
                   </p>
@@ -246,7 +153,7 @@ const Profile = () => {
                     Country
                   </label>
                   <p className="pro-name" id="country">
-                    {id !== 3
+                    {id !== "3"
                       ? userList[0].country === null && "N/A"
                       : userList[2].country === null && "N/A"}
                   </p>
@@ -268,11 +175,10 @@ const Profile = () => {
             <ThreeDots
               height="80"
               width="80"
-              radius="9"
+              radius={9}
               color="#4D78FF"
-              ariaLabel="loading"
-              wrapperStyle
-              wrapperClass
+              type="ThreeDots"
+              visible={true}
             />
           </div>
         );

@@ -1,14 +1,12 @@
 import { withRouter } from "react-router-dom";
-import Popup from "reactjs-popup";
 import { FiLogOut } from "react-icons/fi";
-import Cookies from "js-cookie";
 
 import useUserId from "../../hooks/useUserId";
 import SideBarContents from "../SideBarContents";
 import ResourceContext from "../../context/ResourceContext";
 
 import "./index.css";
-import { useContext } from "react";
+import  { useContext } from "react";
 
 const sideBarContents = [
   {
@@ -40,22 +38,19 @@ const sideBarContents = [
   },
 ];
 
-const SideBar = (props) => {
+const SideBar = (props: any) => {
   const userId = useUserId()
-  const { userList, isLoading, imagesUrl } = useContext(ResourceContext)
-
-  const onLogout = () => {
-    const { history } = props;
-    Cookies.remove("id");
-    history.replace("/login");
-  };
+  const { userList, isLoading, imagesUrl  , onLogClick} = useContext(ResourceContext)
 
   const toHome = () => {
     const { history } = props;
     history.push("/");
   };
-          let name = "Username";
-          let email = "Email";
+  const onLogout = () => {
+    onLogClick()
+  }
+          let name : string = "Username";
+          let email : string= "Email";
           const { location } = props;
           if (isLoading === "SUCCESS") {
             name = userList[0].name;
@@ -85,63 +80,22 @@ const SideBar = (props) => {
                     alt="avatar"
                     src={
                       imagesUrl.find(
-                        (user) => parseInt(user.id) === parseInt(userId)
+                        (user) => (user.id) === (userId)
                       )?.url
                     }
                   />
                   <div className="mail-card">
                     <h1 className="usr-name">
-                      {parseInt(userId) !== 3 ? name : "Admin"}
+                      {(userId) !== "3" ? name : "Admin"}
                     </h1>
                     <p className="usr-mail">
-                      {parseInt(userId) !== 3 ? email : "admin@gmail.com"}
+                      {(userId) !== "3" ? email : "admin@gmail.com"}
                     </p>
                   </div>
                 </div>
-                <Popup
-                  modal
-                  trigger={
-                    <button className="logout-btn" type="button">
+                    <button onClick={onLogout} className="logout-btn" type="button">
                       <FiLogOut />
                     </button>
-                  }
-                >
-                  {(close) => (
-                    <div className="modal-card">
-                      <div className="mssg-card">
-                        <div className="out-icon">
-                          <span className="bg-clr">
-                            <FiLogOut color="#D97706" size="21" />
-                          </span>
-                        </div>
-                        <div className="text-card">
-                          <h1 className="logout-name">
-                            Are you sure you want to Logout?
-                          </h1>
-                          <p className="cnfrm-txt">
-                            Click Yes to logout or else Cancel
-                          </p>
-                          <div className="btn-crd">
-                            <button
-                              onClick={onLogout}
-                              className="s-btn"
-                              type="button"
-                            >
-                              Yes,Logout
-                            </button>
-                            <button
-                              className="no-btn"
-                              type="button"
-                              onClick={() => close()}
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </Popup>
               </div>
             </div>
           );
