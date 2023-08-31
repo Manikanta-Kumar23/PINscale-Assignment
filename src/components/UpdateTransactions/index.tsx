@@ -40,6 +40,7 @@ const UpdateTransactions = () => {
   const [transactionDate , setTransactionDate] = useState(updateTransacList.date)
   const [transactionAmount , setTransactionAmount] = useState(updateTransacList.amount)
   const [transactionCategory , setTransactionCategory] = useState(updateTransacList.category)
+  console.log(transactionDate)
 
   const onBlurName = (event: React.FocusEvent<HTMLInputElement>) => {
     if (event.target.value === "") {
@@ -93,10 +94,10 @@ const UpdateTransactions = () => {
   };
           const onUpdateTransaction = async (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
-            const parsedDate = parse(updateTransacList.date, "yyyy-MM-dd", new Date());
+            const parsedDate = parse(transactionDate, "yyyy-MM-dd", new Date());
             const formatDate = format(parsedDate, "yyyy-MM-dd'T'HH:mm:ssxxx");
             const data = {...updateTransacList , 
-            date: formatDate}
+            date: formatDate , type: transactionType , name: transactionName , category: transactionCategory , amount: transactionAmount}
             const url = "https://bursting-gelding-24.hasura.app/api/rest/update-transaction"
             const options =  {
               method: "POST",
@@ -149,6 +150,7 @@ const UpdateTransactions = () => {
                             onBlur={onBlurName}
                             onChange={(event) => setTransactionName(event.target.value)}
                             value={transactionName}
+                            defaultValue={updateTransacList.transactionName}
                             type="text"
                             id="transc-name"
                             placeholder="Enter Name"
@@ -164,6 +166,7 @@ const UpdateTransactions = () => {
                           <select
                             onBlur={onBlurType}
                             value={transactionType}
+                            defaultValue={updateTransacList.type}
                             onChange={(event)=> setTransactionType(event.target.value)}
                             className="add-transc-name"
                             id="transc-type"
@@ -186,6 +189,7 @@ const UpdateTransactions = () => {
                             onChange={(event)=> setTransactionCategory(event.target.value)}
                             onBlur={onBlurCat}
                             value={transactionCategory}
+                            defaultValue={updateTransacList.category}
                             className="add-transc-name"
                             id="transc-type"
                           >
@@ -205,6 +209,7 @@ const UpdateTransactions = () => {
                             onBlur={onBlurAmount}
                             onChange={(event)=> setTransactionAmount(event.target.value)}
                             value={transactionAmount}
+                            defaultValue={updateTransacList.amount}
                             className="add-transc-name"
                             type="number"
                             id="transc-amount"
@@ -221,10 +226,8 @@ const UpdateTransactions = () => {
                           <input
                             onBlur={onBlurDate}
                             onChange={(event)=> setTransactionDate(event.target.value)}
-                            value={format(
-                              parseISO(transactionDate),
-                              "yyyy-MM-dd"
-                            )}
+                            value={transactionDate}
+                            defaultValue={format(parseISO(updateTransacList.date) , "mm-dd-yy")}
                             className="add-transc-name"
                             type="date"
                             id="transc-date"

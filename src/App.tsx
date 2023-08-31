@@ -133,6 +133,9 @@ const  App = () => {
   const onLogClick = () => {
     setLogoutPopup(true)
   }
+  const logoutPop = () => {
+    setLogoutPopup(false)
+  }
 
   const onDeleteTransaction = (data: TransactionType[]) => {
         setTransactionList(data)
@@ -152,7 +155,17 @@ const  App = () => {
       setTransactionSuccessMssg(true)
   };
 
-  const updateTransactionToDatabase = async () => {
+  const updateTransactionToDatabase = async (data: TransactionType) => {
+    const list = transactionList.map((each) => {
+      if (each.id === data.id) {
+        return ({...each , ...data})
+      }
+      return each
+    })
+    console.log(list)
+    setTransactionList((prevList) => {
+      return [...prevList , data]
+    })
         setUpdateSuccessMssg(true)
   };
 
@@ -187,7 +200,8 @@ const  App = () => {
           onClickDelete ,
           deleteTransacId , 
           logoutPopup ,
-          onLogClick
+          onLogClick ,
+          logoutPop
         }}
       >
         <UpdateTransactions />

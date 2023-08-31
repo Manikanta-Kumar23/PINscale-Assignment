@@ -23,7 +23,7 @@ interface TransactionType {
   }
 
 const DeleteTransaction = (props: any) => {
-    const {showDeletePopup , onCancel , deleteTransacId , onDeleteTransaction , transactionList , logoutPopup} = useContext(ResourceContext)
+    const {showDeletePopup , onCancel , deleteTransacId , onDeleteTransaction , transactionList , logoutPopup , logoutPop} = useContext(ResourceContext)
     const [deleteMssg , setDeleteMssg] = useState(false)
     const [errMssg , setErrMssg] = useState(false)
     const userId = useUserId()
@@ -60,6 +60,7 @@ const DeleteTransaction = (props: any) => {
         const { history } = props;
         Cookies.remove("id");
         history.replace("/login");
+        logoutPop()
       };
     const deleteView = () => {
         return (

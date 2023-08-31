@@ -78,28 +78,13 @@ const Transactions = () => {
                 )
               : filterList.sort((a, b) => new Date(b.date) < new Date(a.date) ? -1 : 1);
           const onEdit = async (event: any) => {
-            const url = `https://bursting-gelding-24.hasura.app/api/rest/delete-transaction?id=${event.target.value}`;
-            const options = {
-              method: "DELETE",
-              headers: {
-                "content-type": "application/json",
-                "x-hasura-admin-secret":
-                  "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
-                "x-hasura-role": "user",
-                "x-hasura-user-id": `${userId}`,
-              },
-            };
-            const res = await fetch(url, options);
-            const data = await res.json();
-            if (res.ok) {
-              const updateList = transactionList.filter(
-                (each: TransactionTypes) => each.id === data.delete_transactions_by_pk.id
-              );
-              const list = updateList[0];
-              const formatDate = format(parseISO(list.date), "yyyy-MM-dd");
-              const updatedList = {...list , date: formatDate}
-            onClickEdit(updatedList);
-          }}
+            const updateList = transactionList.filter((each) => parseInt(each.id) === parseInt(event.target.value))
+            const list = updateList[0]
+              if (list !== undefined) {
+                const updatedList = {...list }
+                onClickEdit(updatedList);
+              }
+}
           switch (transactionIsLoading) {
             case apiStatus.res:
               let allUsersList: UserListType[];
@@ -123,7 +108,7 @@ const Transactions = () => {
                     </thead>
                     {!showTransactionPopup && !showUpdatePopup &&  !showDeletePopup && !logoutPopup &&(
                       <tbody className="body">
-                        {formatedTransactionList.map((each) => (
+                        {formatedTransactionList.map((each: TransactionTypes) => (
                           <tr key={each.id}>
                             {((userId) === "3")  && (
                               <td>

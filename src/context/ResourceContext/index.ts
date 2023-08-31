@@ -54,7 +54,8 @@ const ResourceContext = React.createContext({
   onClickDelete: (a: any) => {} ,
   deleteTransacId: "" ,
   logoutPopup: false ,
-  onLogClick: () => {}
+  onLogClick: () => {} ,
+  logoutPop: () => {}
 });
 
 export default ResourceContext;
