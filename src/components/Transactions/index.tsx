@@ -1,18 +1,15 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { parseISO, format } from "date-fns";
 import ThreeDots  from  'react-loader-spinner'
 import { HiOutlinePencil } from "react-icons/hi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { BiUpArrowCircle } from "react-icons/bi";
 import { BsArrowDownCircle } from "react-icons/bs";
-import FailureView from "../FailureView";
-
+import {  Observer } from "mobx-react-lite" 
 
 import ResourceContext from "../../context/ResourceContext";
+import FailureView from "../FailureView";
 import useUserId from "../../hooks/useUserId";
-import SideBar from "../SideBar";
-import Navbar from "../Navbar";
-import TransactionType from "../TransactionType";
 import { apiStatus } from "../../constants";
 
 import "./index.css";
@@ -44,21 +41,16 @@ const transactionTypes: TransactionTabType[] = [
 ];
 
 const Transactions = () => {
-  const [activeTypeId , setActiveTypeId] = useState(transactionTypes[0].id)
   const userId = useUserId()
   const {
-    transactionList,
+    transaction,
     transactionIsLoading,
     showTransactionPopup,
     onClickEdit,
     userList,
     showUpdatePopup,
-    imagesUrl, apiCall , onClickDelete , showDeletePopup , logoutPopup
+    imagesUrl, apiCall , onClickDelete , showDeletePopup , logoutPopup ,activeTypeId
   } = useContext(ResourceContext)
-
-  const changeTypeId = (id: string) => {
-      setActiveTypeId(id)
-  };
 
   const changePopup = (event:any) => {
     onClickDelete(event.target.value)
@@ -69,16 +61,19 @@ const Transactions = () => {
   } , [])
 
   const renderTransactiondata = () => {
-          const filterList = transactionList.filter(
-            (each: TransactionTypes) =>  each.type.toLowerCase() === activeTypeId);
+    let filterList;
+          if (activeTypeId !== transactionTypes[0].id) {
+            filterList = transaction.transactionList.filter(
+              (each: TransactionTypes) =>  each.type.toLowerCase() === activeTypeId);
+          }
           const formatedTransactionList =
             activeTypeId === transactionTypes[0].id
-              ? transactionList.sort(
-                  (a, b) => new Date(b.date) < new Date(a.date) ? -1 : 1
-                )
-              : filterList.sort((a, b) => new Date(b.date) < new Date(a.date) ? -1 : 1);
+              ? transaction.transactionList.slice().sort(
+                (a: any, b: any) => new Date(b.date) < new Date(a.date) ? -1 : 1
+              )
+              : filterList.slice().sort((a: any, b: any) => new Date(b.date) < new Date(a.date) ? -1 : 1);
           const onEdit = async (event: any) => {
-            const updateList = transactionList.filter((each) => parseInt(each.id) === parseInt(event.target.value))
+            const updateList = transaction.transactionList.filter((each: TransactionTypes) => parseInt(each.id) === parseInt(event.target.value))
             const list = updateList[0]
               if (list !== undefined) {
                 const updatedList = {...list }
@@ -245,24 +240,13 @@ const Transactions = () => {
   };
 
     return (
-      <div className="home-bg">
-        <SideBar />
-        <div className="home-content">
-          <Navbar />
-          <ul className="transactiontype-crd">
-            {transactionTypes.map((each) => (
-              <TransactionType
-                changeTypeId={changeTypeId}
-                list={each}
-                key={each.id}
-                isActive={activeTypeId === each.id}
-              />
-            ))}
-          </ul>
-          <div className="main-content">{renderTransactiondata()}</div>
-        </div>
-      </div>
+      <Observer>
+        {() => (<>
+          {renderTransactiondata()}
+        </>
+)}
+      </Observer>
     );
 }
 
-export default Transactions;
+export default (Transactions);

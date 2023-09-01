@@ -33,14 +33,13 @@ const UpdateTransactions = () => {
     onCancel,
     updateTransacList ,
     updateSuccessMssg,
-    updateTransactionToDatabase
+    updateTransactionToDatabase , apiCall , transaction
   } = useContext(ResourceContext)
   const [transactionName  ,setTransactionName] = useState(updateTransacList.transactionName)
   const [transactionType , setTransactionType] = useState(updateTransacList.type)
   const [transactionDate , setTransactionDate] = useState(updateTransacList.date)
   const [transactionAmount , setTransactionAmount] = useState(updateTransacList.amount)
   const [transactionCategory , setTransactionCategory] = useState(updateTransacList.category)
-  console.log(transactionDate)
 
   const onBlurName = (event: React.FocusEvent<HTMLInputElement>) => {
     if (event.target.value === "") {
@@ -96,7 +95,7 @@ const UpdateTransactions = () => {
             event.preventDefault();
             const parsedDate = parse(transactionDate, "yyyy-MM-dd", new Date());
             const formatDate = format(parsedDate, "yyyy-MM-dd'T'HH:mm:ssxxx");
-            const data = {...updateTransacList , 
+            const data = {id: updateTransacList.id , 
             date: formatDate , type: transactionType , name: transactionName , category: transactionCategory , amount: transactionAmount}
             const url = "https://bursting-gelding-24.hasura.app/api/rest/update-transaction"
             const options =  {
@@ -112,7 +111,9 @@ const UpdateTransactions = () => {
             };
             const res = await fetch(url, options);
             const updateDdata = await res.json()
-            updateTransactionToDatabase(updateDdata)
+            transaction.updateTransactionList(updateDdata)
+            updateTransactionToDatabase()
+            apiCall()
           };
           const close = () => {
             onCancel();

@@ -3,14 +3,27 @@ import { HiMenu } from "react-icons/hi";
 import Cookies from "js-cookie";
 
 import ResourceContext from "../../context/ResourceContext";
+import TransactionType from "../TransactionType";
 
 import "./index.css";
 import  { useContext } from "react";
 import useUserId from "../../hooks/useUserId";
 
+interface TransactionTabType {
+  name: string
+  id: string
+}
+
 const Navbar = (props: any) => {
   const userId = useUserId()
-  const { onClickTransaction, onShow, showSidebar } = useContext(ResourceContext)
+  const { onClickTransaction, onShow, showSidebar , activeTypeId } = useContext(ResourceContext)
+
+  const transactionTypes: TransactionTabType[] = [
+    { name: "All Transactions", id: "ALL TRANSACTIONS" },
+    { name: "Debit", id: "debit" },
+    { name: "Credit", id: "credit" },
+  ];
+  
 
   const { location } = props;
   const { pathname } = location;
@@ -78,6 +91,17 @@ const Navbar = (props: any) => {
                 </button>
               </ul>
             )}
+            {transActive && (
+                <ul className="transactiontype-crd">
+                {transactionTypes.map((each) => (
+                  <TransactionType
+                    list={each}
+                    key={each.id}
+                    isActive={activeTypeId === each.id}
+                  />
+                ))}
+                </ul>
+              )}
           </>
         );
 };

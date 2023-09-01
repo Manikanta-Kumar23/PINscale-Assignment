@@ -10,6 +10,10 @@ interface TransactionType {
   transactionName?: string
   userId?: string
 }
+
+interface StoreType {
+  transactionList: TransactionType[]
+}
 interface ImgUrlsType {
   id: string
   url: string
@@ -30,21 +34,23 @@ interface UserListType {
   present_address?: string | null
 }
 
+const transaction: any = class{}
+
 const ResourceContext = React.createContext({
   userList: [] as UserListType[],
   isLoading: "",
-  transactionList:  [] as TransactionType[],
   transactionIsLoading: "",
+  store: {} as StoreType,
   onDeleteTransaction: (a: any) => {},
   onClickTransaction: () => {},
   showTransactionPopup: false,
   onCancel: () => {},
-  addTransactionToDatabase: (a: any) => {},
+  addTransactionToDatabase: () => {},
   transactionSuccessMssg: false,
   onClickEdit: (a: any) => {},
   showUpdatePopup: false,
   updateTransacList: {} as TransactionType,
-  updateTransactionToDatabase: (a: any) => {},
+  updateTransactionToDatabase: () => {},
   imagesUrl: [] as ImgUrlsType[],
   showSidebar: false,
   onShow: () => {},
@@ -55,7 +61,10 @@ const ResourceContext = React.createContext({
   deleteTransacId: "" ,
   logoutPopup: false ,
   onLogClick: () => {} ,
-  logoutPop: () => {}
+  logoutPop: () => {},
+  transaction,
+  changeTypeId: (a: string) => {} ,
+  activeTypeId: "" as string
 });
 
 export default ResourceContext;

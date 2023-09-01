@@ -23,16 +23,18 @@ interface TransactionType {
   }
 
 const DeleteTransaction = (props: any) => {
-    const {showDeletePopup , onCancel , deleteTransacId , onDeleteTransaction , transactionList , logoutPopup , logoutPop} = useContext(ResourceContext)
+    const {showDeletePopup , onCancel , deleteTransacId ,  logoutPopup , logoutPop , transaction , apiCall} = useContext(ResourceContext)
     const [deleteMssg , setDeleteMssg] = useState(false)
     const [errMssg , setErrMssg] = useState(false)
     const userId = useUserId()
     const onClose = () => {
         setErrMssg(false)
         onCancel()
+        setDeleteMssg(false)
     }
     const onDelete = async () => {
         setErrMssg(false)
+        const id = parseInt(deleteTransacId)
         const options = {
             method: "DELETE",
             headers: {
@@ -43,13 +45,14 @@ const DeleteTransaction = (props: any) => {
               "x-hasura-user-id": `${userId}`,
             },
           };
-          const url = `https://bursting-gelding-24.hasura.app/api/rest/delete-transaction?id=${deleteTransacId}`;
+          const url = `https://bursting-gelding-24.hasura.app/api/rest/delete-transaction?id=${id}`;
           const res = await fetch(url, options);
           const data = await res.json();
           if (res.ok) {
             const trnsacId = data.delete_transactions_by_pk.id;
-            const updateList = transactionList.filter((each: TransactionType) => each.id !== trnsacId);
-            onDeleteTransaction(updateList);
+            const updateList = transaction.transactionList.filter((each: TransactionType) => each.id !== trnsacId);
+            transaction.deleteTransactionList(updateList)
+            apiCall()
             setDeleteMssg(true)
           }
           else {

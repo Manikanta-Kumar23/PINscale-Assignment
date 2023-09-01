@@ -1,8 +1,6 @@
 import ThreeDots  from "react-loader-spinner";
 
 import FailureView from "../FailureView";
-import SideBar from "../SideBar";
-import Navbar from "../Navbar";
 import useDataFetching from "../../hooks/useDataFetching";
 import useUserId from "../../hooks/useUserId";
 import {OptionsType} from "../../types"
@@ -189,13 +187,9 @@ const Profile = () => {
     }
   };
     return (
-      <div className="home-bg">
-        <SideBar />
-        <div className="home-content">
-          <Navbar />
-          <div className="main-content">{renderUserData()}</div>
-        </div>
-      </div>
+      <>
+      {renderUserData()}
+      </>
     );
 }
 

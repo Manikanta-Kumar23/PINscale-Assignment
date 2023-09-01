@@ -1,6 +1,7 @@
 import  {useContext, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { format, parse} from "date-fns";
+import { useObserver } from "mobx-react";
 
 import ResourceContext from "../../context/ResourceContext";
 import useUserId from "../../hooks/useUserId";
@@ -37,7 +38,8 @@ const AddTransactions = () => {
     showTransactionPopup,
     onCancel,
     transactionSuccessMssg,
-    addTransactionToDatabase 
+    addTransactionToDatabase  ,
+    transaction , apiCall
   } = useContext(ResourceContext)
 
   const onBlurName = (event: React.FocusEvent<HTMLInputElement>) => {
@@ -122,7 +124,9 @@ const AddTransactions = () => {
                   const res = await fetch(url, options);
                   const data = await res.json();
                   if (res.ok) {
-                    addTransactionToDatabase(data.insert_transactions_one)
+                    transaction.addTransactionList(data.insert_transactions_one)
+                    addTransactionToDatabase()
+                    apiCall()
                     setTransactionName("")
                     setTransactionAmount("")
                     setTransactionCategory("null")
@@ -136,137 +140,144 @@ const AddTransactions = () => {
           };
           const close = () => {
             onCancel();
+            setTransactionName("")
+                    setTransactionAmount("")
+                    setTransactionCategory("null")
+                    setTransactionType("null")
+                    setTransactionDate("")
           };
           return (
-            showTransactionPopup && (
-              <div className="add-transactions">
-                <form onSubmit={onAddTransaction} className="add-form-crd">
-                  <div className="frm-head">
-                    {!transactionSuccessMssg && (
-                      <div className="hed-crd">
-                        <h1 className="heading">Add Transaction</h1>
-                        <p className="para">
-                          You can add your transaction here.
-                        </p>
+            useObserver(() => (
+              showTransactionPopup && (
+                <div className="add-transactions">
+                  <form onSubmit={onAddTransaction} className="add-form-crd">
+                    <div className="frm-head">
+                      {!transactionSuccessMssg && (
+                        <div className="hed-crd">
+                          <h1 className="heading">Add Transaction</h1>
+                          <p className="para">
+                            You can add your transaction here.
+                          </p>
+                        </div>
+                      )}
+                      <button
+                        className="cancel-btn"
+                        onClick={close}
+                        type="button"
+                      >
+                        <RxCross2 color="#718EBF" size="19" />
+                      </button>
+                    </div>
+                    {transactionSuccessMssg === false ? (
+                      <>
+                        <div className="data-crd">
+                          <div className="label-crd">
+                            <label className="add-label" htmlFor="transc-name">
+                              Transaction Name
+                            </label>
+                            <input
+                              className="add-transc-name"
+                              onBlur={onBlurName}
+                              onChange={(event)=> setTransactionName(event.target.value)}
+                              value={transactionName}
+                              type="text"
+                              id="transc-name"
+                              placeholder="Enter Name"
+                            />
+                            {nameErr && (
+                              <p className="transc-err">{nameErrMssg}</p>
+                            )}
+                          </div>
+                          <div className="label-crd">
+                            <label className="add-label" htmlFor="transc-type">
+                              Transaction Type
+                            </label>
+                            <select
+                              onBlur={onBlurType}
+                              value={transactionType}
+                              onChange={(event)=> setTransactionType(event.target.value)}
+                              className="add-transc-name"
+                              id="transc-type"
+                            >
+                              <option value="null">
+                                Select Transaction Type
+                              </option>
+                              <option value="credit">Credit</option>
+                              <option value="debit">Debit</option>
+                            </select>
+                            {typeErr && (
+                              <p className="transc-err">{typeErrMssg}</p>
+                            )}
+                          </div>
+                          <div className="label-crd">
+                            <label className="add-label" htmlFor="transc-type">
+                              Transaction Category
+                            </label>
+                            <select
+                              onChange={(event)=> setTransactionCategory(event.target.value)}
+                              onBlur={onBlurCat}
+                              value={transactionCategory}
+                              className="add-transc-name"
+                              id="transc-type"
+                            >
+                              {transactionCategoryTypes.map((each) => (
+                                <option value={each.value} key={each.value}>
+                                  {each.name}
+                                </option>
+                              ))}
+                            </select>
+                            {catErr && <p className="transc-err">{catErrMssg}</p>}
+                          </div>
+                          <div className="label-crd">
+                            <label className="add-label" htmlFor="transc-amount">
+                              Amount
+                            </label>
+                            <input
+                              onBlur={onBlurAmount}
+                              onChange={(event)=> setTransactionAmount(event.target.value)}
+                              value={transactionAmount}
+                              className="add-transc-name"
+                              type="number"
+                              id="transc-amount"
+                              placeholder="Enter Amount"
+                            />
+                            {amntErr && (
+                              <p className="transc-err">{amntErrMssg}</p>
+                            )}
+                          </div>
+                          <div className="label-crd">
+                            <label className="add-label" htmlFor="transc-date">
+                              Date
+                            </label>
+                            <input
+                              onBlur={onBlurDate}
+                              onChange={(event)=> setTransactionDate(event.target.value)}
+                              value={transactionDate}
+                              className="add-transc-name"
+                              type="date"
+                              id="transc-date"
+                              placeholder="Enter Date"
+                            />
+                            {dateErr && (
+                              <p className="transc-err">{dateErrMssg}</p>
+                            )}
+                          </div>
+                        </div>
+                        <button className="add-transaction-btn" type="submit">
+                          Add Transaction
+                        </button>
+                      </>
+                    ) : (
+                      <div className="add-suc-crd">
+                        <h1 className="add-suc">
+                          Transaction Added Successfully
+                        </h1>
                       </div>
                     )}
-                    <button
-                      className="cancel-btn"
-                      onClick={close}
-                      type="button"
-                    >
-                      <RxCross2 color="#718EBF" size="19" />
-                    </button>
-                  </div>
-                  {transactionSuccessMssg === false ? (
-                    <>
-                      <div className="data-crd">
-                        <div className="label-crd">
-                          <label className="add-label" htmlFor="transc-name">
-                            Transaction Name
-                          </label>
-                          <input
-                            className="add-transc-name"
-                            onBlur={onBlurName}
-                            onChange={(event)=> setTransactionName(event.target.value)}
-                            value={transactionName}
-                            type="text"
-                            id="transc-name"
-                            placeholder="Enter Name"
-                          />
-                          {nameErr && (
-                            <p className="transc-err">{nameErrMssg}</p>
-                          )}
-                        </div>
-                        <div className="label-crd">
-                          <label className="add-label" htmlFor="transc-type">
-                            Transaction Type
-                          </label>
-                          <select
-                            onBlur={onBlurType}
-                            value={transactionType}
-                            onChange={(event)=> setTransactionType(event.target.value)}
-                            className="add-transc-name"
-                            id="transc-type"
-                          >
-                            <option value="null">
-                              Select Transaction Type
-                            </option>
-                            <option value="credit">Credit</option>
-                            <option value="debit">Debit</option>
-                          </select>
-                          {typeErr && (
-                            <p className="transc-err">{typeErrMssg}</p>
-                          )}
-                        </div>
-                        <div className="label-crd">
-                          <label className="add-label" htmlFor="transc-type">
-                            Transaction Category
-                          </label>
-                          <select
-                            onChange={(event)=> setTransactionCategory(event.target.value)}
-                            onBlur={onBlurCat}
-                            value={transactionCategory}
-                            className="add-transc-name"
-                            id="transc-type"
-                          >
-                            {transactionCategoryTypes.map((each) => (
-                              <option value={each.value} key={each.value}>
-                                {each.name}
-                              </option>
-                            ))}
-                          </select>
-                          {catErr && <p className="transc-err">{catErrMssg}</p>}
-                        </div>
-                        <div className="label-crd">
-                          <label className="add-label" htmlFor="transc-amount">
-                            Amount
-                          </label>
-                          <input
-                            onBlur={onBlurAmount}
-                            onChange={(event)=> setTransactionAmount(event.target.value)}
-                            value={transactionAmount}
-                            className="add-transc-name"
-                            type="number"
-                            id="transc-amount"
-                            placeholder="Enter Amount"
-                          />
-                          {amntErr && (
-                            <p className="transc-err">{amntErrMssg}</p>
-                          )}
-                        </div>
-                        <div className="label-crd">
-                          <label className="add-label" htmlFor="transc-date">
-                            Date
-                          </label>
-                          <input
-                            onBlur={onBlurDate}
-                            onChange={(event)=> setTransactionDate(event.target.value)}
-                            value={transactionDate}
-                            className="add-transc-name"
-                            type="date"
-                            id="transc-date"
-                            placeholder="Enter Date"
-                          />
-                          {dateErr && (
-                            <p className="transc-err">{dateErrMssg}</p>
-                          )}
-                        </div>
-                      </div>
-                      <button className="add-transaction-btn" type="submit">
-                        Add Transaction
-                      </button>
-                    </>
-                  ) : (
-                    <div className="add-suc-crd">
-                      <h1 className="add-suc">
-                        Transaction Added Successfully
-                      </h1>
-                    </div>
-                  )}
-                </form>
-              </div>
-            )
+                  </form>
+                </div>
+              )
+            ))
           );
 }
 

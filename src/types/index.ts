@@ -1,6 +1,5 @@
 export interface UrlType {
     creditUrl: string
-    recentTransactionUrl: string
     overviewUrl: string
   }
   interface HeaderType  {

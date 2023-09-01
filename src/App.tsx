@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { Switch, Route, withRouter } from "react-router-dom";
+import { useLocalObservable } from "mobx-react-lite";
+import { makeAutoObservable, observable , action } from "mobx";
+
 
 import "./App.css";
 import AddTransactions from "./components/AddTransactions";
@@ -13,9 +16,12 @@ import Profile from "./components/Profile";
 import AuthenticateRoute from "./components/AuthenticateRoute";
 import NotFound from "./components/NotFound";
 import useUserId from "./hooks/useUserId"
+import Navbar from "./components/Navbar";
+import SideBar from "./components/SideBar";
 import ResourceContext from "./context/ResourceContext";
 import { OptionsType} from "./types"
 import { apiStatus, imagesUrl } from "./constants";
+
 
 interface TransactionType {
   transaction_name?: string
@@ -45,10 +51,37 @@ interface UserListType {
   present_address?: string | null
 }
 
+class TransactionStore {
+  transactionList: TransactionType[] = []
+  
+  constructor() {
+    makeAutoObservable(this , {
+      transactionList: observable,
+      createTransactionList: action,
+      updateTransactionList: action,
+      deleteTransactionList: action,
+      addTransactionList: action
 
-const  App = () => {
+    })
+  }
+
+  createTransactionList (data: TransactionType[]) {
+    this.transactionList = [...data]
+  }
+  addTransactionList (data: TransactionType) {
+    this.transactionList.push(data)
+  }
+  updateTransactionList (data: TransactionType) {
+    const index = this.transactionList.findIndex((each) => each.id === data.id)
+    this.transactionList[index] = data
+  }
+  deleteTransactionList (data: TransactionType) {
+    this.transactionList.push(data)
+  }
+}
+
+const  App = (props: any) => {
   const userId = useUserId()
-  let [transactionList , setTransactionList] = useState([] as TransactionType[])
   const [showTransactionPopup , setShowTransactionPopup] = useState(false)
   const [transactionSuccessMssg , setTransactionSuccessMssg] = useState(false)
   const [showUpdatePopup , setShowUpdatePopup] = useState(false)
@@ -58,9 +91,22 @@ const  App = () => {
   const [showDeletePopup , setShowDeletePopup] = useState(false)
   const [deleteTransacId , setDeleteTransacId] = useState("")
   const [logoutPopup , setLogoutPopup] = useState(false)
+  const [activeTypeId , setActiveTypeId] = useState("ALL TRANSACTIONS")
+  const transaction = useLocalObservable(() => new TransactionStore())
+  const {location} = props
+
+  const store = useLocalObservable(() => ({
+    transactionList: [] as TransactionType[],
+    addTransactionToDatabase: () => {}
+  }))
+
+  let limit = 3
+  if (location.pathname === "/transactions") {
+    limit = 100
+  }
 
   const userUrl = "https://bursting-gelding-24.hasura.app/api/rest/profile"
-  const transactionsUrl ="https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=100&offset=0"
+  const transactionsUrl =`https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=${limit}&offset=0`
   let apiOptions: OptionsType = {method: "GET" , headers: {"content-type": "application/json",
   "x-hasura-admin-secret":
     "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",}}
@@ -73,14 +119,16 @@ const  App = () => {
     }
 
     const {data: transactionDataList , isLoading: transactionIsLoading , fetchData: transactionDataApi} = useDataFetching()
+    const {data: userDataList ,  isLoading , fetchData: userDataApi} = useDataFetching()
     useEffect(() => {
       transactionDataApi(transactionsUrl , apiOptions)
+      userDataApi(userUrl, apiOptions)
     } , [])
     const apiCall = () => {
       transactionDataApi(transactionsUrl , apiOptions)
     }
     if (transactionIsLoading === apiStatus.res) {
-      transactionList = transactionDataList.transactions.map((each: TransactionType) => {
+      store.transactionList = transactionDataList.transactions.map((each: TransactionType) => {
         return ({
           transactionName: each.transaction_name , 
           category: each.category ,
@@ -91,12 +139,20 @@ const  App = () => {
           userId: each.user_id
         })
       })
+      const list = transactionDataList.transactions.map((each: TransactionType) => {
+        return ({
+          transactionName: each.transaction_name , 
+          category: each.category ,
+          amount: each.amount ,
+          id: each.id,
+          date: each.date ,
+          type: each.type ,
+          userId: each.user_id
+        })
+      })
+      transaction.createTransactionList(list)
     }
 
-    const {data: userDataList ,  isLoading , fetchData: userDataApi} = useDataFetching()
-    useEffect(() => {
-      userDataApi(userUrl, apiOptions)
-    } , [])
     let userList: UserListType[] = []
     if (isLoading === apiStatus.res) {
       userList = userDataList.users.map((each: UserListType) => {
@@ -138,34 +194,18 @@ const  App = () => {
   }
 
   const onDeleteTransaction = (data: TransactionType[]) => {
-        setTransactionList(data)
+        store.transactionList = data
     };
 
     const onShow = () => {
       setShowSidebar(s  => !s)
   };
 
-  const addTransactionToDatabase = async (data: TransactionType) => {
-      setTransactionList((prevList) => {
-        return  [
-          ...prevList,
-          data,
-        ]
-      })
+  const addTransactionToDatabase = () => {
       setTransactionSuccessMssg(true)
   };
 
-  const updateTransactionToDatabase = async (data: TransactionType) => {
-    const list = transactionList.map((each) => {
-      if (each.id === data.id) {
-        return ({...each , ...data})
-      }
-      return each
-    })
-    console.log(list)
-    setTransactionList((prevList) => {
-      return [...prevList , data]
-    })
+  const updateTransactionToDatabase = () => {
         setUpdateSuccessMssg(true)
   };
 
@@ -173,6 +213,10 @@ const  App = () => {
         setUpdateTransacList(updatedList)
         setShowUpdatePopup(true)
   };
+
+  const changeTypeId = (id: string) => {
+    setActiveTypeId(id)
+};
 
     return (
       <ResourceContext.Provider
@@ -182,7 +226,7 @@ const  App = () => {
           transactionIsLoading,
           showTransactionPopup,
           onClickTransaction: onClickTransaction,
-          transactionList,
+          store,
           onDeleteTransaction: onDeleteTransaction,
           onCancel: onCancel,
           addTransactionToDatabase: addTransactionToDatabase,
@@ -201,17 +245,28 @@ const  App = () => {
           deleteTransacId , 
           logoutPopup ,
           onLogClick ,
-          logoutPop
+          logoutPop ,
+          transaction ,
+          changeTypeId,
+          activeTypeId
         }}
       >
         <UpdateTransactions />
         <AddTransactions />
         <DeleteTransaction />
         <Switch>
-          <Route exact path="/login" component={Login} />
-          <AuthenticateRoute exact path="/" component={Home} />
-          <AuthenticateRoute path="/transactions" component={Transactions} />
-          <AuthenticateRoute path="/profile" component={Profile} />
+        <Route exact path="/login" component={Login} />
+        <div className="home-bg">
+          <SideBar />
+          <div className="home-content">
+            <Navbar />
+            <div className="main-content">
+              <AuthenticateRoute exact path="/" component={Home} />
+              <AuthenticateRoute path="/transactions" component={Transactions} />
+              <AuthenticateRoute path="/profile" component={Profile} />
+            </div>
+        </div>
+      </div>
           <Route component={NotFound} />
         </Switch>
       </ResourceContext.Provider>
