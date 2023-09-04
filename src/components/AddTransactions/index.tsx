@@ -3,8 +3,9 @@ import { RxCross2 } from "react-icons/rx";
 import { format, parse} from "date-fns";
 import { useObserver } from "mobx-react";
 
-import ResourceContext from "../../context/ResourceContext";
+import {ResourceContext} from "../../context/ResourceContext";
 import useUserId from "../../hooks/useUserId";
+import {  TransactionData } from "../../store";
 
 import "./index.css";
 
@@ -18,11 +19,6 @@ const transactionCategoryTypes = [
 ];
 
 const AddTransactions = () => {
-  const [transactionName  ,setTransactionName] = useState("")
-  const [transactionType , setTransactionType] = useState("")
-  const [transactionDate , setTransactionDate] = useState("")
-  const [transactionAmount , setTransactionAmount] = useState("")
-  const [transactionCategory , setTransactionCategory] = useState("")
   const [nameErr , setNameErr] = useState(false)
   const [nameErrMssg , setNameErrMssg] = useState("")
   const [catErr , setCatErr] = useState(false)
@@ -33,12 +29,11 @@ const AddTransactions = () => {
   const [dateErrMssg , setDateErrMssg] = useState("")
   const [typeErr , setTypeErr] = useState(false)
   const [typeErrMssg ,setTypeErrMssg]  =useState("")
+  const [transactionSuccessMssg, setTransactionSuccessMssg] = useState(false)
   const userId = useUserId()
   const {
     showTransactionPopup,
     onCancel,
-    transactionSuccessMssg,
-    addTransactionToDatabase  ,
     transaction , apiCall
   } = useContext(ResourceContext)
 
@@ -90,24 +85,25 @@ const AddTransactions = () => {
         setDateErrMssg("*Required")
     } else {
         setDateErr(false)
+        console.log(transaction.current.transactionDate)
     }
   };
       const onAddTransaction = async (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
-              if (transactionName !== "" &&
-                transactionType !== "" &&
-                transactionCategory !== "" &&
-                transactionAmount!== "" &&
-                transactionDate !== "") {
+              if (transaction.current.transactionName !== "" &&
+                transaction.current.transactionType !== "" &&
+                transaction.current.transactionCategory !== "" &&
+                transaction.current.transactionAmount!== "" &&
+                transaction.current.transactionDate !== "") {
                   let formatDate
-                  if (transactionDate !== "") {
-                    const parsedDate = parse(transactionDate , "yyyy-MM-dd", new Date());
+                  if (transaction.current.transactionDate !== "") {
+                    const parsedDate = parse(transaction.current.transactionDate , "yyyy-MM-dd", new Date());
                     formatDate = format(parsedDate, "yyyy-MM-dd'T'HH:mm:ssxxx");
                   }
-                  const updateData = {name: transactionName,
-                    type: transactionType,
-                    category: transactionCategory,
-                    amount: transactionAmount,
+                  const updateData = {name: transaction.current.transactionName,
+                    type: transaction.current.transactionType,
+                    category: transaction.current.transactionCategory,
+                    amount: transaction.current.transactionAmount,
                     date: formatDate , user_id: userId}
                   const url = "https://bursting-gelding-24.hasura.app/api/rest/add-transaction"
                   const options =  {
@@ -124,14 +120,10 @@ const AddTransactions = () => {
                   const res = await fetch(url, options);
                   const data = await res.json();
                   if (res.ok) {
-                    transaction.addTransactionList(data.insert_transactions_one)
-                    addTransactionToDatabase()
+                    const updatedData = new TransactionData(data.insert_transactions_one)
+                    transaction.current.addTransactionList(updatedData)
+                    setTransactionSuccessMssg(true)
                     apiCall()
-                    setTransactionName("")
-                    setTransactionAmount("")
-                    setTransactionCategory("null")
-                    setTransactionType("null")
-                    setTransactionDate("")
                   }
                 }
                 else {
@@ -140,11 +132,7 @@ const AddTransactions = () => {
           };
           const close = () => {
             onCancel();
-            setTransactionName("")
-                    setTransactionAmount("")
-                    setTransactionCategory("null")
-                    setTransactionType("null")
-                    setTransactionDate("")
+            setTransactionSuccessMssg(false)
           };
           return (
             useObserver(() => (
@@ -178,8 +166,8 @@ const AddTransactions = () => {
                             <input
                               className="add-transc-name"
                               onBlur={onBlurName}
-                              onChange={(event)=> setTransactionName(event.target.value)}
-                              value={transactionName}
+                              onChange={(e) => transaction.current.nameChange(e.target.value)}
+                              value={transaction.current.transactionName}
                               type="text"
                               id="transc-name"
                               placeholder="Enter Name"
@@ -194,8 +182,8 @@ const AddTransactions = () => {
                             </label>
                             <select
                               onBlur={onBlurType}
-                              value={transactionType}
-                              onChange={(event)=> setTransactionType(event.target.value)}
+                              value={transaction.current.transactionType}
+                              onChange={(event)=> transaction.current.typeChange(event.target.value)}
                               className="add-transc-name"
                               id="transc-type"
                             >
@@ -214,9 +202,9 @@ const AddTransactions = () => {
                               Transaction Category
                             </label>
                             <select
-                              onChange={(event)=> setTransactionCategory(event.target.value)}
+                              onChange={(event)=> transaction.current.catChange(event.target.value)}
                               onBlur={onBlurCat}
-                              value={transactionCategory}
+                              value={transaction.current.transactionCategory}
                               className="add-transc-name"
                               id="transc-type"
                             >
@@ -234,8 +222,8 @@ const AddTransactions = () => {
                             </label>
                             <input
                               onBlur={onBlurAmount}
-                              onChange={(event)=> setTransactionAmount(event.target.value)}
-                              value={transactionAmount}
+                              onChange={(event)=> transaction.current.amntChange(event.target.value)}
+                              value={transaction.current.transactionAmount}
                               className="add-transc-name"
                               type="number"
                               id="transc-amount"
@@ -251,8 +239,8 @@ const AddTransactions = () => {
                             </label>
                             <input
                               onBlur={onBlurDate}
-                              onChange={(event)=> setTransactionDate(event.target.value)}
-                              value={transactionDate}
+                              onChange={(event)=> transaction.current.dateChange(event.target.value)}
+                              value={transaction.current.transactionDate}
                               className="add-transc-name"
                               type="date"
                               id="transc-date"

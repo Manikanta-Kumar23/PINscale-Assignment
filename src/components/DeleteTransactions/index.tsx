@@ -4,7 +4,7 @@ import { FiLogOut } from "react-icons/fi";
 import Cookies from "js-cookie";
 import { withRouter } from "react-router-dom";
 
-import ResourceContext from "../../context/ResourceContext";
+import {ResourceContext} from "../../context/ResourceContext";
 import useUserId from "../../hooks/useUserId";
 
 import "./index.css"
@@ -20,6 +20,9 @@ interface TransactionType {
     date: string
     transactionName?: string
     userId?: string
+  }
+  interface DataType {
+    fetchedTransactionData: TransactionType
   }
 
 const DeleteTransaction = (props: any) => {
@@ -50,9 +53,8 @@ const DeleteTransaction = (props: any) => {
           const data = await res.json();
           if (res.ok) {
             const trnsacId = data.delete_transactions_by_pk.id;
-            const updateList = transaction.transactionList.filter((each: TransactionType) => each.id !== trnsacId);
-            transaction.deleteTransactionList(updateList)
-            apiCall()
+            const updateList = transaction.current.transactionList.filter((each: DataType) => each.fetchedTransactionData.id !== trnsacId);
+            transaction.current.deleteTransactionList(updateList)
             setDeleteMssg(true)
           }
           else {
@@ -65,7 +67,7 @@ const DeleteTransaction = (props: any) => {
         history.replace("/login");
         logoutPop()
       };
-    const deleteView = () => {
+    const renderDeleteView = () => {
         return (
             <div className="add-transactions">
                 <div className="modal-card">
@@ -124,7 +126,7 @@ const DeleteTransaction = (props: any) => {
             </div>
         )
     }
-    const logOutView = () => {
+    const renderLogOutView = () => {
         return (
             <div className="add-transactions">
                 <div className="modal-card">
@@ -166,8 +168,8 @@ const DeleteTransaction = (props: any) => {
     return (
         ( 
        <>
-        {showDeletePopup && deleteView()}
-        {logoutPopup && logOutView()}</>)
+        {showDeletePopup && renderDeleteView()}
+        {logoutPopup && renderLogOutView()}</>)
     )
 }
 export default withRouter(DeleteTransaction)

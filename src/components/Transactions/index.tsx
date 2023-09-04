@@ -7,12 +7,13 @@ import { BiUpArrowCircle } from "react-icons/bi";
 import { BsArrowDownCircle } from "react-icons/bs";
 import {  Observer } from "mobx-react-lite" 
 
-import ResourceContext from "../../context/ResourceContext";
+import {ResourceContext }from "../../context/ResourceContext";
 import FailureView from "../FailureView";
 import useUserId from "../../hooks/useUserId";
-import { apiStatus } from "../../constants";
+import { apiStatus ,imagesUrl  } from "../../constants";
 
 import "./index.css";
+
 
 interface TransactionTabType {
   name: string
@@ -29,6 +30,10 @@ interface TransactionTypes {
   transactionName?: string
   userId?: string
 }
+interface DataType {
+  fetchedTransactionData: TransactionTypes
+}
+
 interface UserListType {
   name: string
   id: string | number
@@ -40,7 +45,7 @@ const transactionTypes: TransactionTabType[] = [
   { name: "Credit", id: "credit" },
 ];
 
-const Transactions = () => {
+const Transactions = (props: any) => {
   const userId = useUserId()
   const {
     transaction,
@@ -49,7 +54,7 @@ const Transactions = () => {
     onClickEdit,
     userList,
     showUpdatePopup,
-    imagesUrl, apiCall , onClickDelete , showDeletePopup , logoutPopup ,activeTypeId
+ apiCall , onClickDelete , showDeletePopup , logoutPopup ,activeTypeId
   } = useContext(ResourceContext)
 
   const changePopup = (event:any) => {
@@ -62,26 +67,27 @@ const Transactions = () => {
 
   const renderTransactiondata = () => {
     let filterList;
-          if (activeTypeId !== transactionTypes[0].id) {
-            filterList = transaction.transactionList.filter(
-              (each: TransactionTypes) =>  each.type.toLowerCase() === activeTypeId);
-          }
-          const formatedTransactionList =
-            activeTypeId === transactionTypes[0].id
-              ? transaction.transactionList.slice().sort(
-                (a: any, b: any) => new Date(b.date) < new Date(a.date) ? -1 : 1
-              )
-              : filterList.slice().sort((a: any, b: any) => new Date(b.date) < new Date(a.date) ? -1 : 1);
-          const onEdit = async (event: any) => {
-            const updateList = transaction.transactionList.filter((each: TransactionTypes) => parseInt(each.id) === parseInt(event.target.value))
-            const list = updateList[0]
-              if (list !== undefined) {
-                const updatedList = {...list }
-                onClickEdit(updatedList);
-              }
-}
           switch (transactionIsLoading) {
             case apiStatus.res:
+              if (activeTypeId !== transactionTypes[0].id) {
+                filterList = transaction.current.transactionList.filter(
+                  (each: DataType) =>  each.fetchedTransactionData.type.toLowerCase() === activeTypeId);
+              }
+              const formatedTransactionList =
+                activeTypeId === transactionTypes[0].id
+                  ? transaction.current.transactionList
+                  : filterList
+                  const finalList = props.limit !== undefined ? transaction.current.transactionList.slice(0 , 3) : formatedTransactionList
+
+              const onEdit =  (event: any) => {
+                const updateList = transaction.current.transactionList.filter((each: DataType) => parseInt(each.fetchedTransactionData.id) === parseInt(event.target.value))
+                  if (updateList[0] !== undefined) {
+                    const list = updateList[0].fetchedTransactionData
+                    const updatedList = {...list}
+                    transaction.current.changeUpdateList(updatedList)
+                    onClickEdit();
+                  }
+    }
               let allUsersList: UserListType[];
               if ((userId) === "3") {
                 allUsersList = userList.map((each) => ({
@@ -103,13 +109,13 @@ const Transactions = () => {
                     </thead>
                     {!showTransactionPopup && !showUpdatePopup &&  !showDeletePopup && !logoutPopup &&(
                       <tbody className="body">
-                        {formatedTransactionList.map((each: TransactionTypes) => (
-                          <tr key={each.id}>
+                        {finalList.map((each: DataType) => (
+                          <tr key={each.fetchedTransactionData.id}>
                             {((userId) === "3")  && (
                               <td>
                                 <div className="usr-icn-crd">
                                   {((userId) === "3") ? (
-                                    each.type.toLowerCase() === "credit" ? (
+                                    each.fetchedTransactionData.type.toLowerCase() === "credit" ? (
                                       <BiUpArrowCircle
                                         color="#16DBAA"
                                         size="23"
@@ -127,12 +133,12 @@ const Transactions = () => {
                                     src={
                                       imagesUrl.find(
                                         (user) =>
-                                          (user.id) === (each.userId)
+                                          (user.id) === (each.fetchedTransactionData.userId)
                                       )?.url
                                     }
                                   />
                                   {allUsersList.find(
-                                    (user) => user.id === each.userId
+                                    (user) => user.id === each.fetchedTransactionData.userId
                                   )?.name || "N/A"}
                                 </div>
                               </td>
@@ -140,7 +146,7 @@ const Transactions = () => {
                             <td>
                               <div className="align">
                                 {((userId) !== "3")  ? (
-                                  each.type.toLowerCase() === "credit" ? (
+                                  each.fetchedTransactionData.type.toLowerCase() === "credit" ? (
                                     <BiUpArrowCircle
                                       color="#16DBAA"
                                       size="23"
@@ -152,26 +158,26 @@ const Transactions = () => {
                                     />
                                   )
                                 ) : null}
-                                <p className="margin">{each.transactionName}</p>
+                                <p className="margin">{each.fetchedTransactionData.transactionName}</p>
                               </div>
                             </td>
-                            <td>{each.category}</td>
+                            <td>{each.fetchedTransactionData.category}</td>
                             <td>
-                              {format(parseISO(each.date), "d MMM, h:mm aa")}
+                              {format(parseISO(each.fetchedTransactionData.date), "d MMM, h:mm aa")}
                             </td>
                             <td
                               style={{
                                 color: `${
-                                  each.type.toLowerCase() === "credit"
+                                  each.fetchedTransactionData.type.toLowerCase() === "credit"
                                     ? "#16DBAA"
                                     : "#fe5c73"
                                 }`,
                               }}
                             >
                               {`${
-                                each.type.toLowerCase() === "credit"
-                                  ? `+$${each.amount}`
-                                  : `-$${each.amount}`
+                                each.fetchedTransactionData.type.toLowerCase() === "credit"
+                                  ? `+$${each.fetchedTransactionData.amount}`
+                                  : `-$${each.fetchedTransactionData.amount}`
                               }`}
                             </td>
                             {(userId) !== "3" && (
@@ -179,7 +185,7 @@ const Transactions = () => {
                                 <td>
                                   <button
                                     onClick={onEdit}
-                                    value={each.id}
+                                    value={each.fetchedTransactionData.id}
                                     className="edit-btn"
                                     type="button"
                                   >
@@ -193,7 +199,7 @@ const Transactions = () => {
                                 <button
                                         onClick={changePopup}
                                         className="edit-btn"
-                                        value = {each.id}
+                                        value = {each.fetchedTransactionData.id}
                                         type="button"
                                       >
                                         <RiDeleteBin6Line

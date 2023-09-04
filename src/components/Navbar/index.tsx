@@ -2,7 +2,7 @@ import { withRouter , Link } from "react-router-dom"
 import { HiMenu } from "react-icons/hi";
 import Cookies from "js-cookie";
 
-import ResourceContext from "../../context/ResourceContext";
+import {ResourceContext }from "../../context/ResourceContext";
 import TransactionType from "../TransactionType";
 
 import "./index.css";

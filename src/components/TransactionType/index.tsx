@@ -1,5 +1,5 @@
 import {useContext} from "react"
-import ResourceContext from "../../context/ResourceContext";
+import {ResourceContext} from "../../context/ResourceContext";
 import "./index.css";
 
 interface TabType {

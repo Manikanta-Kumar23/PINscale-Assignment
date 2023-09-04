@@ -1,7 +1,7 @@
 import ThreeDots  from "react-loader-spinner";
 import useUserId from "../../hooks/useUserId";
 import useDataFetching from "../../hooks/useDataFetching";
-import ResourceContext from "../../context/ResourceContext";
+import {ResourceContext} from "../../context/ResourceContext";
 import FailureView from "../FailureView";
 import TransactionOverviewChart from "../TransactionOverviewChart";
 import Transactions from "../Transactions";
@@ -22,8 +22,16 @@ interface OverviewType {
 }
 
 
-const Home = () => {
+const Home = (props: any) => {
   const userId = useUserId()
+  const {location} = props
+  let limit
+  if (location.pathname === "/") {
+    limit = 3
+  }
+  else {
+    limit = undefined
+  }
   const {
     showTransactionPopup,
     showDeletePopup,
@@ -191,7 +199,7 @@ const Home = () => {
         {renderTotalCreditAndDebit()}
         <div className="recent-card">
           {transactionIsLoading === apiStatus.res && (<h1 className="last-transc">Last Transaction</h1>)}
-          <Transactions />
+          <Transactions limit = {limit} />
         </div>
         {renderTransactionOverviewCharts()}
       </>

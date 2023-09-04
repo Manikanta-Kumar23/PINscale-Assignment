@@ -4,7 +4,7 @@ import { Redirect, Route } from "react-router-dom";
 interface RouteProps {
   exact?: boolean
   path: string
-  component: () => JSX.Element
+  component: (props?: any) => JSX.Element
 }
 
 const AuthenticateRoute = (props: RouteProps) => {

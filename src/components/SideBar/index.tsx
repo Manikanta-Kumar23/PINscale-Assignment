@@ -1,12 +1,13 @@
+import  { useContext } from "react";
 import { withRouter } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
 
 import useUserId from "../../hooks/useUserId";
 import SideBarContents from "../SideBarContents";
-import ResourceContext from "../../context/ResourceContext";
+import{ ResourceContext} from "../../context/ResourceContext";
+import { imagesUrl } from "../../constants";
 
 import "./index.css";
-import  { useContext } from "react";
 
 const sideBarContents = [
   {
@@ -40,7 +41,7 @@ const sideBarContents = [
 
 const SideBar = (props: any) => {
   const userId = useUserId()
-  const { userList, isLoading, imagesUrl  , onLogClick} = useContext(ResourceContext)
+  const { userList, isLoading, onLogClick} = useContext(ResourceContext)
 
   const toHome = () => {
     const { history } = props;
