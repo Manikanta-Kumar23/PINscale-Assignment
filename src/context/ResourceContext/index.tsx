@@ -1,22 +1,10 @@
-import React ,{ useState , useEffect , useRef } from "react";
+import React ,{ useState , useEffect } from "react";
 
-import { TransactionStore , TransactionData } from "../../store";
 import useUserId from "../../hooks/useUserId";
 import { apiStatus } from "../../constants";
 import { OptionsType } from "../../types";
 import useDataFetching from "../../hooks/useDataFetching";
 
-interface TransactionType {
-  transaction_name?: string
-  user_id?:string
-  amount: string
-  category: string
-  id: string
-  type: string
-  date: string
-  transactionName?: string
-  userId?: string
-}
 interface UserListType {
   name: string
   email: string
@@ -32,12 +20,10 @@ interface UserListType {
   presentAddress?: string | null
   present_address?: string | null
 }
-const transaction: any = class{}
 
 export const ResourceContext = React.createContext({
   userList: [] as UserListType[],
   isLoading: "",
-  transactionIsLoading: "",
   onClickTransaction: () => {},
   showTransactionPopup: false,
   onCancel: () => {},
@@ -52,7 +38,6 @@ export const ResourceContext = React.createContext({
   logoutPopup: false ,
   onLogClick: () => {} ,
   logoutPop: () => {},
-  transaction,
   changeTypeId: (a: string) => {} ,
   activeTypeId: "" as string
 });
@@ -65,7 +50,6 @@ const ResourceProvider = ({children}: any , props: any) => {
   const [deleteTransacId , setDeleteTransacId] = useState("")
   const [logoutPopup , setLogoutPopup] = useState(false)
   const [activeTypeId , setActiveTypeId] = useState("ALL TRANSACTIONS")
-  const transaction = useRef(new TransactionStore())
 
   const userId = useUserId()
 
@@ -82,35 +66,11 @@ const ResourceProvider = ({children}: any , props: any) => {
       apiOptions = {...apiOptions , headers: {...apiOptions.headers , "x-hasura-role": "admin"}}
     }
 
-    const {data: transactionDataList , isLoading: transactionIsLoading , fetchData: transactionDataApi} = useDataFetching()
     const {data: userDataList ,  isLoading , fetchData: userDataApi} = useDataFetching()
     useEffect(() => {
-      transactionDataApi(transactionsUrl , apiOptions)
       userDataApi(userUrl, apiOptions)
     } , [])
-    const apiCall = () => {
-      transactionDataApi(transactionsUrl , apiOptions)
-    }
-    let list
-    if (transactionIsLoading === apiStatus.res) {
-    list = transactionDataList.transactions.map((each: TransactionType) => {
-        return ({
-          transactionName: each.transaction_name , 
-          category: each.category ,
-          amount: each.amount ,
-          id: each.id,
-          date: each.date ,
-          type: each.type ,
-          userId: each.user_id
-        })
-      })
-      list = list.sort((a: any , b: any) => new Date(b.date) < new Date(a.date) ? -1 : 1)
-
-      const data = list.map((each: TransactionType) => new TransactionData(each))
-        transaction.current.createTransactionList(data)
-    }
-
-
+   
     let userList: UserListType[] = []
     if (isLoading === apiStatus.res) {
       userList = userDataList.users.map((each: UserListType) => {
@@ -142,6 +102,8 @@ const onCancel = () => {
   setShowDeletePopup(false)
   setLogoutPopup(false)
 };
+const apiCall = () => {
+}
 const onLogClick = () => {
   setLogoutPopup(true)
 }
@@ -175,9 +137,7 @@ const changeTypeId = (id: string) => {
                                               onShow ,
                                               onClickEdit ,
                                               changeTypeId ,
-                                            transaction ,
                                           apiCall ,
-                                          transactionIsLoading  ,
                                           userList ,
                                           isLoading }}>{children}</ResourceContext.Provider>)
 }

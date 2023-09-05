@@ -4,7 +4,7 @@ import useDataFetching from "../../hooks/useDataFetching";
 import {ResourceContext} from "../../context/ResourceContext";
 import FailureView from "../FailureView";
 import TransactionOverviewChart from "../TransactionOverviewChart";
-import Transactions from "../Transactions";
+import TransactionsList from "../TransactionsList";
 import "./index.css";
 import  { useContext, useEffect } from "react";
 
@@ -35,7 +35,7 @@ const Home = (props: any) => {
   const {
     showTransactionPopup,
     showDeletePopup,
-    showUpdatePopup, logoutPopup , transactionIsLoading
+    showUpdatePopup, logoutPopup
   } = useContext(ResourceContext)
 
 
@@ -198,8 +198,8 @@ const Home = (props: any) => {
       <>
         {renderTotalCreditAndDebit()}
         <div className="recent-card">
-          {transactionIsLoading === apiStatus.res && (<h1 className="last-transc">Last Transaction</h1>)}
-          <Transactions limit = {limit} />
+          {isLoading === apiStatus.res && (<h1 className="last-transc">Last Transaction</h1>)}
+          <TransactionsList limit = {limit} />
         </div>
         {renderTransactionOverviewCharts()}
       </>

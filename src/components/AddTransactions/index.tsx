@@ -1,11 +1,12 @@
-import  {useContext, useState } from "react";
+import  {useContext, useRef, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { format, parse} from "date-fns";
-import { useObserver } from "mobx-react";
+import { observer } from "mobx-react";
 
 import {ResourceContext} from "../../context/ResourceContext";
+import { StoreContext } from "../../context/StoreContext";
 import useUserId from "../../hooks/useUserId";
-import {  TransactionData } from "../../store";
+import {  TransactionModel } from "../../store";
 
 import "./index.css";
 
@@ -17,6 +18,16 @@ const transactionCategoryTypes = [
   { name: "Gaming", value: "gaming" },
   { name: "Others", value: "others" },
 ];
+interface TransactionTypes {
+  transaction_name: string
+  user_id:string
+  amount: string
+  category: string
+  id: string
+  type: string
+  date?: string
+  userId?: string
+}
 
 const AddTransactions = () => {
   const [nameErr , setNameErr] = useState(false)
@@ -33,9 +44,9 @@ const AddTransactions = () => {
   const userId = useUserId()
   const {
     showTransactionPopup,
-    onCancel,
-    transaction , apiCall
+    onCancel,  apiCall
   } = useContext(ResourceContext)
+  const {transaction} = useContext(StoreContext)
 
   const onBlurName = (event: React.FocusEvent<HTMLInputElement>) => {
     if (event.target.value === "") {
@@ -85,25 +96,30 @@ const AddTransactions = () => {
         setDateErrMssg("*Required")
     } else {
         setDateErr(false)
-        console.log(transaction.current.transactionDate)
     }
   };
+  const transactionName = ""
+  const type = ""
+  const category = ""
+  const amount = ""
+  const date = ""
+  const addTransactionModel = useRef(new TransactionModel(transactionName , type , category , amount , date , ))
       const onAddTransaction = async (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
-              if (transaction.current.transactionName !== "" &&
-                transaction.current.transactionType !== "" &&
-                transaction.current.transactionCategory !== "" &&
-                transaction.current.transactionAmount!== "" &&
-                transaction.current.transactionDate !== "") {
+              if (addTransactionModel.current.transactionName !== "" &&
+              addTransactionModel.current.type !== "" &&
+              addTransactionModel.current.category !== "" &&
+              addTransactionModel.current.amount!== "" &&
+              addTransactionModel.current.date !== "") {
                   let formatDate
-                  if (transaction.current.transactionDate !== "") {
-                    const parsedDate = parse(transaction.current.transactionDate , "yyyy-MM-dd", new Date());
+                  if (addTransactionModel.current.date !== "") {
+                    const parsedDate = parse(addTransactionModel.current.date , "yyyy-MM-dd", new Date());
                     formatDate = format(parsedDate, "yyyy-MM-dd'T'HH:mm:ssxxx");
                   }
-                  const updateData = {name: transaction.current.transactionName,
-                    type: transaction.current.transactionType,
-                    category: transaction.current.transactionCategory,
-                    amount: transaction.current.transactionAmount,
+                  const updateData = {name: addTransactionModel.current.transactionName,
+                    type: addTransactionModel.current.type,
+                    category: addTransactionModel.current.category,
+                    amount:addTransactionModel.current.amount,
                     date: formatDate , user_id: userId}
                   const url = "https://bursting-gelding-24.hasura.app/api/rest/add-transaction"
                   const options =  {
@@ -120,8 +136,10 @@ const AddTransactions = () => {
                   const res = await fetch(url, options);
                   const data = await res.json();
                   if (res.ok) {
-                    const updatedData = new TransactionData(data.insert_transactions_one)
-                    transaction.current.addTransactionList(updatedData)
+                    const updatedData = (data.insert_transactions_one)
+                    const addData = {transactionName: updatedData.transaction_name , type: updatedData.type , amount: updatedData.amount , category: updatedData.category , date: updatedData.date , id: updatedData.id}
+                    const list = new TransactionModel(addData.transactionName , addData.type , addData.category , addData.amount, addData.date  , addData.id)
+                    transaction.current.addTransactionList(list)
                     setTransactionSuccessMssg(true)
                     apiCall()
                   }
@@ -132,10 +150,14 @@ const AddTransactions = () => {
           };
           const close = () => {
             onCancel();
+            addTransactionModel.current.transactionName = ""
+            addTransactionModel.current.type = ""
+            addTransactionModel.current.category = ""
+            addTransactionModel.current.amount = ""
+            addTransactionModel.current.date = ""
             setTransactionSuccessMssg(false)
           };
           return (
-            useObserver(() => (
               showTransactionPopup && (
                 <div className="add-transactions">
                   <form onSubmit={onAddTransaction} className="add-form-crd">
@@ -166,8 +188,8 @@ const AddTransactions = () => {
                             <input
                               className="add-transc-name"
                               onBlur={onBlurName}
-                              onChange={(e) => transaction.current.nameChange(e.target.value)}
-                              value={transaction.current.transactionName}
+                              onChange={(e) => addTransactionModel.current.setName(e.target.value)}
+                              value={addTransactionModel.current.transactionName}
                               type="text"
                               id="transc-name"
                               placeholder="Enter Name"
@@ -182,8 +204,8 @@ const AddTransactions = () => {
                             </label>
                             <select
                               onBlur={onBlurType}
-                              value={transaction.current.transactionType}
-                              onChange={(event)=> transaction.current.typeChange(event.target.value)}
+                              value={addTransactionModel.current.type}
+                              onChange={(event)=> addTransactionModel.current.setType(event.target.value)}
                               className="add-transc-name"
                               id="transc-type"
                             >
@@ -202,9 +224,9 @@ const AddTransactions = () => {
                               Transaction Category
                             </label>
                             <select
-                              onChange={(event)=> transaction.current.catChange(event.target.value)}
+                              onChange={(event)=> addTransactionModel.current.setCategory(event.target.value)}
                               onBlur={onBlurCat}
-                              value={transaction.current.transactionCategory}
+                              value={addTransactionModel.current.category}
                               className="add-transc-name"
                               id="transc-type"
                             >
@@ -222,8 +244,8 @@ const AddTransactions = () => {
                             </label>
                             <input
                               onBlur={onBlurAmount}
-                              onChange={(event)=> transaction.current.amntChange(event.target.value)}
-                              value={transaction.current.transactionAmount}
+                              onChange={(event)=> addTransactionModel.current.setAmount(event.target.value)}
+                              value={addTransactionModel.current.amount}
                               className="add-transc-name"
                               type="number"
                               id="transc-amount"
@@ -239,8 +261,8 @@ const AddTransactions = () => {
                             </label>
                             <input
                               onBlur={onBlurDate}
-                              onChange={(event)=> transaction.current.dateChange(event.target.value)}
-                              value={transaction.current.transactionDate}
+                              onChange={(event)=> addTransactionModel.current.setDate(event.target.value)}
+                              value={addTransactionModel.current.date}
                               className="add-transc-name"
                               type="date"
                               id="transc-date"
@@ -265,8 +287,7 @@ const AddTransactions = () => {
                   </form>
                 </div>
               )
-            ))
-          );
+            )
 }
 
-export default AddTransactions;
+export default observer(AddTransactions);

@@ -1,25 +1,19 @@
 import { useContext, useEffect } from "react";
-import { parseISO, format } from "date-fns";
 import ThreeDots  from  'react-loader-spinner'
-import { HiOutlinePencil } from "react-icons/hi";
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { BiUpArrowCircle } from "react-icons/bi";
-import { BsArrowDownCircle } from "react-icons/bs";
 import {  Observer } from "mobx-react-lite" 
 
-import {ResourceContext }from "../../context/ResourceContext";
+import { StoreContext } from "../../context/StoreContext";
 import FailureView from "../FailureView";
 import useUserId from "../../hooks/useUserId";
-import { apiStatus ,imagesUrl  } from "../../constants";
+import { apiStatus } from "../../constants";
+import { TransactionModel } from "../../store";
+import { OptionsType } from "../../types";
+import TransactionsList from "../TransactionsList";
 
 import "./index.css";
+import useDataFetching from "../../hooks/useDataFetching";
 
-
-interface TransactionTabType {
-  name: string
-  id: string
-}
-interface TransactionTypes {
+interface TransactionModels {
   transaction_name?: string
   user_id?:string
   amount: string
@@ -30,192 +24,59 @@ interface TransactionTypes {
   transactionName?: string
   userId?: string
 }
-interface DataType {
-  fetchedTransactionData: TransactionTypes
+interface TransactionModelType {
+  amount: string
+  category: string
+  id: string
+  type: string
+  date: string
+  transactionName: string
+  userId?: string
 }
 
-interface UserListType {
-  name: string
-  id: string | number
-}
-
-const transactionTypes: TransactionTabType[] = [
-  { name: "All Transactions", id: "ALL TRANSACTIONS" },
-  { name: "Debit", id: "debit" },
-  { name: "Credit", id: "credit" },
-];
-
-const Transactions = (props: any) => {
+const Transactions = () => {
   const userId = useUserId()
-  const {
-    transaction,
-    transactionIsLoading,
-    showTransactionPopup,
-    onClickEdit,
-    userList,
-    showUpdatePopup,
- apiCall , onClickDelete , showDeletePopup , logoutPopup ,activeTypeId
-  } = useContext(ResourceContext)
-
-  const changePopup = (event:any) => {
-    onClickDelete(event.target.value)
-  };
+  const {transaction} = useContext(StoreContext)
+  const transactionsUrl =`https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=100&offset=0`
+  let apiOptions: OptionsType = {method: "GET" , headers: {"content-type": "application/json",
+  "x-hasura-admin-secret":
+    "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",}}
+    if ((userId) !== "3") {
+      apiOptions = {...apiOptions , headers: {...apiOptions.headers , "x-hasura-role": "user",
+      "x-hasura-user-id": `${userId}`,}}
+    }
+    else {
+      apiOptions = {...apiOptions , headers: {...apiOptions.headers , "x-hasura-role": "admin"}}
+    }
+    const {data: transactionDataModel, isLoading: transactionIsLoading , fetchData: transactionDataApi} = useDataFetching()
 
   useEffect(() => {
-    apiCall()
+    transactionDataApi(transactionsUrl , apiOptions)
   } , [])
+  let transactionModel
+  if (transactionIsLoading === apiStatus.res) {
+  transactionModel = transactionDataModel.transactions.map((each: TransactionModels) => {
+      return ({
+        transactionName: each.transaction_name , 
+        category: each.category ,
+        amount: each.amount ,
+        id: each.id,
+        date: each.date ,
+        type: each.type ,
+        userId: each.user_id
+      })
+    })
+    transactionModel = transactionModel.sort((a: any , b: any) => new Date(b.date) < new Date(a.date) ? -1 : 1)
+
+    const data = transactionModel .map((each: TransactionModelType) => new TransactionModel(each.transactionName , each.type , each.category , each.amount  , each.date , each.id , each.userId))
+      transaction.current.createTransactionList(data)
+  }
 
   const renderTransactiondata = () => {
-    let filterList;
           switch (transactionIsLoading) {
             case apiStatus.res:
-              if (activeTypeId !== transactionTypes[0].id) {
-                filterList = transaction.current.transactionList.filter(
-                  (each: DataType) =>  each.fetchedTransactionData.type.toLowerCase() === activeTypeId);
-              }
-              const formatedTransactionList =
-                activeTypeId === transactionTypes[0].id
-                  ? transaction.current.transactionList
-                  : filterList
-                  const finalList = props.limit !== undefined ? transaction.current.transactionList.slice(0 , 3) : formatedTransactionList
-
-              const onEdit =  (event: any) => {
-                const updateList = transaction.current.transactionList.filter((each: DataType) => parseInt(each.fetchedTransactionData.id) === parseInt(event.target.value))
-                  if (updateList[0] !== undefined) {
-                    const list = updateList[0].fetchedTransactionData
-                    const updatedList = {...list}
-                    transaction.current.changeUpdateList(updatedList)
-                    onClickEdit();
-                  }
-    }
-              let allUsersList: UserListType[];
-              if ((userId) === "3") {
-                allUsersList = userList.map((each) => ({
-                  name: each.name,
-                  id: each.id,
-                }));
-              }
               return (
-                <div className="table-card">
-                  <table className="table">
-                    <thead className="head">
-                      <tr className="head-card">
-                        {((userId) === "3")  && <th>User Name</th>}
-                        <th>Transaction Name</th>
-                        <th>Category</th>
-                        <th>Date</th>
-                        <th>Amount</th>
-                      </tr>
-                    </thead>
-                    {!showTransactionPopup && !showUpdatePopup &&  !showDeletePopup && !logoutPopup &&(
-                      <tbody className="body">
-                        {finalList.map((each: DataType) => (
-                          <tr key={each.fetchedTransactionData.id}>
-                            {((userId) === "3")  && (
-                              <td>
-                                <div className="usr-icn-crd">
-                                  {((userId) === "3") ? (
-                                    each.fetchedTransactionData.type.toLowerCase() === "credit" ? (
-                                      <BiUpArrowCircle
-                                        color="#16DBAA"
-                                        size="23"
-                                      />
-                                    ) : (
-                                      <BsArrowDownCircle
-                                        color="#FE5C73"
-                                        size="19"
-                                      />
-                                    )
-                                  ) : null}
-                                  <img
-                                    className="usr-icn"
-                                    alt="user-icon"
-                                    src={
-                                      imagesUrl.find(
-                                        (user) =>
-                                          (user.id) === (each.fetchedTransactionData.userId)
-                                      )?.url
-                                    }
-                                  />
-                                  {allUsersList.find(
-                                    (user) => user.id === each.fetchedTransactionData.userId
-                                  )?.name || "N/A"}
-                                </div>
-                              </td>
-                            )}
-                            <td>
-                              <div className="align">
-                                {((userId) !== "3")  ? (
-                                  each.fetchedTransactionData.type.toLowerCase() === "credit" ? (
-                                    <BiUpArrowCircle
-                                      color="#16DBAA"
-                                      size="23"
-                                    />
-                                  ) : (
-                                    <BsArrowDownCircle
-                                      color="#FE5C73"
-                                      size="19"
-                                    />
-                                  )
-                                ) : null}
-                                <p className="margin">{each.fetchedTransactionData.transactionName}</p>
-                              </div>
-                            </td>
-                            <td>{each.fetchedTransactionData.category}</td>
-                            <td>
-                              {format(parseISO(each.fetchedTransactionData.date), "d MMM, h:mm aa")}
-                            </td>
-                            <td
-                              style={{
-                                color: `${
-                                  each.fetchedTransactionData.type.toLowerCase() === "credit"
-                                    ? "#16DBAA"
-                                    : "#fe5c73"
-                                }`,
-                              }}
-                            >
-                              {`${
-                                each.fetchedTransactionData.type.toLowerCase() === "credit"
-                                  ? `+$${each.fetchedTransactionData.amount}`
-                                  : `-$${each.fetchedTransactionData.amount}`
-                              }`}
-                            </td>
-                            {(userId) !== "3" && (
-                              <>
-                                <td>
-                                  <button
-                                    onClick={onEdit}
-                                    value={each.fetchedTransactionData.id}
-                                    className="edit-btn"
-                                    type="button"
-                                  >
-                                    <HiOutlinePencil
-                                      color="#2D60FF"
-                                      size="15"
-                                    />
-                                  </button>
-                                </td>
-                                <td>
-                                <button
-                                        onClick={changePopup}
-                                        className="edit-btn"
-                                        value = {each.fetchedTransactionData.id}
-                                        type="button"
-                                      >
-                                        <RiDeleteBin6Line
-                                          color="#FE5C73"
-                                          size="15 "
-                                        />
-                                      </button>
-                                </td>
-                              </>
-                            )}
-                          </tr>
-                        ))}
-                      </tbody>
-                    )}
-                  </table>
-                </div>
+                <TransactionsList />
               );
             case apiStatus.inProgress:
               return (

@@ -14,11 +14,12 @@ import NotFound from "./components/NotFound";
 import Navbar from "./components/Navbar";
 import SideBar from "./components/SideBar";
 import ResourceProvider from "./context/ResourceContext";
+import StoreProvider from "./context/StoreContext";
 
-const  App = (props: any) => {
-  const {location} = props
+const  App = () => {
     return (
-      <ResourceProvider location = {location}>
+      <ResourceProvider>
+        <StoreProvider>
         {<>
           <UpdateTransactions />
         <AddTransactions />
@@ -39,6 +40,7 @@ const  App = (props: any) => {
           <Route component={NotFound} />
         </Switch>
         </>}
+        </StoreProvider>
       </ResourceProvider>
     );
   }

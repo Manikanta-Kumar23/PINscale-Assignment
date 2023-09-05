@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 import { withRouter } from "react-router-dom";
 
 import {ResourceContext} from "../../context/ResourceContext";
+import { StoreContext } from "../../context/StoreContext";
 import useUserId from "../../hooks/useUserId";
 
 import "./index.css"
@@ -26,10 +27,11 @@ interface TransactionType {
   }
 
 const DeleteTransaction = (props: any) => {
-    const {showDeletePopup , onCancel , deleteTransacId ,  logoutPopup , logoutPop , transaction , apiCall} = useContext(ResourceContext)
+    const {showDeletePopup , onCancel , deleteTransacId ,  logoutPopup , logoutPop , apiCall} = useContext(ResourceContext)
     const [deleteMssg , setDeleteMssg] = useState(false)
     const [errMssg , setErrMssg] = useState(false)
     const userId = useUserId()
+    const {transaction} = useContext(StoreContext)
     const onClose = () => {
         setErrMssg(false)
         onCancel()
@@ -55,6 +57,7 @@ const DeleteTransaction = (props: any) => {
             const trnsacId = data.delete_transactions_by_pk.id;
             const updateList = transaction.current.transactionList.filter((each: DataType) => each.fetchedTransactionData.id !== trnsacId);
             transaction.current.deleteTransactionList(updateList)
+            apiCall()
             setDeleteMssg(true)
           }
           else {

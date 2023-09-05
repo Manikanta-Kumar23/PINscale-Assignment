@@ -1,12 +1,13 @@
-import React , { useContext, useState } from "react";
+import React , { useContext, useRef, useState } from "react";
 import { format, parseISO , parse } from "date-fns";
 import { RxCross2 } from "react-icons/rx";
 import {  observer } from "mobx-react";
 
 import {ResourceContext} from "../../context/ResourceContext";
+import { StoreContext } from "../../context/StoreContext";
 import useUserId from "../../hooks/useUserId";
 import "./index.css";
-import { TransactionData } from "../../store";
+import { TransactionModel } from "../../store";
 
 const transactionCategoryTypes = [
   { name: "Select", value: "null" },
@@ -32,9 +33,11 @@ const UpdateTransactions = () => {
   const userId = useUserId()
   const {
     showUpdatePopup,
-    onCancel, apiCall , transaction
+    onCancel, apiCall
   } = useContext(ResourceContext)
+  const {transaction} = useContext(StoreContext)
   const [updateSuccessMssg , setUpdateSuccessMssg] = useState(false)
+  console.log(transaction.current.updateList)
 
   const onBlurName = (event: React.FocusEvent<HTMLInputElement>) => {
     if (event.target.value === "") {
@@ -86,7 +89,12 @@ const UpdateTransactions = () => {
         setDateErr(false)
     }
   };
-          const onUpdateTransaction = async (event: React.FormEvent<HTMLFormElement>) => {
+  function updateTransactionFunction()  {
+    return new TransactionModel(transaction.current.updateList.transactionName ,transaction.current.updateList.type , transaction.current.updateList.category ,transaction.current.updateList.amount ,transaction.current.updateList.date , transaction.current.updateList.id , transaction.current.updateList.userId)
+  }
+  const [updateTransactionModel ] = useState(updateTransactionFunction)
+  console.log(updateTransactionModel)
+  const onUpdateTransaction = async (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
             let formatDate = transaction.current.updateList.date
             if (transaction.current.updateList.date.slice(0 , 10) !== format(parseISO(transaction.current.updateList.date) ,"yyyy-MM-dd'T'HH:mm:ssxxx").slice(0 , 10)) {
@@ -109,7 +117,7 @@ const UpdateTransactions = () => {
             };
             const res = await fetch(url, options);
             const updateDdata = await res.json()
-            const list = new TransactionData(updateDdata)
+            const list = new TransactionModel(updateDdata.transactionName ,updateDdata.type , updateDdata.category , updateDdata.amount  , updateDdata.date , updateDdata.id , updateDdata.userId)
             const fetchedTransactionData = {...list}
             transaction.current.updateTransactionList(fetchedTransactionData)
             setUpdateSuccessMssg(true)
@@ -155,8 +163,8 @@ const UpdateTransactions = () => {
                             <input
                               className="add-transc-name"
                               onBlur={onBlurName}
-                              onChange={(event) => transaction.current.updateName(event.target.value)}
-                              value={transaction.current.updateList.transactionName}
+                              onChange={(event) => updateTransactionModel.setName(event.target.value)}
+                              value={updateTransactionModel.transactionName}
                               type="text"
                               id="transc-name"
                               placeholder="Enter Name"
@@ -171,8 +179,8 @@ const UpdateTransactions = () => {
                             </label>
                             <select
                               onBlur={onBlurType}
-                              value={transaction.current.updateList.type}
-                              onChange={(event)=> transaction.current.updateType(event.target.value)}
+                              value={updateTransactionModel.type}
+                              onChange={(event)=> updateTransactionModel.setType(event.target.value)}
                               className="add-transc-name"
                               id="transc-type"
                             >
@@ -191,9 +199,9 @@ const UpdateTransactions = () => {
                               Transaction Category
                             </label>
                             <select
-                              onChange={(event)=> transaction.current.updateCat(event.target.value)}
+                              onChange={(event)=> updateTransactionModel.setCategory(event.target.value)}
                               onBlur={onBlurCat}
-                              value={transaction.current.updateList.category}
+                              value={updateTransactionModel.category}
                               className="add-transc-name"
                               id="transc-type"
                             >
@@ -211,7 +219,7 @@ const UpdateTransactions = () => {
                             </label>
                             <input
                               onBlur={onBlurAmount}
-                              onChange={(event)=> transaction.current.updateAmnt(event.target.value)}
+                              onChange={(event)=> transaction.current.setAmount(event.target.value)}
                               value={transaction.current.updateList.amount}
                               className="add-transc-name"
                               type="number"
@@ -228,8 +236,7 @@ const UpdateTransactions = () => {
                             </label>
                             <input
                               onBlur={onBlurDate}
-                              onChange={(event)=> transaction.current.updateDate(event.target.value)}
-                              value={format(parseISO(transaction.current.updateList.date) , "yyyy-MM-dd") }
+                              onChange={(event)=> transaction.current.setDate(event.target.value)}
                               className="add-transc-name"
                               type="date"
                               id="transc-date"

@@ -1,6 +1,6 @@
 import { makeAutoObservable, observable , action ,  makeObservable} from "mobx";
 
-interface TransactionType {
+interface TransactionModelType {
     transaction_name?: string
     user_id?:string
     amount: string
@@ -11,21 +11,59 @@ interface TransactionType {
     transactionName?: string
     userId?: string
   }
-  export class TransactionData {
+  export class TransactionModel {
+    type = ""
+    category = ""
+    amount = ""
+    id? = ""
+    transactionName = ""
+    userId? = ""
+    date = ""
     fetchedTransactionData = {}
-    constructor(data: TransactionType) {
-        this.fetchedTransactionData = {...data}
+    constructor(transactionName: string  , type: string, category: string  , amount: string ,date: string , id?: string , userId?: string) {
+      this.transactionName = transactionName 
+      this.amount = amount
+      this.type = type
+      this.category = category
+      this.date = date
+      this.userId = userId
+      this.id = id
         makeObservable(this , {
-            fetchedTransactionData: observable
+            fetchedTransactionData: observable ,
+            transactionName: observable , 
+            type: observable ,
+            category: observable ,
+            amount: observable ,
+            date: observable , 
+            userId: observable , 
+            id: observable,
+            setName: action.bound,
+            setType: action , 
+            setCategory: action , 
+            setDate: action ,
+            setAmount: action,
         })
+        this.fetchedTransactionData = {transactionName , type , category , amount , date, id , userId}
     }
-    getFetchedData() {
-        console.log(this.fetchedTransactionData)
+    setName(value: string) {
+      this.transactionName = value
+    }
+    setType(value: string) {
+      this.type = value
+    }
+    setCategory(value: string) {
+      this.category = value
+    }
+    setAmount(value: string) {
+      this.amount = value
+    }
+    setDate(value:string) {
+      this.date = value
     }
   }
 
 export class TransactionStore {
-    transactionList: TransactionType[] = []
+    transactionList: TransactionModelType[] = []
     transactionName = ""
     transactionCategory = ""
     transactionType = ""
@@ -45,59 +83,24 @@ export class TransactionStore {
         transactionAmount: observable,
         transactionDate: observable,
         transactionType: observable,
-        nameChange: action,
-        typeChange: action , 
-        catChange: action , 
-        dateChange: action ,
-        amntChange: action,
         updateList: observable,
         changeUpdateList: action,
       })
     }
-    createTransactionList (data: TransactionType[]) {
+    createTransactionList (data: TransactionModelType[]) {
       return this.transactionList = [...data]
     }
-    addTransactionList (data: TransactionType) {
+    addTransactionList (data: TransactionModelType) {
       return this.transactionList.push(data)
     }
-    updateTransactionList (data: TransactionType) {
+    updateTransactionList (data: TransactionModelType) {
       const index = this.transactionList.findIndex((each) => each.id === data.id)
       return this.transactionList[index] = data
     }
-    deleteTransactionList (data: TransactionType[]) {
+    deleteTransactionList (data: TransactionModelType[]) {
       return this.transactionList = [...data]
     }
-    nameChange(value: any) {
-      this.transactionName = value
-    }
-    typeChange(value: any) {
-      this.transactionType = value
-    }
-    catChange(value: any) {
-      this.transactionCategory = value
-    }
-    amntChange(value: any) {
-      this.transactionAmount = value
-    }
-    dateChange(value: any) {
-      this.transactionDate = value
-    }
-    changeUpdateList(data: TransactionType) {
+    changeUpdateList(data: TransactionModel) {
         this.updateList = {...data}
-    }
-    updateName(value: string) {
-      this.updateList.transactionName = value
-    }
-    updateType(value: string) {
-      this.updateList.type = value
-    }
-    updateAmnt(value: string) {
-      this.updateList.amount = value
-    }
-    updateCat(value: string) {
-      this.updateList.category = value
-    }
-    updateDate(value: any) {
-      this.updateList.date = value
     }
   }
