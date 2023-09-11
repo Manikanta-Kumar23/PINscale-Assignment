@@ -4,6 +4,8 @@ import useUserId from "../../hooks/useUserId";
 import { apiStatus } from "../../constants";
 import { OptionsType } from "../../types";
 import useDataFetching from "../../hooks/useDataFetching";
+import { TransactionModel } from "../../store";
+import { useStoreProvider } from "../StoreContext";
 
 interface UserListType {
   name: string
@@ -20,8 +22,32 @@ interface UserListType {
   presentAddress?: string | null
   present_address?: string | null
 }
+interface TransactionModels {
+  transaction_name?: string
+  user_id?:string
+  amount: string
+  category: string
+  id: string
+  type: string
+  date: string
+  transactionName?: string
+  userId?: string
+}
+interface TransactionModelType {
+  amount: string
+  category: string
+  id: string
+  type: string
+  date: string
+  transactionName: string
+  userId?: string
+}
+interface DataType  {
+  fetchedTransactionData: TransactionModelType
+}
 
 export const ResourceContext = React.createContext({
+  transactionIsLoading: "",
   userList: [] as UserListType[],
   isLoading: "",
   onClickTransaction: () => {},
@@ -42,7 +68,7 @@ export const ResourceContext = React.createContext({
   activeTypeId: "" as string
 });
 
-const ResourceProvider = ({children}: any , props: any) => {
+const ResourceProvider = ({children}: any) => {
   const [showTransactionPopup , setShowTransactionPopup] = useState(false)
   const [showUpdatePopup , setShowUpdatePopup] = useState(false)
   const [showSidebar , setShowSidebar] = useState(false)
@@ -52,6 +78,7 @@ const ResourceProvider = ({children}: any , props: any) => {
   const [activeTypeId , setActiveTypeId] = useState("ALL TRANSACTIONS")
 
   const userId = useUserId()
+  const transaction = useStoreProvider()
 
   const userUrl = "https://bursting-gelding-24.hasura.app/api/rest/profile"
   const transactionsUrl =`https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=100&offset=0`
@@ -65,11 +92,42 @@ const ResourceProvider = ({children}: any , props: any) => {
     else {
       apiOptions = {...apiOptions , headers: {...apiOptions.headers , "x-hasura-role": "admin"}}
     }
-
+    const {data: transactionDataModel, isLoading: transactionIsLoading , fetchData: transactionDataApi} = useDataFetching()
     const {data: userDataList ,  isLoading , fetchData: userDataApi} = useDataFetching()
+
     useEffect(() => {
+      transactionDataApi(transactionsUrl , apiOptions)
       userDataApi(userUrl, apiOptions)
     } , [])
+    let transactionModel
+  if (transactionIsLoading === apiStatus.res) {
+  transactionModel = transactionDataModel.transactions.map((each: TransactionModels) => {
+      return ({
+        transactionName: each.transaction_name , 
+        category: each.category ,
+        amount: each.amount ,
+        id: each.id,
+        date: each.date ,
+        type: each.type ,
+        userId: each.user_id
+      })
+    })
+    transactionModel = transactionModel.sort((a: any , b: any) => new Date(b.date) < new Date(a.date) ? -1 : 1)
+
+    const data = transactionModel.map((each: TransactionModelType) => new TransactionModel(each.transactionName , each.type , each.category , each.amount  , each.date , each.id , each.userId))
+    const fetchedData = data.map((each: DataType) => {
+      return ({
+        transactionName: each.fetchedTransactionData.transactionName ,
+        type: each.fetchedTransactionData.type ,
+        amount: each.fetchedTransactionData.amount ,
+        date: each.fetchedTransactionData.date , 
+        id: each.fetchedTransactionData.id , 
+        userId: each.fetchedTransactionData.userId ,
+        category: each.fetchedTransactionData.category
+      })
+    })
+    transaction.createTransactionList(fetchedData)
+  }
    
     let userList: UserListType[] = []
     if (isLoading === apiStatus.res) {
@@ -103,6 +161,7 @@ const onCancel = () => {
   setLogoutPopup(false)
 };
 const apiCall = () => {
+  transactionDataApi(transactionsUrl , apiOptions)
 }
 const onLogClick = () => {
   setLogoutPopup(true)
@@ -139,7 +198,8 @@ const changeTypeId = (id: string) => {
                                               changeTypeId ,
                                           apiCall ,
                                           userList ,
-                                          isLoading }}>{children}</ResourceContext.Provider>)
+                                          isLoading ,
+                                          transactionIsLoading }}>{children}</ResourceContext.Provider>)
 }
 
 export default (ResourceProvider);

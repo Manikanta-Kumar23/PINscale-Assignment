@@ -35,7 +35,7 @@ const Home = (props: any) => {
   const {
     showTransactionPopup,
     showDeletePopup,
-    showUpdatePopup, logoutPopup
+    showUpdatePopup, logoutPopup , apiCall
   } = useContext(ResourceContext)
 
 
@@ -62,6 +62,7 @@ const Home = (props: any) => {
     useEffect(() => {
       homeCreditData(apiUrl.creditUrl , apiOptions)
       overviewData(apiUrl.overviewUrl , apiOptions)
+      apiCall()
     } , [])
     if (isLoading === apiStatus.res && (userId) !== "3") {
       creditData = creditedData.totals_credit_debit_transactions

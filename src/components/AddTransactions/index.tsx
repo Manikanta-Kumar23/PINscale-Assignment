@@ -4,7 +4,7 @@ import { format, parse} from "date-fns";
 import { observer } from "mobx-react";
 
 import {ResourceContext} from "../../context/ResourceContext";
-import { StoreContext } from "../../context/StoreContext";
+import { useStoreProvider } from "../../context/StoreContext";
 import useUserId from "../../hooks/useUserId";
 import {  TransactionModel } from "../../store";
 
@@ -18,16 +18,6 @@ const transactionCategoryTypes = [
   { name: "Gaming", value: "gaming" },
   { name: "Others", value: "others" },
 ];
-interface TransactionTypes {
-  transaction_name: string
-  user_id:string
-  amount: string
-  category: string
-  id: string
-  type: string
-  date?: string
-  userId?: string
-}
 
 const AddTransactions = () => {
   const [nameErr , setNameErr] = useState(false)
@@ -46,7 +36,7 @@ const AddTransactions = () => {
     showTransactionPopup,
     onCancel,  apiCall
   } = useContext(ResourceContext)
-  const {transaction} = useContext(StoreContext)
+  const transaction = useStoreProvider()
 
   const onBlurName = (event: React.FocusEvent<HTMLInputElement>) => {
     if (event.target.value === "") {
@@ -103,7 +93,8 @@ const AddTransactions = () => {
   const category = ""
   const amount = ""
   const date = ""
-  const addTransactionModel = useRef(new TransactionModel(transactionName , type , category , amount , date , ))
+  const id = ""
+  const addTransactionModel = useRef(new TransactionModel(transactionName , type , category , amount , date , id ))
       const onAddTransaction = async (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
               if (addTransactionModel.current.transactionName !== "" &&
@@ -139,7 +130,7 @@ const AddTransactions = () => {
                     const updatedData = (data.insert_transactions_one)
                     const addData = {transactionName: updatedData.transaction_name , type: updatedData.type , amount: updatedData.amount , category: updatedData.category , date: updatedData.date , id: updatedData.id}
                     const list = new TransactionModel(addData.transactionName , addData.type , addData.category , addData.amount, addData.date  , addData.id)
-                    transaction.current.addTransactionList(list)
+                    transaction.addTransactionList(addData)
                     setTransactionSuccessMssg(true)
                     apiCall()
                   }

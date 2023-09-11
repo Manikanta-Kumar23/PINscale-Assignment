@@ -1,4 +1,4 @@
-import { makeAutoObservable, observable , action ,  makeObservable} from "mobx";
+import { makeAutoObservable, observable , action} from "mobx";
 
 interface TransactionModelType {
     transaction_name?: string
@@ -15,12 +15,12 @@ interface TransactionModelType {
     type = ""
     category = ""
     amount = ""
-    id? = ""
+    id = ""
     transactionName = ""
     userId? = ""
     date = ""
     fetchedTransactionData = {}
-    constructor(transactionName: string  , type: string, category: string  , amount: string ,date: string , id?: string , userId?: string) {
+    constructor(transactionName: string  , type: string, category: string  , amount: string ,date: string , id: string , userId?: string) {
       this.transactionName = transactionName 
       this.amount = amount
       this.type = type
@@ -28,7 +28,7 @@ interface TransactionModelType {
       this.date = date
       this.userId = userId
       this.id = id
-        makeObservable(this , {
+        makeAutoObservable(this , {
             fetchedTransactionData: observable ,
             transactionName: observable , 
             type: observable ,
@@ -37,7 +37,7 @@ interface TransactionModelType {
             date: observable , 
             userId: observable , 
             id: observable,
-            setName: action.bound,
+            setName: action,
             setType: action , 
             setCategory: action , 
             setDate: action ,
@@ -63,12 +63,7 @@ interface TransactionModelType {
   }
 
 export class TransactionStore {
-    transactionList: TransactionModelType[] = []
-    transactionName = ""
-    transactionCategory = ""
-    transactionType = ""
-    transactionAmount = ""
-    transactionDate = ""
+    transactionList: TransactionModelType[]  = []
     updateList: any = {}
     
     constructor() {
@@ -78,11 +73,6 @@ export class TransactionStore {
         updateTransactionList: action,
         deleteTransactionList: action,
         addTransactionList: action,
-        transactionName: observable,
-        transactionCategory: observable ,
-        transactionAmount: observable,
-        transactionDate: observable,
-        transactionType: observable,
         updateList: observable,
         changeUpdateList: action,
       })
@@ -100,7 +90,7 @@ export class TransactionStore {
     deleteTransactionList (data: TransactionModelType[]) {
       return this.transactionList = [...data]
     }
-    changeUpdateList(data: TransactionModel) {
+    changeUpdateList(data: TransactionModelType) {
         this.updateList = {...data}
     }
   }

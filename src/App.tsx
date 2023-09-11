@@ -18,8 +18,8 @@ import StoreProvider from "./context/StoreContext";
 
 const  App = () => {
     return (
-      <ResourceProvider>
-        <StoreProvider>
+      <StoreProvider>
+        <ResourceProvider>
         {<>
           <UpdateTransactions />
         <AddTransactions />
@@ -40,8 +40,8 @@ const  App = () => {
           <Route component={NotFound} />
         </Switch>
         </>}
-        </StoreProvider>
-      </ResourceProvider>
+        </ResourceProvider>
+      </StoreProvider>
     );
   }
 

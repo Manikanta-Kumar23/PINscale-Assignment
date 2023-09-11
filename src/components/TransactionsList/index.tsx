@@ -9,23 +9,9 @@ import { BsArrowDownCircle } from "react-icons/bs";
 import "./index.css"
 import useUserId from "../../hooks/useUserId";
 import { ResourceContext } from "../../context/ResourceContext";
-import { StoreContext } from "../../context/StoreContext";
 import { imagesUrl } from "../../constants";
+import { useStoreProvider } from "../../context/StoreContext";
 
-interface TransactionTypes {
-    transaction_name?: string
-    user_id?:string
-    amount: string
-    category: string
-    id: string
-    type: string
-    date: string
-    transactionName?: string
-    userId?: string
-  }
-  interface DataType {
-    fetchedTransactionData: TransactionTypes
-  }
   interface TransactionTabType {
     name: string
     id: string
@@ -44,27 +30,27 @@ const transactionTypes: TransactionTabType[] = [
 const TransactionsList = (props: any) => {
     let filterList;
     const userId = useUserId()
-    const {transaction} = useContext(StoreContext)
+    const transaction = useStoreProvider()
     const {showDeletePopup , showTransactionPopup , showUpdatePopup , logoutPopup , activeTypeId , onClickEdit , onClickDelete ,
-    userList} = useContext(ResourceContext)
+    userList , apiCall} = useContext(ResourceContext)
     if (activeTypeId !== transactionTypes[0].id) {
-        filterList = transaction.current.transactionList.filter(
-          (each: DataType) =>  each.fetchedTransactionData.type.toLowerCase() === activeTypeId);
+        filterList = transaction.transactionList.filter(
+          (each) =>  each.type.toLowerCase() === activeTypeId);
       }
     const formatedTransactionList =
         activeTypeId === transactionTypes[0].id
-          ? transaction.current.transactionList
+          ? transaction.transactionList
           : filterList
-    const finalList = props.limit !== undefined ? transaction.current.transactionList.slice(0 , 3) : formatedTransactionList
+    const finalList: any = props.limit !== undefined ? transaction.transactionList.slice(0 , 3) : formatedTransactionList
 
     const onEdit =  (event: any) => {
-    const updateList = transaction.current.transactionList.filter((each: DataType) => parseInt(each.fetchedTransactionData.id) === parseInt(event.target.value))
-    if (updateList[0] !== undefined) {
-            const list = updateList[0].fetchedTransactionData
-            const updatedList = {...list}
-            transaction.current.changeUpdateList(updatedList)
-            onClickEdit();
-          }
+      const updateList = transaction.transactionList.filter((each) => parseInt(each.id) === parseInt(event.target.value))
+      if (updateList[0] !== undefined) {
+              const list = updateList[0]
+              const updatedList = {...list}
+              transaction.changeUpdateList(updatedList)
+              onClickEdit();
+            }
     }
     let allUsersList: UserListType[];
     if ((userId) === "3") {
@@ -90,13 +76,13 @@ const TransactionsList = (props: any) => {
                     </thead>
                     {!showTransactionPopup && !showUpdatePopup &&  !showDeletePopup && !logoutPopup &&(
                       <tbody className="body">
-                        {finalList.map((each: DataType) => (
-                          <tr key={each.fetchedTransactionData.id}>
+                        {finalList.map((each: any) => (
+                          <tr key={each.id}>
                             {((userId) === "3")  && (
                               <td>
                                 <div className="usr-icn-crd">
                                   {((userId) === "3") ? (
-                                    each.fetchedTransactionData.type.toLowerCase() === "credit" ? (
+                                    each.type.toLowerCase() === "credit" ? (
                                       <BiUpArrowCircle
                                         color="#16DBAA"
                                         size="23"
@@ -114,12 +100,12 @@ const TransactionsList = (props: any) => {
                                     src={
                                       imagesUrl.find(
                                         (user) =>
-                                          (user.id) === (each.fetchedTransactionData.userId)
+                                          (user.id) === (each.userId)
                                       )?.url
                                     }
                                   />
                                   {allUsersList.find(
-                                    (user) => user.id === each.fetchedTransactionData.userId
+                                    (user) => user.id === each.userId
                                   )?.name || "N/A"}
                                 </div>
                               </td>
@@ -127,7 +113,7 @@ const TransactionsList = (props: any) => {
                             <td>
                               <div className="align">
                                 {((userId) !== "3")  ? (
-                                  each.fetchedTransactionData.type.toLowerCase() === "credit" ? (
+                                  each.type.toLowerCase() === "credit" ? (
                                     <BiUpArrowCircle
                                       color="#16DBAA"
                                       size="23"
@@ -139,26 +125,26 @@ const TransactionsList = (props: any) => {
                                     />
                                   )
                                 ) : null}
-                                <p className="margin">{each.fetchedTransactionData.transactionName}</p>
+                                <p className="margin">{each.transactionName}</p>
                               </div>
                             </td>
-                            <td>{each.fetchedTransactionData.category}</td>
+                            <td>{each.category}</td>
                             <td>
-                              {format(parseISO(each.fetchedTransactionData.date), "d MMM, h:mm aa")}
+                              {format(parseISO(each.date), "d MMM, h:mm aa")}
                             </td>
                             <td
                               style={{
                                 color: `${
-                                  each.fetchedTransactionData.type.toLowerCase() === "credit"
+                                  each.type.toLowerCase() === "credit"
                                     ? "#16DBAA"
                                     : "#fe5c73"
                                 }`,
                               }}
                             >
                               {`${
-                                each.fetchedTransactionData.type.toLowerCase() === "credit"
-                                  ? `+$${each.fetchedTransactionData.amount}`
-                                  : `-$${each.fetchedTransactionData.amount}`
+                                each.type.toLowerCase() === "credit"
+                                  ? `+$${each.amount}`
+                                  : `-$${each.amount}`
                               }`}
                             </td>
                             {(userId) !== "3" && (
@@ -166,7 +152,7 @@ const TransactionsList = (props: any) => {
                                 <td>
                                   <button
                                     onClick={onEdit}
-                                    value={each.fetchedTransactionData.id}
+                                    value={each.id}
                                     className="edit-btn"
                                     type="button"
                                   >
@@ -180,7 +166,7 @@ const TransactionsList = (props: any) => {
                                 <button
                                         onClick={changePopup}
                                         className="edit-btn"
-                                        value = {each.fetchedTransactionData.id}
+                                        value = {each.id}
                                         type="button"
                                       >
                                         <RiDeleteBin6Line

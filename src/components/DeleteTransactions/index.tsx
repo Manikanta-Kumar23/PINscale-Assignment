@@ -5,33 +5,30 @@ import Cookies from "js-cookie";
 import { withRouter } from "react-router-dom";
 
 import {ResourceContext} from "../../context/ResourceContext";
-import { StoreContext } from "../../context/StoreContext";
+import { useStoreProvider } from "../../context/StoreContext";
 import useUserId from "../../hooks/useUserId";
 
 import "./index.css"
 import { useContext, useState } from "react";
 
-interface TransactionType {
-    transaction_name?: string
-    user_id?:string
-    amount: string
-    category: string
-    id: string
-    type: string
-    date: string
-    transactionName?: string
-    userId?: string
-  }
-  interface DataType {
-    fetchedTransactionData: TransactionType
-  }
+interface TransactionModelType {
+  transaction_name?: string
+  user_id?:string
+  amount: string
+  category: string
+  id: string
+  type: string
+  date: string
+  transactionName?: string
+  userId?: string
+}
 
 const DeleteTransaction = (props: any) => {
     const {showDeletePopup , onCancel , deleteTransacId ,  logoutPopup , logoutPop , apiCall} = useContext(ResourceContext)
     const [deleteMssg , setDeleteMssg] = useState(false)
     const [errMssg , setErrMssg] = useState(false)
     const userId = useUserId()
-    const {transaction} = useContext(StoreContext)
+    const transaction = useStoreProvider()
     const onClose = () => {
         setErrMssg(false)
         onCancel()
@@ -55,8 +52,8 @@ const DeleteTransaction = (props: any) => {
           const data = await res.json();
           if (res.ok) {
             const trnsacId = data.delete_transactions_by_pk.id;
-            const updateList = transaction.current.transactionList.filter((each: DataType) => each.fetchedTransactionData.id !== trnsacId);
-            transaction.current.deleteTransactionList(updateList)
+            const updateList = transaction.transactionList.filter((each: TransactionModelType) => each.id !== trnsacId);
+            transaction.deleteTransactionList(updateList)
             apiCall()
             setDeleteMssg(true)
           }
