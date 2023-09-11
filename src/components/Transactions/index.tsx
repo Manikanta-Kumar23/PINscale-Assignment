@@ -22,7 +22,7 @@ interface TransactionTabType {
 
 const Transactions = () => {
   const [activeTypeId , setActiveTypeId] = useState(transactionTypes[0].id)
-  const {transactionIsLoading , apiCall} = useContext(ResourceContext)
+  const {transactionIsLoading , apiCall , showDeletePopup , showTransactionPopup , showUpdatePopup} = useContext(ResourceContext)
 
   useEffect(() => {
     apiCall()
@@ -69,16 +69,18 @@ const Transactions = () => {
     return (
       <Observer>
         {() => (<>
-          <ul className="transactiontype-crd">
-                {transactionTypes.map((each) => (
-                  <TransactionType
-                    list={each}
-                    key={each.id}
-                    isActive={activeTypeId === each.id}
-                    changeTypeId = {changeTypeId}
-                  />
-                ))}
-                </ul>
+          {!showDeletePopup && !showTransactionPopup && !showUpdatePopup && (
+            <ul className="transactiontype-crd">
+            {transactionTypes.map((each) => (
+              <TransactionType
+                list={each}
+                key={each.id}
+                isActive={activeTypeId === each.id}
+                changeTypeId = {changeTypeId}
+              />
+            ))}
+            </ul>
+          )}
                 <div className="main-content">
           {renderTransactiondata()}
           </div>

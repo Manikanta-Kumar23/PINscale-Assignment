@@ -93,7 +93,8 @@ const UpdateTransactions = () => {
     return new TransactionModel(transactionName , type , category , amount , date , id)
   })
   useEffect(() => {
-    if (transaction.updateList.transactionName && transaction.updateList.type && transaction.updateList.category && transaction.updateList.amount && transaction.updateList.date) {
+    const valuesAreNotUndefined = transaction.updateList.transactionName && transaction.updateList.type && transaction.updateList.category && transaction.updateList.amount && transaction.updateList.date
+    if (valuesAreNotUndefined) {
     updateTransactionModel.setName(transaction.updateList.transactionName)
     updateTransactionModel.setAmount(transaction.updateList.amount)
     updateTransactionModel.setType(transaction.updateList.type)
@@ -124,7 +125,6 @@ const UpdateTransactions = () => {
             let transactionData = updateDdata.update_transactions_by_pk
             transactionData = {transactionName: transactionData.transaction_name , type: transactionData.type, category: transactionData.category , amount: transactionData.amount , date: transactionData.date , id: transactionData.id , userId: transactionData.user_id}
             const list = new TransactionModel(transactionData.transactionNme ,transactionData.type , transactionData.category , transactionData.amount  , transactionData.date , transactionData.id , transactionData.userId)
-            console.log(list)
             transaction.updateTransactionList(list)
             setUpdateSuccessMssg(true)
             apiCall()

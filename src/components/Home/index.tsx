@@ -20,17 +20,22 @@ interface OverviewType {
   type: string
   date: string
 }
+interface HomeProps {
+  location: {
+    pathname: string
+  }
+}
 
 
-const Home = (props: any) => {
+const Home = (props: HomeProps) => {
   const userId = useUserId()
   const {location} = props
   let limit
   if (location.pathname === "/") {
-    limit = 3
+    limit = "3"
   }
   else {
-    limit = undefined
+    limit = "0"
   }
   const {
     showTransactionPopup,

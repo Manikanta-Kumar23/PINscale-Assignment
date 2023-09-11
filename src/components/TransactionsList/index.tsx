@@ -26,10 +26,14 @@ const transactionTypes: TransactionTabType[] = [
     { name: "Debit", id: "debit" },
     { name: "Credit", id: "credit" },
 ];
+interface TransactionProps {
+  activeTypeId?: string ,
+  limit?: string
+}
 
-const TransactionsList = (props: any) => {
+const TransactionsList = (props: TransactionProps) => {
     let filterList;
-    const {activeTypeId} = props
+    const {activeTypeId , limit} = props
     const userId = useUserId()
     const transaction = useStoreProvider()
     const {showDeletePopup , showTransactionPopup , showUpdatePopup , logoutPopup  , onClickEdit , onClickDelete ,
@@ -42,8 +46,7 @@ const TransactionsList = (props: any) => {
         activeTypeId === transactionTypes[0].id
           ? transaction.transactionList
           : filterList
-    const finalList: any = props.limit !== undefined ? transaction.transactionList.slice(0 , 3) : formatedTransactionList
-
+    const finalList = limit !== undefined ? transaction.transactionList.slice(0 , 3) : formatedTransactionList
     const onEdit =  (event: any) => {
       const updateList = transaction.transactionList.filter((each) => parseInt(each.id) === parseInt(event.target.value))
       if (updateList[0] !== undefined) {
@@ -75,9 +78,9 @@ const TransactionsList = (props: any) => {
                         <th>Amount</th>
                       </tr>
                     </thead>
-                    {!showTransactionPopup && !showUpdatePopup &&  !showDeletePopup && !logoutPopup &&(
+                    {!showTransactionPopup && !showUpdatePopup &&  !showDeletePopup && !logoutPopup && finalList!== undefined &&(
                       <tbody className="body">
-                        {finalList.map((each: any) => (
+                        {finalList.map((each) => (
                           <tr key={each.id}>
                             {((userId) === "3")  && (
                               <td>

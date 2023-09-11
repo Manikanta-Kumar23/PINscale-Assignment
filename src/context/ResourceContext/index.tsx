@@ -22,16 +22,23 @@ interface UserListType {
   presentAddress?: string | null
   present_address?: string | null
 }
-interface TransactionModels {
-  transaction_name?: string
-  user_id?:string
+interface BackendTransactionModel {
   amount: string
   category: string
   id: string
   type: string
   date: string
-  transactionName?: string
-  userId?: string
+  transaction_name: string
+  user_id: string
+}
+interface TransactionModels {
+  amount: string
+  category: string
+  id: string
+  type: string
+  date: string
+  transactionName: string
+  userId: string
 }
 interface TransactionModelType {
   amount: string
@@ -40,7 +47,7 @@ interface TransactionModelType {
   type: string
   date: string
   transactionName: string
-  userId?: string
+  userId: string
 }
 interface DataType  {
   fetchedTransactionData: TransactionModelType
@@ -98,7 +105,7 @@ const ResourceProvider = ({children}: any) => {
     } , [])
     let transactionModel
   if (transactionIsLoading === apiStatus.res) {
-  transactionModel = transactionDataModel.transactions.map((each: TransactionModels) => {
+  transactionModel = transactionDataModel.transactions.map((each: BackendTransactionModel): TransactionModels => {
       return ({
         transactionName: each.transaction_name , 
         category: each.category ,
