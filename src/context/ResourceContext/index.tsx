@@ -64,8 +64,6 @@ export const ResourceContext = React.createContext({
   logoutPopup: false ,
   onLogClick: () => {} ,
   logoutPop: () => {},
-  changeTypeId: (a: string) => {} ,
-  activeTypeId: "" as string
 });
 
 const ResourceProvider = ({children}: any) => {
@@ -75,7 +73,6 @@ const ResourceProvider = ({children}: any) => {
   const [showDeletePopup , setShowDeletePopup] = useState(false)
   const [deleteTransacId , setDeleteTransacId] = useState("")
   const [logoutPopup , setLogoutPopup] = useState(false)
-  const [activeTypeId , setActiveTypeId] = useState("ALL TRANSACTIONS")
 
   const userId = useUserId()
   const transaction = useStoreProvider()
@@ -178,16 +175,12 @@ const onClickEdit = () => {
       setShowUpdatePopup(true)
 };
 
-const changeTypeId = (id: string) => {
-  setActiveTypeId(id)
-};
   return (<ResourceContext.Provider value = {{showTransactionPopup ,
                                               showUpdatePopup,
                                               showSidebar ,
                                               showDeletePopup ,
                                               deleteTransacId ,
                                               logoutPopup  ,
-                                              activeTypeId  ,
                                               onClickTransaction ,
                                               onClickDelete ,
                                               onCancel ,
@@ -195,7 +188,6 @@ const changeTypeId = (id: string) => {
                                               logoutPop ,
                                               onShow ,
                                               onClickEdit ,
-                                              changeTypeId ,
                                           apiCall ,
                                           userList ,
                                           isLoading ,
