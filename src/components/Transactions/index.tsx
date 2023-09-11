@@ -1,26 +1,42 @@
-import {  useContext , useEffect } from "react";
+import {  useContext , useEffect , useState } from "react";
 import ThreeDots  from  'react-loader-spinner'
 import {  Observer } from "mobx-react-lite" 
 
 import FailureView from "../FailureView";
 import { apiStatus } from "../../constants";
 import TransactionsList from "../TransactionsList";
+import TransactionType from "../TransactionType";
 
 import "./index.css";
 import { ResourceContext } from "../../context/ResourceContext";
 
+const transactionTypes: TransactionTabType[] = [
+  { name: "All Transactions", id: "ALL TRANSACTIONS" },
+  { name: "Debit", id: "debit" },
+  { name: "Credit", id: "credit" },
+];
+interface TransactionTabType {
+  name: string
+  id: string
+}
+
 const Transactions = () => {
+  const [activeTypeId , setActiveTypeId] = useState(transactionTypes[0].id)
   const {transactionIsLoading , apiCall} = useContext(ResourceContext)
 
   useEffect(() => {
     apiCall()
   } , [])
 
+  const changeTypeId = (id: string) => {
+    setActiveTypeId(id)
+  }
+
   const renderTransactiondata = () => {
           switch (transactionIsLoading) {
             case apiStatus.res:
               return (
-                <TransactionsList />
+                <TransactionsList activeTypeId = {activeTypeId} />
               );
             case apiStatus.inProgress:
               return (
@@ -53,7 +69,19 @@ const Transactions = () => {
     return (
       <Observer>
         {() => (<>
+          <ul className="transactiontype-crd">
+                {transactionTypes.map((each) => (
+                  <TransactionType
+                    list={each}
+                    key={each.id}
+                    isActive={activeTypeId === each.id}
+                    changeTypeId = {changeTypeId}
+                  />
+                ))}
+                </ul>
+                <div className="main-content">
           {renderTransactiondata()}
+          </div>
         </>
 )}
       </Observer>

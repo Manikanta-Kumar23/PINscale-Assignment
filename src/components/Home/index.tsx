@@ -196,14 +196,14 @@ const Home = (props: any) => {
           }
   };
     return (
-      <>
+      <div className="main-content">
         {renderTotalCreditAndDebit()}
         <div className="recent-card">
           {isLoading === apiStatus.res && (<h1 className="last-transc">Last Transaction</h1>)}
           <TransactionsList limit = {limit} />
         </div>
         {renderTransactionOverviewCharts()}
-      </>
+        </div>
 
     );
 }

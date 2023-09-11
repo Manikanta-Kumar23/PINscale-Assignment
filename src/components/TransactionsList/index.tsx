@@ -29,10 +29,11 @@ const transactionTypes: TransactionTabType[] = [
 
 const TransactionsList = (props: any) => {
     let filterList;
+    const {activeTypeId} = props
     const userId = useUserId()
     const transaction = useStoreProvider()
-    const {showDeletePopup , showTransactionPopup , showUpdatePopup , logoutPopup , activeTypeId , onClickEdit , onClickDelete ,
-    userList , apiCall} = useContext(ResourceContext)
+    const {showDeletePopup , showTransactionPopup , showUpdatePopup , logoutPopup  , onClickEdit , onClickDelete ,
+    userList} = useContext(ResourceContext)
     if (activeTypeId !== transactionTypes[0].id) {
         filterList = transaction.transactionList.filter(
           (each) =>  each.type.toLowerCase() === activeTypeId);

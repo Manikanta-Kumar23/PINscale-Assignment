@@ -1,5 +1,3 @@
-import {useContext} from "react"
-import {ResourceContext} from "../../context/ResourceContext";
 import "./index.css";
 
 interface TabType {
@@ -9,11 +7,11 @@ interface TabType {
 interface ComponentProps {
   list: TabType
   isActive: boolean
+  changeTypeId: (id: string) => void
 }
 
 const TransactionType = (props: ComponentProps) => {
-  const { list,  isActive } = props;
-  const {changeTypeId} = useContext(ResourceContext)
+  const { list,  isActive , changeTypeId } = props;
   const { name, id } = list;
   const typeId = () => {
     changeTypeId(id);

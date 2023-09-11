@@ -30,11 +30,9 @@ const  App = () => {
           <SideBar />
           <div className="home-content">
             <Navbar />
-            <div className="main-content">
               <AuthenticateRoute exact path="/" component={Home} />
               <AuthenticateRoute path="/transactions" component={Transactions}/>
               <AuthenticateRoute path="/profile" component={Profile} />
-            </div>
         </div>
       </div>
           <Route component={NotFound} />

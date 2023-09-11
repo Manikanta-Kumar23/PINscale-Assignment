@@ -1,6 +1,7 @@
 .transactiontype-crd {
   width: 100%;
   background-color: #ffffff;
+  position: relative;
   border-width: 0px;
   border-bottom-width: 1px;
   margin: 0px;
