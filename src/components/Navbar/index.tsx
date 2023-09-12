@@ -2,15 +2,16 @@ import { withRouter , Link } from "react-router-dom"
 import { HiMenu } from "react-icons/hi";
 import Cookies from "js-cookie";
 
-import ResourceContext from "../../context/ResourceContext";
-
+import {ResourceContext }from "../../context/ResourceContext";
 import "./index.css";
 import  { useContext } from "react";
 import useUserId from "../../hooks/useUserId";
 
+
 const Navbar = (props: any) => {
   const userId = useUserId()
   const { onClickTransaction, onShow, showSidebar } = useContext(ResourceContext)
+  
 
   const { location } = props;
   const { pathname } = location;

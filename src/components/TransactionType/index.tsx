@@ -6,12 +6,12 @@ interface TabType {
 }
 interface ComponentProps {
   list: TabType
-  changeTypeId: (id: string) => void
   isActive: boolean
+  changeTypeId: (id: string) => void
 }
 
 const TransactionType = (props: ComponentProps) => {
-  const { list, changeTypeId, isActive } = props;
+  const { list,  isActive , changeTypeId } = props;
   const { name, id } = list;
   const typeId = () => {
     changeTypeId(id);

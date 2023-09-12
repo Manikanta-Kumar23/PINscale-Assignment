@@ -4,35 +4,39 @@ import { FiLogOut } from "react-icons/fi";
 import Cookies from "js-cookie";
 import { withRouter } from "react-router-dom";
 
-import ResourceContext from "../../context/ResourceContext";
+import {ResourceContext} from "../../context/ResourceContext";
+import { useStoreProvider } from "../../context/StoreContext";
 import useUserId from "../../hooks/useUserId";
 
 import "./index.css"
 import { useContext, useState } from "react";
 
-interface TransactionType {
-    transaction_name?: string
-    user_id?:string
-    amount: string
-    category: string
-    id: string
-    type: string
-    date: string
-    transactionName?: string
-    userId?: string
-  }
+interface TransactionModelType {
+  transaction_name?: string
+  user_id?:string
+  amount: string
+  category: string
+  id: string
+  type: string
+  date: string
+  transactionName?: string
+  userId?: string
+}
 
 const DeleteTransaction = (props: any) => {
-    const {showDeletePopup , onCancel , deleteTransacId , onDeleteTransaction , transactionList , logoutPopup , logoutPop} = useContext(ResourceContext)
+    const {showDeletePopup , onCancel , deleteTransacId ,  logoutPopup , logoutPop , apiCall} = useContext(ResourceContext)
     const [deleteMssg , setDeleteMssg] = useState(false)
     const [errMssg , setErrMssg] = useState(false)
     const userId = useUserId()
+    const transaction = useStoreProvider()
     const onClose = () => {
         setErrMssg(false)
         onCancel()
+        setDeleteMssg(false)
     }
     const onDelete = async () => {
         setErrMssg(false)
+        const id = parseInt(deleteTransacId)
         const options = {
             method: "DELETE",
             headers: {
@@ -43,13 +47,14 @@ const DeleteTransaction = (props: any) => {
               "x-hasura-user-id": `${userId}`,
             },
           };
-          const url = `https://bursting-gelding-24.hasura.app/api/rest/delete-transaction?id=${deleteTransacId}`;
+          const url = `https://bursting-gelding-24.hasura.app/api/rest/delete-transaction?id=${id}`;
           const res = await fetch(url, options);
           const data = await res.json();
           if (res.ok) {
             const trnsacId = data.delete_transactions_by_pk.id;
-            const updateList = transactionList.filter((each: TransactionType) => each.id !== trnsacId);
-            onDeleteTransaction(updateList);
+            const updateList = transaction.transactionList.filter((each: TransactionModelType) => each.id !== trnsacId);
+            transaction.deleteTransactionList(updateList)
+            apiCall()
             setDeleteMssg(true)
           }
           else {
@@ -62,7 +67,7 @@ const DeleteTransaction = (props: any) => {
         history.replace("/login");
         logoutPop()
       };
-    const deleteView = () => {
+    const renderDeleteView = () => {
         return (
             <div className="add-transactions">
                 <div className="modal-card">
@@ -121,7 +126,7 @@ const DeleteTransaction = (props: any) => {
             </div>
         )
     }
-    const logOutView = () => {
+    const renderLogOutView = () => {
         return (
             <div className="add-transactions">
                 <div className="modal-card">
@@ -163,8 +168,8 @@ const DeleteTransaction = (props: any) => {
     return (
         ( 
        <>
-        {showDeletePopup && deleteView()}
-        {logoutPopup && logOutView()}</>)
+        {showDeletePopup && renderDeleteView()}
+        {logoutPopup && renderLogOutView()}</>)
     )
 }
 export default withRouter(DeleteTransaction)
