@@ -54,7 +54,7 @@ const SideBar = (props: any) => {
           let email : string= "Email";
           const { location } = props;
           if (isLoading === "SUCCESS") {
-            name = userList[0].name;
+            name = userList[0].name.charAt(0).toUpperCase() + userList[0].name.slice(1);
             email = userList[0].email;
           }
           return (
@@ -81,7 +81,7 @@ const SideBar = (props: any) => {
                     alt="avatar"
                     src={
                       imagesUrl.find(
-                        (user) => (user.id) === (userId)
+                        (user) => userId !== undefined && parseInt((user.id)) === parseInt((userId))
                       )?.url
                     }
                   />

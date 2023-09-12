@@ -59,7 +59,7 @@ const TransactionsList = (props: TransactionProps) => {
     let allUsersList: UserListType[];
     if ((userId) === "3") {
         allUsersList = userList.map((each) => ({
-          name: each.name,
+          name: each.name.charAt(0).toUpperCase() + each.name.slice(1),
           id: each.id,
         }));
     }
@@ -104,13 +104,13 @@ const TransactionsList = (props: TransactionProps) => {
                                     src={
                                       imagesUrl.find(
                                         (user) =>
-                                          (user.id) === (each.userId)
+                                          each.userId !== undefined && parseInt((user.id)) === parseInt((each.userId))
                                       )?.url
                                     }
                                   />
                                   {allUsersList.find(
                                     (user) => user.id === each.userId
-                                  )?.name || "N/A"}
+                                  )?.name|| "N/A"}
                                 </div>
                               </td>
                             )}
