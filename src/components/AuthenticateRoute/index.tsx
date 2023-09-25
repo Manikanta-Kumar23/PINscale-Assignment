@@ -1,5 +1,7 @@
 import useUserId from "../../hooks/useUserId";
 import { Redirect, Route } from "react-router-dom";
+import SideBar from "../SideBar";
+import Navbar from "../Navbar";
 
 interface RouteProps {
   exact?: boolean
@@ -12,7 +14,14 @@ const AuthenticateRoute = (props: RouteProps) => {
   if (userId === undefined) {
     return <Redirect to="/login" />;
   }
-  return <Route {...props} />;
+  return (
+    <div className="home-bg">
+    <SideBar />
+    <div className="home-content">
+      <Navbar />
+      <Route {...props} />
+      </div>
+      </div>);
 };
 
 export default AuthenticateRoute;

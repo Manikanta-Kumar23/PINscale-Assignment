@@ -10,6 +10,8 @@ import  { useContext, useEffect } from "react";
 
 import {UrlType , OptionsType} from "../../types"
 import { apiStatus } from "../../constants";
+import { FetchMachine } from "../Machine";
+import { useMachine } from "@xstate/react";
 
 interface CreditDataType {
   sum: number
@@ -42,6 +44,7 @@ const Home = (props: HomeProps) => {
     showDeletePopup,
     showUpdatePopup, logoutPopup , apiCall
   } = useContext(ResourceContext)
+  const [state , send] = useMachine(FetchMachine)
 
 
   let apiUrl: UrlType = {creditUrl: "" , overviewUrl : ""}
@@ -68,6 +71,8 @@ const Home = (props: HomeProps) => {
       homeCreditData(apiUrl.creditUrl , apiOptions)
       overviewData(apiUrl.overviewUrl , apiOptions)
       apiCall()
+      const homeTra = send({type: "Fetch" , url: apiUrl.creditUrl , options: apiOptions})
+      console.log(homeTra)
     } , [])
     if (isLoading === apiStatus.res && (userId) !== "3") {
       creditData = creditedData.totals_credit_debit_transactions

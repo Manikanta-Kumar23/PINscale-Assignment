@@ -15,6 +15,7 @@ import Navbar from "./components/Navbar";
 import SideBar from "./components/SideBar";
 import ResourceProvider from "./context/ResourceContext";
 import StoreProvider from "./context/StoreContext";
+import Xstate from "./components/XState";
 
 const  App = () => {
     return (
@@ -26,15 +27,10 @@ const  App = () => {
         <DeleteTransaction />
         <Switch>
         <Route exact path="/login" component={Login} />
-        <div className="home-bg">
-          <SideBar />
-          <div className="home-content">
-            <Navbar />
               <AuthenticateRoute exact path="/" component={Home} />
               <AuthenticateRoute path="/transactions" component={Transactions}/>
               <AuthenticateRoute path="/profile" component={Profile} />
-        </div>
-      </div>
+              <Route path = "/X" component={Xstate} />
           <Route component={NotFound} />
         </Switch>
         </>}
