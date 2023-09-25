@@ -1,8 +1,8 @@
 import { assign, createMachine } from "xstate"
 
 export const FetchMachine = createMachine({
-    /** @xstate-layout N4IgpgJg5mDOIC5QDEwBcAWBjAlgOygDoAZAewEMJ8oBiCUvMQ-AN1IGsnVNcCSKqBBK1JZyaHAwDaABgC6suYlAAHUrBwSGykAA9EARgBsAdkIBOAMwAWa+dvmArOZP3rAGhABPRAFpjAEyEAeYBRpaOMpYBjgYyABwmAL5JntzY1PyU1DRgAE55pHmEKgA24gBmRQC2hOm8RGTZQiJiWniKijpqGu06+gi+1vHB1pYmMkZRVgaOJvGePoMBZtYTJpZTY6auTilp6Bl8AJJ4mjjkpTTcWBhdSCA959oPA74BxoTxjo4B8QY2eIyWILbx+AwTQgySYyEwmIy-EzWIzmFKpEB4UgQOA6erUbrqZ54fp+ax-YLmIzWOIheYuAyLPxhIKmWFGUzhAIyMJGfYgPF8JqCKAE3qSYmvPyxQgmAIfWXI6lGAxWRmDCHWCxOEzOeyOKZyyx8gVEABKOIeTz6koQlnMMmCNkiZMcliByqMav8ZKhBgcwIRCTZxsODUI5oAVqKiSSEAYDCM7ZN3QCgXYAmr4kYZdSdWNLJZuQY5SGeJlTudLtHraA3m6HSEqTSXPF6V6IQ7-gFovFCx8Ua60UkgA */
-    initial: "Initial",
+    /** @xstate-layout N4IgpgJg5mDOIC5QDEwBcAWBjAlgOygDoAFAUQDkARASXIHEBiCAezzEPwDdmBrd1TLgIkKNegi7MsAQzQ5WAbQAMAXWUrEoAA7NYOOa00gAHogCMANgDshAJwBmACyPbz2wFZbV144A0IAE9EAFpLACZCMNswi3t3JXsw9zMlAA4rAF8M-wFsfCIyKlpGMAAnUuZSwi0AG1kAM0qAW0JcoQLRYok8bhkDPHV1Ix09fqNTBGDHVMjHeyslCwSHM3crVP8gybCbRwWreyW5628PLJz0POFaagAVagBBABkGASwMIaQQEf15PHGQmFLIRUu53GFUmYnKklMkNoEQmYFoQlIslFYrBZwVZHBZbFlsiA8MwIHAjG18sNdL9DF8JlMIZFbBZHCkousvGZNoCLBEXGsBVZ3I4lHtziAKcJCmI6FTRn8AZNkoQrGEgarcayLGYHNzJkjHHYPELbK53Es1fZxZKiABlACqAGFHaRbba5TT-nTEPZbEpIk54o4kvYYdqLHrQsGUWY3LCsWl0RZrZd2q0HtQnh6xt6EGYzDNfYsw1CYS4wnrUhYVayhXN7PYlEC1SnBPlCDd7s9swrc8FQ-6oiy2V5UpzI0j-ZCwolUo2gXj3FaCUA */
+    initial: "INITIAL",
     schema: {
         services: {} as {
             "fetchApi": {
@@ -11,33 +11,33 @@ export const FetchMachine = createMachine({
         }
     },
     context: {
-        fetchedData: {}
+        fetchedData: {} as any
     },
 
     id: "Fethcing",
     tsTypes: {} as import("./index.typegen").Typegen0,
 
     states: {
-        Loading: {
+        PENDING: {
             invoke: {
                 src: "fetchApi",
 
                 onDone: {
-                    target: "Res" ,
+                    target: "SUCCESS" ,
                     actions: assign({
                         fetchedData: (context , event) => event.data
                     })
                 },
 
-                onError: "Rej" 
+                onError: "FAIL" 
             }
         },
 
-        Res: {},
-        Rej: {},
-        Initial: {
+        SUCCESS: {},
+        FAIL: {},
+        INITIAL: {
             on: {
-                Fetch: "Loading"
+                Fetch: "PENDING" 
             }
         }
     }

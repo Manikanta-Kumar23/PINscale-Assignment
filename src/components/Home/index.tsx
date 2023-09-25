@@ -10,7 +10,7 @@ import  { useContext, useEffect } from "react";
 
 import {UrlType , OptionsType} from "../../types"
 import { apiStatus } from "../../constants";
-import { FetchMachine } from "../Machine";
+import { FetchMachine } from "../../machines/FetchingMachine";
 import { useMachine } from "@xstate/react";
 
 interface CreditDataType {
@@ -45,6 +45,7 @@ const Home = (props: HomeProps) => {
     showUpdatePopup, logoutPopup , apiCall
   } = useContext(ResourceContext)
   const [state , send] = useMachine(FetchMachine)
+  const [current , sends] = useMachine(FetchMachine)
 
 
   let apiUrl: UrlType = {creditUrl: "" , overviewUrl : ""}
@@ -65,32 +66,28 @@ const Home = (props: HomeProps) => {
     }
 
     let creditData: CreditDataType[] = []
-    const {data: creditedData , isLoading , fetchData: homeCreditData} = useDataFetching()
-    const {data: overviewDataList , isLoading: overviewLoading  , fetchData: overviewData} = useDataFetching()
     useEffect(() => {
-      homeCreditData(apiUrl.creditUrl , apiOptions)
-      overviewData(apiUrl.overviewUrl , apiOptions)
       apiCall()
-      const homeTra = send({type: "Fetch" , url: apiUrl.creditUrl , options: apiOptions})
-      console.log(homeTra)
+      send({type: "Fetch" , url: apiUrl.creditUrl , options: apiOptions})
+      sends({type: "Fetch" , url: apiUrl.overviewUrl , options: apiOptions})
     } , [])
-    if (isLoading === apiStatus.res && (userId) !== "3") {
-      creditData = creditedData.totals_credit_debit_transactions
+    if (state.value === apiStatus.res && (userId) !== "3") {
+      creditData = state.context.fetchedData.totals_credit_debit_transactions
     }
-    else if (isLoading === apiStatus.res && (userId) === "3") {
-      creditData = creditedData.transaction_totals_admin
+    else if (state.value  === apiStatus.res && (userId) === "3") {
+      creditData = state.context.fetchedData.transaction_totals_admin
     }
 
     let overviewList: OverviewType[] = []
-    if (overviewLoading === apiStatus.res && (userId) !== "3") {
-      overviewList = overviewDataList.last_7_days_transactions_credit_debit_totals
+    if (current.value === apiStatus.res && (userId) !== "3") {
+      overviewList = current.context.fetchedData.last_7_days_transactions_credit_debit_totals
     }
-    else if (overviewLoading === apiStatus.res && (userId) === "3") {
-      overviewList = overviewDataList.last_7_days_transactions_totals_admin;
+    else if (current.value === apiStatus.res && (userId) === "3") {
+      overviewList = current.context.fetchedData.last_7_days_transactions_totals_admin;
     }
 
   const renderTotalCreditAndDebit = () => {
-    switch (isLoading) {
+    switch (state.value) {
       case apiStatus.res:
         let credit = 0;
         let debit = 0;
@@ -169,7 +166,7 @@ const Home = (props: HomeProps) => {
   };
 
   const renderTransactionOverviewCharts = () => {
-          switch (overviewLoading) {
+          switch (current.value ) {
             case apiStatus.res:
               return (
                 <div className="chart-card">
@@ -209,7 +206,7 @@ const Home = (props: HomeProps) => {
       <div className="main-content">
         {renderTotalCreditAndDebit()}
         <div className="recent-card">
-          {isLoading === apiStatus.res && (<h1 className="last-transc">Last Transaction</h1>)}
+          {state.value === apiStatus.res && (<h1 className="last-transc">Last Transaction</h1>)}
           <TransactionsList limit = {limit} />
         </div>
         {renderTransactionOverviewCharts()}

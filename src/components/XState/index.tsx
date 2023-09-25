@@ -1,5 +1,5 @@
 import { useMachine } from "@xstate/react"
-import { FetchMachine } from "../Machine"
+import { FetchMachine } from "../../machines/FetchingMachine"
 import useUserId from "../../hooks/useUserId"
 import {useEffect} from "react"
 
@@ -28,7 +28,7 @@ const Xstate = () => {
             }
         })
         useEffect(() => {
-            send("Fetch")
+            send("transacFetch")
         })
         console.log(state.context)
     return (

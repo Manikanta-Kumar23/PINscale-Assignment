@@ -6,6 +6,8 @@ import { OptionsType } from "../../types";
 import useDataFetching from "../../hooks/useDataFetching";
 import { TransactionModel } from "../../store";
 import { useStoreProvider } from "../StoreContext";
+import { useMachine } from "@xstate/react";
+import { FetchMachine } from "../../machines/FetchingMachine";
 
 interface UserListType {
   name: string
@@ -54,7 +56,7 @@ interface DataType  {
 }
 
 export const ResourceContext = React.createContext({
-  transactionIsLoading: "",
+  current: {} as any,
   userList: [] as UserListType[],
   isLoading: "",
   onClickTransaction: () => {},
@@ -83,6 +85,7 @@ const ResourceProvider = ({children}: any) => {
 
   const userId = useUserId()
   const transaction = useStoreProvider()
+  const [current , send] = useMachine(FetchMachine)
 
   const userUrl = "https://bursting-gelding-24.hasura.app/api/rest/profile"
   const transactionsUrl =`https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=100&offset=0`
@@ -96,16 +99,15 @@ const ResourceProvider = ({children}: any) => {
     else {
       apiOptions = {...apiOptions , headers: {...apiOptions.headers , "x-hasura-role": "admin"}}
     }
-    const {data: transactionDataModel, isLoading: transactionIsLoading , fetchData: transactionDataApi} = useDataFetching()
     const {data: userDataList ,  isLoading , fetchData: userDataApi} = useDataFetching()
 
     useEffect(() => {
-      transactionDataApi(transactionsUrl , apiOptions)
+      send({type: "Fetch" , url: transactionsUrl , options: apiOptions})
       userDataApi(userUrl, apiOptions)
     } , [])
     let transactionModel
-  if (transactionIsLoading === apiStatus.res) {
-  transactionModel = transactionDataModel.transactions.map((each: BackendTransactionModel): TransactionModels => {
+  if (current.value === apiStatus.res) {
+  transactionModel = current.context.fetchedData.transactions.map((each: BackendTransactionModel): TransactionModels => {
       return ({
         transactionName: each.transaction_name , 
         category: each.category ,
@@ -165,7 +167,7 @@ const onCancel = () => {
   setLogoutPopup(false)
 };
 const apiCall = () => {
-  transactionDataApi(transactionsUrl , apiOptions)
+  send({type: "Fetch" , url: transactionsUrl , options: apiOptions})
 }
 const onLogClick = () => {
   setLogoutPopup(true)
@@ -198,7 +200,7 @@ const onClickEdit = () => {
                                           apiCall ,
                                           userList ,
                                           isLoading ,
-                                          transactionIsLoading }}>{children}</ResourceContext.Provider>)
+                                          current }}>{children}</ResourceContext.Provider>)
 }
 
 export default (ResourceProvider);

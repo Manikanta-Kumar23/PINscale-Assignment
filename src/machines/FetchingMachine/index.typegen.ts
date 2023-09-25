@@ -7,7 +7,7 @@
           "xstate.init": { type: "xstate.init" };
         };
         invokeSrcNameMap: {
-          "fetchApi": "done.invoke.Fethcing.Loading:invocation[0]";
+          "fetchApi": "done.invoke.Fethcing.PENDING:invocation[0]";
         };
         missingImplementations: {
           actions: never;
@@ -27,7 +27,7 @@
         eventsCausingServices: {
           "fetchApi": "Fetch";
         };
-        matchesStates: "Initial" | "Loading" | "Rej" | "Res";
+        matchesStates: "FAIL" | "INITIAL" | "PENDING" | "SUCCESS";
         tags: never;
       }
   

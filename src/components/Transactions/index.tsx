@@ -22,7 +22,7 @@ interface TransactionTabType {
 
 const Transactions = () => {
   const [activeTypeId , setActiveTypeId] = useState(transactionTypes[0].id)
-  const {transactionIsLoading , apiCall , showDeletePopup , showTransactionPopup , showUpdatePopup , logoutPopup} = useContext(ResourceContext)
+  const {current , apiCall , showDeletePopup , showTransactionPopup , showUpdatePopup , logoutPopup} = useContext(ResourceContext)
 
   useEffect(() => {
     apiCall()
@@ -33,7 +33,7 @@ const Transactions = () => {
   }
 
   const renderTransactiondata = () => {
-          switch (transactionIsLoading) {
+          switch (current.value) {
             case apiStatus.res:
               return (
                 <TransactionsList activeTypeId = {activeTypeId} />
