@@ -1,4 +1,4 @@
-.chart {
+.recharts-card {
   background-color: #ffffff;
   border-radius: 13px;
   margin-left: 3%;
@@ -7,7 +7,7 @@
   justify-content: center;
   flex-direction: column;
 }
-.week_cost {
+.week-cost-card {
   color: #718ebf;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 16px;
@@ -20,10 +20,10 @@
   margin-left: 3%;
   margin-top: 2%;
 }
-.span {
+.week-cost-span {
   color: #333b69;
 }
-.no-data {
+.recharts-no-data {
   color: #333b69;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 16px;

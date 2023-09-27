@@ -1,17 +1,17 @@
-import ThreeDots  from "react-loader-spinner";
-import useUserId from "../../hooks/useUserId";
-import useDataFetching from "../../hooks/useDataFetching";
+import  { useContext, useEffect } from "react";
+import { useMachine } from "@xstate/react";
+
+import LoadingWrapper from "../../common/LoadingWrapper";
 import {ResourceContext} from "../../context/ResourceContext";
-import FailureView from "../FailureView";
+import { FetchMachine } from "../../machines/FetchingMachine";
+import {UrlType , OptionsType} from "../../types"
+import useUserId from "../../hooks/useUserId";
+import { apiStatus } from "../../constants";
+import FailureView from "../../common/FailureView";
 import TransactionOverviewChart from "../TransactionOverviewChart";
 import TransactionsList from "../TransactionsList";
-import "./index.css";
-import  { useContext, useEffect } from "react";
 
-import {UrlType , OptionsType} from "../../types"
-import { apiStatus } from "../../constants";
-import { FetchMachine } from "../../machines/FetchingMachine";
-import { useMachine } from "@xstate/react";
+import "./index.css";
 
 interface CreditDataType {
   sum: number
@@ -32,7 +32,7 @@ interface HomeProps {
 const Home = (props: HomeProps) => {
   const userId = useUserId()
   const {location} = props
-  let limit
+  let limit:string
   if (location.pathname === "/") {
     limit = "3"
   }
@@ -40,9 +40,9 @@ const Home = (props: HomeProps) => {
     limit = "0"
   }
   const {
-    showTransactionPopup,
-    showDeletePopup,
-    showUpdatePopup, logoutPopup , apiCall
+    shouldShowAddTransactionPopup,
+    shouldShowDeletePopup,
+    shouldShowUpdatePopup, shouldShowLogoutPopup , apiCall , transacCurrent
   } = useContext(ResourceContext)
   const [state , send] = useMachine(FetchMachine)
   const [current , sends] = useMachine(FetchMachine)
@@ -121,15 +121,15 @@ const Home = (props: HomeProps) => {
                 <div className="cost-card">
                   <h1
                     className={`cost ${
-                      each.type.toLocaleLowerCase() === "debit" ? "debit-cost" : null
+                      each.type.toLowerCase() === "debit" ? "debit-cost" : null
                     }`}
                   >
                     ${each.cost}
                   </h1>
-                  <p className="transc-type">{each.type}</p>
+                  <p className="transaction-type">{each.type}</p>
                 </div>
                 <img
-                  className="transc-img"
+                  className="totalcredit-card-image"
                   alt={`${each.type}`}
                   src={each.image}
                 />
@@ -139,24 +139,7 @@ const Home = (props: HomeProps) => {
         );
       case apiStatus.inProgress:
         return (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: "13"
-            }}
-            className="loader-container"
-          >
-            <ThreeDots
-              height="80"
-              width="80"
-              radius={9}
-              color="#4D78FF"
-              type="ThreeDots"
-              visible={true}
-            />
-          </div>
+          <LoadingWrapper />
         );
       case apiStatus.rej:
         return <FailureView />;
@@ -165,36 +148,38 @@ const Home = (props: HomeProps) => {
     }
   };
 
+  const renderTransactions = () => {
+    switch(transacCurrent.value) {
+      case apiStatus.res:
+        return (<div className="recent-transactions-card">
+        <h1 className="recent-transaction-card-heading">Last Transaction</h1>
+        <TransactionsList limit = {limit} />
+      </div>)
+      case apiStatus.inProgress:
+        return (
+          <LoadingWrapper />
+      );
+      case apiStatus.rej: 
+      return <FailureView />;
+      default:
+        return null
+    }
+  }
+
   const renderTransactionOverviewCharts = () => {
           switch (current.value ) {
             case apiStatus.res:
               return (
-                <div className="chart-card">
-                  <h1 className="overview">Debit & Credit Overview</h1>
-                  {!showTransactionPopup && !showUpdatePopup && !showDeletePopup && !logoutPopup &&(
+                <div className="overview-chart-card">
+                  <h1 className="overview-card-heading">Debit & Credit Overview</h1>
+                  {!shouldShowAddTransactionPopup && !shouldShowUpdatePopup && !shouldShowDeletePopup && !shouldShowLogoutPopup &&(
                     <TransactionOverviewChart data={overviewList} />
                   )}
                 </div>
               );
             case apiStatus.inProgress:
               return (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                  className="loader-container"
-                >
-                  <ThreeDots
-                    height="80"
-                    width="80"
-                    radius={9}
-                    color="#4D78FF"
-                    type="ThreeDots"
-                    visible={true}
-                  />
-                </div>
+                <LoadingWrapper />
               );
             case apiStatus.rej:
               return <FailureView />;
@@ -205,10 +190,7 @@ const Home = (props: HomeProps) => {
     return (
       <div className="main-content">
         {renderTotalCreditAndDebit()}
-        <div className="recent-card">
-          {state.value === apiStatus.res && (<h1 className="last-transc">Last Transaction</h1>)}
-          <TransactionsList limit = {limit} />
-        </div>
+        {renderTransactions()}
         {renderTransactionOverviewCharts()}
         </div>
 

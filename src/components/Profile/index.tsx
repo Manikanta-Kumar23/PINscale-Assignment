@@ -1,31 +1,31 @@
-import ThreeDots  from "react-loader-spinner";
+import { useEffect } from "react";
 
-import FailureView from "../FailureView";
+import LoadingWrapper from "../../common/LoadingWrapper";
+import FailureView from "../../common/FailureView";
 import useDataFetching from "../../hooks/useDataFetching";
 import useUserId from "../../hooks/useUserId";
 import {OptionsType} from "../../types"
 import { imagesUrl  ,apiStatus } from "../../constants";
 
 import "./index.css";
-import { useEffect } from "react";
 
 const Profile = () => {
   const userId = useUserId()
   let url: string;
-    let options: OptionsType;
-    if ((userId) !== "3") {
-      url = "https://bursting-gelding-24.hasura.app/api/rest/profile";
-      options = {
-        method: "GET",
-        headers: {
+  let options: OptionsType;
+  if ((userId) !== "3") {
+    url = "https://bursting-gelding-24.hasura.app/api/rest/profile";
+    options = {
+      method: "GET",
+      headers: {
           "content-type": "application/json",
           "x-hasura-admin-secret":
             "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
           "x-hasura-role": "user",
           "x-hasura-user-id": `${userId}`,
-        },
-      };
-    } else {
+      },
+    };
+  } else {
       url = "https://bursting-gelding-24.hasura.app/api/rest/profile";
       options = {
         method: "GET",
@@ -38,7 +38,7 @@ const Profile = () => {
       };
     }
     const {data:userDataList , isLoading , fetchData:profileData} = useDataFetching()
-    useEffect(() =>{
+    useEffect(() => {
       profileData(url , options)
     } , [])
 
@@ -48,109 +48,109 @@ const Profile = () => {
       case apiStatus.res:
         const userList = userDataList.users
         return (
-          <div className="user-data">
+          <div className="user-profile-card">
             <img
-              className="pro-icon"
+              className="profile-icon"
               alt="profile-icon"
               src={imagesUrl.find((user) => user.id === userId)?.url}
             />
-            <div className="inf-card">
-              <div className="nae-card">
-                <div className="pro-crd">
-                  <label className="profile-label" htmlFor="ur-name">
+            <div className="user-info-card">
+              <div className="user-data-body">
+                <div className="user-name-card">
+                  <label className="user-name-card-label" htmlFor="urName">
                     Your Name
                   </label>
-                  <p className="pro-name" id="ur-name">
+                  <p className="user-name-card-input" id="urName">
                     {id !== "3" ? userList[0].name : userList[2].name}
                   </p>
                 </div>
-                <div className="pro-crd">
-                  <label className="profile-label" htmlFor="name">
+                <div className="user-name-card">
+                  <label className="user-name-card-label" htmlFor="name">
                     User Name
                   </label>
-                  <p className="pro-name" id="name">
+                  <p className="user-name-card-input" id="name">
                     {id !== "3" ? userList[0].name : userList[2].name}
                   </p>
                 </div>
               </div>
-              <div className="nae-card">
-                <div className="pro-crd">
-                  <label className="profile-label" htmlFor="email">
+              <div className="user-data-body">
+                <div className="user-name-card">
+                  <label className="user-name-card-label" htmlFor="email">
                     Email
                   </label>
-                  <p className="pro-name" id="email">
+                  <p className="user-name-card-input" id="email">
                     {id !== "3"? userList[0].email : userList[2].email}
                   </p>
                 </div>
-                <div className="pro-crd">
-                  <label className="profile-label" htmlFor="pswd">
+                <div className="user-name-card">
+                  <label className="user-name-card-label" htmlFor="password">
                     Password
                   </label>
-                  <p className="pro-name" id="pswd">
+                  <p className="user-name-card-input" id="password">
                     ********
                   </p>
                 </div>
               </div>
-              <div className="nae-card">
-                <div className="pro-crd">
-                  <label className="profile-label" htmlFor="birth">
+              <div className="user-data-body">
+                <div className="user-name-card">
+                  <label className="user-name-card-label" htmlFor="birth">
                     Date Of Birth
                   </label>
-                  <p className="pro-name" id="birth">
+                  <p className="user-name-card-input" id="birth">
                     {id !== "3"
                       ? userList[0].dateOfBirth
                       : userList[2].dateOfBirth}
                   </p>
                 </div>
-                <div className="pro-crd">
-                  <label className="profile-label" htmlFor="address">
+                <div className="user-name-card">
+                  <label className="user-name-card-label" htmlFor="address">
                     Present Address
                   </label>
-                  <p className="pro-name" id="address">
+                  <p className="user-name-card-input" id="address">
                     {id !== "3"
                       ? userList[0].presentAddress === null && "N/A"
                       : userList[2].presentAddress === null && "N/A"}
                   </p>
                 </div>
               </div>
-              <div className="nae-card">
-                <div className="pro-crd">
-                  <label className="profile-label" htmlFor="Prem-address">
+              <div className="user-data-body">
+                <div className="user-name-card">
+                  <label className="user-name-card-label" htmlFor="premanentAddress">
                     Permanent Address
                   </label>
-                  <p className="pro-name" id="prem-address">
+                  <p className="user-name-card-input" id="premanentAddress">
                     {id !== "3"
                       ? userList[0].permanentAddress === null && "N/A"
                       : userList[2].permanentAddress === null && "N/A"}
                   </p>
                 </div>
-                <div className="pro-crd">
-                  <label className="profile-label" htmlFor="city">
+                <div className="user-name-card">
+                  <label className="user-name-card-label" htmlFor="city">
                     City
                   </label>
-                  <p className="pro-name" id="city">
+                  <p className="user-name-card-input" id="city">
                     {id !== "3"
                       ? userList[0].city === null && "N/A"
                       : userList[2].city === null && "N/A"}
                   </p>
                 </div>
               </div>
-              <div className="nae-card">
-                <div className="pro-crd">
-                  <label className="profile-label" htmlFor="code">
+              <div className="user-data-body">
+                <div className="user-name-card">
+                  <label className="user-name-card-label" htmlFor="postalCode">
                     Postal Code
                   </label>
-                  <p className="pro-name" id="code">
+                  <p className="user-name-card-input" id="postalCode">
                     {id !== "3"
                       ? userList[0].postalCode === null && "N/A"
                       : userList[2].postalCode === null && "N/A"}
                   </p>
                 </div>
-                <div className="pro-crd">
-                  <label className="profile-label" htmlFor="country">
+                <div className="user-name-card">
+                  <label className="user-name-card-label" htmlFor="country">
                     Country
                   </label>
-                  <p className="pro-name" id="country">
+                  <p className="user-name-card-input" id="country">
                     {id !== "3"
                       ? userList[0].country === null && "N/A"
                       : userList[2].country === null && "N/A"}
@@ -162,23 +162,7 @@ const Profile = () => {
         );
       case apiStatus.inProgress:
         return (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            className="loader-container"
-          >
-            <ThreeDots
-              height="80"
-              width="80"
-              radius={9}
-              color="#4D78FF"
-              type="ThreeDots"
-              visible={true}
-            />
-          </div>
+          <LoadingWrapper />
         );
       case apiStatus.rej:
         return <FailureView />;

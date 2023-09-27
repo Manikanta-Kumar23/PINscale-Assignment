@@ -18,9 +18,9 @@ const TransactionType = (props: ComponentProps) => {
   };
   const color = isActive ? "active" : null;
   return (
-    <li onClick={typeId} className="transac-nme">
-      <p className={`tran-nme ${color}`}>{name}</p>
-      {isActive && <hr className="trans-line" />}
+    <li onClick={typeId} className="transaction-type-list">
+      <p className={`transaction-type-name ${color}`}>{name}</p>
+      {isActive && <hr className="transaction-line" />}
     </li>
   );
 };

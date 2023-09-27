@@ -1,7 +1,7 @@
 import { assign, createMachine } from "xstate"
 
 export const FetchMachine = createMachine({
-    /** @xstate-layout N4IgpgJg5mDOIC5QDEwBcAWBjAlgOygDoAFAUQDkARASXIHEBiCAezzEPwDdmBrd1TLgIkKNegi7MsAQzQ5WAbQAMAXWUrEoAA7NYOOa00gAHogCMANgDshAJwBmACyPbz2wFZbV144A0IAE9EAFpLACZCMNswi3t3JXsw9zMlAA4rAF8M-wFsfCIyKlpGMAAnUuZSwi0AG1kAM0qAW0JcoQLRYok8bhkDPHV1Ix09fqNTBGDHVMjHeyslCwSHM3crVP8gybCbRwWreyW5628PLJz0POFaagAVagBBABkGASwMIaQQEf15PHGQmFLIRUu53GFUmYnKklMkNoEQmYFoQlIslFYrBZwVZHBZbFlsiA8MwIHAjG18sNdL9DF8JlMIZFbBZHCkousvGZNoCLBEXGsBVZ3I4lHtziAKcJCmI6FTRn8AZNkoQrGEgarcayLGYHNzJkjHHYPELbK53Es1fZxZKiABlACqAGFHaRbba5TT-nTEPZbEpIk54o4kvYYdqLHrQsGUWY3LCsWl0RZrZd2q0HtQnh6xt6EGYzDNfYsw1CYS4wnrUhYVayhXN7PYlEC1SnBPlCDd7s9swrc8FQ-6oiy2V5UpzI0j-ZCwolUo2gXj3FaCUA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QDEwBcAWBjAlgOygDoAFAUQDkARASXIHEBiCAezzEPwDdmBrd1TLgIkKNegi7MsAQzQ5WAbQAMAXWUrEoAA7NYOOa00gAHogCMANgDshAJwBmACyPbz2wFZbV144A0IAE9EAFpLACZCMNswi3t3JXsw9zMlAA4rAF8M-wFsfCIyKlpGMAAnUuZSwi0AG1kAM0qAW0JcoQLRYok8bhkDPHV1Ix09fqNTBGDHVMjHeyslCwSHM3crVP8gybCbRwWreyW5628PLJz0POFaagAVagBBABkGASwMIaQQEf15PHGQmFLIRUu53GFUmYnKklMkNoEQmYFoQlIslFYrBZwVZHBZbOcQG18oQAMoAVQAwhTSCSSa90O9PtpdL9DF8JjsZuj7KkYWFHGt7PNNoCdoRrKC5uiwqilNMstkQHhmBA4EYiQRhiyxuyQo4IZFbBZHCkousvGYRZN7KtCEjJelnHiwQSNR0ivQtaM-gDJslCFYwkDA7iTRYzA4raEcXYPFZPK53Esg-ZXZd2qTKdTaV7Wf9dQg5u4A2alEaFk57K4o2YTSiLEs8fazDFA2nBMTkA9qE9czrQBMzGYZlXFjDwzy5dErakLAGTfG5kKlECg+2rkQbvdnn2fQXgpPDcbTV5Uhaa8jIWFEql7CvLB5UwqgA */
     initial: "INITIAL",
     schema: {
         services: {} as {
@@ -33,11 +33,16 @@ export const FetchMachine = createMachine({
             }
         },
 
-        SUCCESS: {},
+        SUCCESS: {
+            on: {
+                Fetch: "PENDING"
+            }
+        },
         FAIL: {},
+
         INITIAL: {
             on: {
-                Fetch: "PENDING" 
+                Fetch: "PENDING"
             }
         }
     }
@@ -50,7 +55,7 @@ export const FetchMachine = createMachine({
                 return data
             }
             else {
-                throw new Error
+                throw new Error("Fetching Failed")
             }
             
         }

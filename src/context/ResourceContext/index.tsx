@@ -56,36 +56,36 @@ interface DataType  {
 }
 
 export const ResourceContext = React.createContext({
-  current: {} as any,
+  transacCurrent: {} as any,
   userList: [] as UserListType[],
   isLoading: "",
-  onClickTransaction: () => {},
-  showTransactionPopup: false,
+  onClickAddTransaction: () => {},
+  shouldShowAddTransactionPopup: false,
   onCancel: () => {},
   onClickEdit: () => {},
-  showUpdatePopup: false,
-  showSidebar: false,
-  onShow: () => {},
+  shouldShowUpdatePopup: false,
+  shouldShowSidebar: false,
+  onShowSidebar: () => {},
   apiCall: () => {},
-  showDeletePopup: false,
+  shouldShowDeletePopup: false,
   onClickDelete: (a: any) => {} ,
   deleteTransacId: "" ,
-  logoutPopup: false ,
-  onLogClick: () => {} ,
-  logoutPop: () => {},
+  shouldShowLogoutPopup: false ,
+  onClickLogout: () => {} ,
+  hideLogoutPop: () => {},
 });
 
 const ResourceProvider = ({children}: any) => {
-  const [showTransactionPopup , setShowTransactionPopup] = useState(false)
-  const [showUpdatePopup , setShowUpdatePopup] = useState(false)
-  const [showSidebar , setShowSidebar] = useState(false)
-  const [showDeletePopup , setShowDeletePopup] = useState(false)
+  const [shouldShowAddTransactionPopup , setShouldShowAddTransactionPopup] = useState(false)
+  const [shouldShowUpdatePopup , setShouldShowUpdatePopup] = useState(false)
+  const [shouldShowSidebar , setShouldShowSidebar] = useState(false)
+  const [shouldShowDeletePopup , setShouldShowDeletePopup] = useState(false)
   const [deleteTransacId , setDeleteTransacId] = useState("")
-  const [logoutPopup , setLogoutPopup] = useState(false)
+  const [shouldShowLogoutPopup , setShouldShowLogoutPopup] = useState(false)
 
   const userId = useUserId()
   const transaction = useStoreProvider()
-  const [current , send] = useMachine(FetchMachine)
+  const [transacCurrent , transacSend] = useMachine(FetchMachine)
 
   const userUrl = "https://bursting-gelding-24.hasura.app/api/rest/profile"
   const transactionsUrl =`https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=100&offset=0`
@@ -101,13 +101,16 @@ const ResourceProvider = ({children}: any) => {
     }
     const {data: userDataList ,  isLoading , fetchData: userDataApi} = useDataFetching()
 
+    const apiCall = () => {
+      return transacSend({type: "Fetch" , url: transactionsUrl , options: apiOptions})
+    }
     useEffect(() => {
-      send({type: "Fetch" , url: transactionsUrl , options: apiOptions})
+      apiCall()
       userDataApi(userUrl, apiOptions)
     } , [])
     let transactionModel
-  if (current.value === apiStatus.res) {
-  transactionModel = current.context.fetchedData.transactions.map((each: BackendTransactionModel): TransactionModels => {
+  if (transacCurrent.value === apiStatus.res) {
+  transactionModel = transacCurrent.context.fetchedData.transactions.map((each: BackendTransactionModel): TransactionModels => {
       return ({
         transactionName: each.transaction_name , 
         category: each.category ,
@@ -152,55 +155,52 @@ const ResourceProvider = ({children}: any) => {
       });
     }
 
-  const onClickTransaction = () => {
-    setShowTransactionPopup(true)
+  const onClickAddTransaction = () => {
+    setShouldShowAddTransactionPopup(true)
 };
 const onClickDelete = (id: string) => {
   setDeleteTransacId(id)
-  setShowDeletePopup(true)
+  setShouldShowDeletePopup(true)
 }
 
 const onCancel = () => {
-  setShowTransactionPopup(false)
-  setShowUpdatePopup(false)
-  setShowDeletePopup(false)
-  setLogoutPopup(false)
+  setShouldShowAddTransactionPopup(false)
+  setShouldShowUpdatePopup(false)
+  setShouldShowDeletePopup(false)
+  setShouldShowLogoutPopup(false)
 };
-const apiCall = () => {
-  send({type: "Fetch" , url: transactionsUrl , options: apiOptions})
+const onClickLogout = () => {
+  setShouldShowLogoutPopup(true)
 }
-const onLogClick = () => {
-  setLogoutPopup(true)
-}
-const logoutPop = () => {
-  setLogoutPopup(false)
+const hideLogoutPop = () => {
+  setShouldShowLogoutPopup(false)
 }
 
-  const onShow = () => {
-    setShowSidebar(s  => !s)
+  const onShowSidebar = () => {
+    setShouldShowSidebar(s  => !s)
 };
 
 const onClickEdit = () => {
-      setShowUpdatePopup(true)
+      setShouldShowUpdatePopup(true)
 };
 
-  return (<ResourceContext.Provider value = {{showTransactionPopup ,
-                                              showUpdatePopup,
-                                              showSidebar ,
-                                              showDeletePopup ,
+  return (<ResourceContext.Provider value = {{shouldShowAddTransactionPopup,
+                                              shouldShowUpdatePopup,
+                                              shouldShowSidebar ,
+                                              shouldShowDeletePopup ,
                                               deleteTransacId ,
-                                              logoutPopup  ,
-                                              onClickTransaction ,
+                                              shouldShowLogoutPopup  ,
+                                              onClickAddTransaction ,
                                               onClickDelete ,
                                               onCancel ,
-                                              onLogClick  ,
-                                              logoutPop ,
-                                              onShow ,
+                                              onClickLogout  ,
+                                              hideLogoutPop ,
+                                              onShowSidebar ,
                                               onClickEdit ,
                                           apiCall ,
                                           userList ,
                                           isLoading ,
-                                          current }}>{children}</ResourceContext.Provider>)
+                                          transacCurrent }}>{children}</ResourceContext.Provider>)
 }
 
 export default (ResourceProvider);

@@ -1,14 +1,14 @@
 import React, {  useContext , useEffect , useState } from "react";
-import ThreeDots  from  'react-loader-spinner'
 import {  Observer } from "mobx-react-lite" 
 
-import FailureView from "../FailureView";
+import { ResourceContext } from "../../context/ResourceContext";
+import FailureView from "../../common/FailureView";
+import LoadingWrapper from "../../common/LoadingWrapper";
 import { apiStatus } from "../../constants";
 import TransactionsList from "../TransactionsList";
 import TransactionType from "../TransactionType";
 
 import "./index.css";
-import { ResourceContext } from "../../context/ResourceContext";
 
 const transactionTypes: TransactionTabType[] = [
   { name: "All Transactions", id: "ALL TRANSACTIONS" },
@@ -22,7 +22,7 @@ interface TransactionTabType {
 
 const Transactions = () => {
   const [activeTypeId , setActiveTypeId] = useState(transactionTypes[0].id)
-  const {current , apiCall , showDeletePopup , showTransactionPopup , showUpdatePopup , logoutPopup} = useContext(ResourceContext)
+  const {transacCurrent , apiCall , shouldShowDeletePopup , shouldShowAddTransactionPopup , shouldShowUpdatePopup , shouldShowLogoutPopup} = useContext(ResourceContext)
 
   useEffect(() => {
     apiCall()
@@ -33,30 +33,14 @@ const Transactions = () => {
   }
 
   const renderTransactiondata = () => {
-          switch (current.value) {
+          switch (transacCurrent.value) {
             case apiStatus.res:
               return (
                 <TransactionsList activeTypeId = {activeTypeId} />
               );
             case apiStatus.inProgress:
               return (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center"
-                  }}
-                  className="loader-container"
-                >
-                  <ThreeDots
-                    height="80"
-                    width="80"
-                    color="#4D78FF"
-                    radius= {9}
-                    type="ThreeDots"
-                    visible={true}
-                  />
-                </div>
+                <LoadingWrapper />
               );
             case apiStatus.rej:
               return <FailureView />;
@@ -69,8 +53,8 @@ const Transactions = () => {
     return (
       <Observer>
         {() => (<>
-          {!showDeletePopup && !showTransactionPopup && !showUpdatePopup && !logoutPopup && (
-            <ul className="transactiontype-crd">
+          {!shouldShowDeletePopup && !shouldShowAddTransactionPopup && !shouldShowUpdatePopup && !shouldShowLogoutPopup && (
+            <ul className="transactiontype-card">
             {transactionTypes.map((each) => (
               <TransactionType
                 list={each}

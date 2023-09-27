@@ -21,8 +21,8 @@ const SideBarContents = (props: SideBarProps) => {
   return (
     <Link className="link" to={link}>
       <li className="content-list">
-        {isActive && <hr className="cont-line" />}
-        <div className="cnt-icons">
+        {isActive && <hr className="content-line" />}
+        <div className="content-card">
           <img
             style={{ color: "#505887" }}
             className="content-icon"

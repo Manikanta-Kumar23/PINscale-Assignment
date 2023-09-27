@@ -1,14 +1,12 @@
 import { makeAutoObservable, observable , action} from "mobx";
 
 interface TransactionModelType {
-    transaction_name?: string
-    user_id?:string
     amount: string
     category: string
     id: string
     type: string
     date: string
-    transactionName?: string
+    transactionName: string
     userId?: string
   }
   export class TransactionModel {
