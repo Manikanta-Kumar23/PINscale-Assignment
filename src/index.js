@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 
-import "/home/flowwai_ibu_apc5_015/GIthub Code/PINscale-Assignment/src/translation/i18n.js"
+import "/home/flowwai_ibu_apc5_015/GIthub Code/PINscale-Assignment/src/translation/i18n.js";
 
 import { BrowserRouter } from "react-router-dom";
 
@@ -11,7 +11,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter basename="/PINscale-Assignment">
     <App />
-  </BrowserRouter>
+  </BrowserRouter>,
 );
 
 // If you want to start measuring performance in your app, pass a function

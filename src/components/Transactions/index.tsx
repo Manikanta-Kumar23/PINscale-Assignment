@@ -1,5 +1,5 @@
-import React, {  useContext , useEffect , useState } from "react";
-import {  Observer } from "mobx-react-lite" 
+import React, { useContext, useEffect, useState } from "react";
+import { Observer } from "mobx-react-lite";
 
 import { ResourceContext } from "../../context/ResourceContext";
 import FailureView from "../../common/FailureView";
@@ -16,62 +16,66 @@ const transactionTypes: TransactionTabType[] = [
   { name: "Credit", id: "credit" },
 ];
 interface TransactionTabType {
-  name: string
-  id: string
+  name: string;
+  id: string;
 }
 
 const Transactions = () => {
-  const [activeTypeId , setActiveTypeId] = useState(transactionTypes[0].id)
-  const {transacCurrent , apiCall , shouldShowDeletePopup , shouldShowAddTransactionPopup , shouldShowUpdatePopup , shouldShowLogoutPopup} = useContext(ResourceContext)
+  const [activeTypeId, setActiveTypeId] = useState(transactionTypes[0].id);
+  const {
+    transacCurrent,
+    apiCall,
+    shouldShowDeletePopup,
+    shouldShowAddTransactionPopup,
+    shouldShowUpdatePopup,
+    shouldShowLogoutPopup,
+  } = useContext(ResourceContext);
 
   useEffect(() => {
-    apiCall()
-  } , [])
+    apiCall();
+  }, []);
 
   const changeTypeId = (id: string) => {
-    setActiveTypeId(id)
-  }
-
-  const renderTransactiondata = () => {
-          switch (transacCurrent.value) {
-            case apiStatus.res:
-              return (
-                <TransactionsList activeTypeId = {activeTypeId} />
-              );
-            case apiStatus.inProgress:
-              return (
-                <LoadingWrapper />
-              );
-            case apiStatus.rej:
-              return <FailureView />;
-            default:
-              return null;
-          }
-        ;
+    setActiveTypeId(id);
   };
 
-    return (
-      <Observer>
-        {() => (<>
-          {!shouldShowDeletePopup && !shouldShowAddTransactionPopup && !shouldShowUpdatePopup && !shouldShowLogoutPopup && (
-            <ul className="transactiontype-card">
-            {transactionTypes.map((each) => (
-              <TransactionType
-                list={each}
-                key={each.id}
-                isActive={activeTypeId === each.id}
-                changeTypeId = {changeTypeId}
-              />
-            ))}
-            </ul>
-          )}
-                <div className="main-content">
-          {renderTransactiondata()}
-          </div>
-        </>
-)}
-      </Observer>
-    );
-}
+  const renderTransactiondata = () => {
+    switch (transacCurrent.value) {
+      case apiStatus.res:
+        return <TransactionsList activeTypeId={activeTypeId} />;
+      case apiStatus.inProgress:
+        return <LoadingWrapper />;
+      case apiStatus.rej:
+        return <FailureView />;
+      default:
+        return null;
+    }
+  };
 
-export default (Transactions);
+  return (
+    <Observer>
+      {() => (
+        <>
+          {!shouldShowDeletePopup &&
+            !shouldShowAddTransactionPopup &&
+            !shouldShowUpdatePopup &&
+            !shouldShowLogoutPopup && (
+              <ul className="transactiontype-card">
+                {transactionTypes.map((each) => (
+                  <TransactionType
+                    list={each}
+                    key={each.id}
+                    isActive={activeTypeId === each.id}
+                    changeTypeId={changeTypeId}
+                  />
+                ))}
+              </ul>
+            )}
+          <div className="main-content">{renderTransactiondata()}</div>
+        </>
+      )}
+    </Observer>
+  );
+};
+
+export default Transactions;
