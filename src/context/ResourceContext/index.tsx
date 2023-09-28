@@ -105,7 +105,6 @@ const ResourceProvider = ({children}: any) => {
       return transacSend({type: "Fetch" , url: transactionsUrl , options: apiOptions})
     }
     useEffect(() => {
-      apiCall()
       userDataApi(userUrl, apiOptions)
     } , [])
     let transactionModel
