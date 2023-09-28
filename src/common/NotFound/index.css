@@ -1,4 +1,4 @@
-.not-card {
+.not-found-card {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -8,7 +8,7 @@
   padding: 3%;
   height: 100vh;
 }
-.not-img {
+.not-found-image {
   width: 35%;
   padding: 5px;
   margin: 5px;
@@ -16,11 +16,11 @@
   color: #ffffff;
 }
 @media (min-width: 768px) {
-  .not-found-img {
+  .not-found-image {
     width: 35%;
   }
 }
-.not-heading {
+.not-found-heading {
   font-family: "Roboto";
   font-size: 23px;
   font-weight: 700;
@@ -28,7 +28,7 @@
   margin: 5px;
   padding: 5px;
 }
-.not-para {
+.not-found-para {
   font-family: "Roboto";
   font-size: 13px;
   font-weight: 500;
@@ -36,7 +36,7 @@
   margin: 5px;
   padding: 5px;
 }
-.home-btn {
+.back-to-home-btn {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 14px;
   font-weight: 500;

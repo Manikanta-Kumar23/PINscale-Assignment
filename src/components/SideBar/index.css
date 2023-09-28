@@ -24,7 +24,7 @@
   cursor: pointer;
   outline: none;
 }
-.content-card {
+.sidebar-content-card {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -47,7 +47,7 @@
   border-color: #00000025;
   justify-content: space-between;
 }
-.mail {
+.user-data {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -65,7 +65,7 @@
   flex-direction: column;
   justify-content: center;
 }
-.usr-name {
+.user-name {
   font-size: 14px;
   line-height: 21px;
   color: #505887;
@@ -74,7 +74,7 @@
   font-family: Arial, Helvetica, sans-serif;
   font-weight: 700;
 }
-.usr-mail {
+.user-mail {
   font-size: 13px;
   line-height: 15px;
   color: #718ebf;
@@ -91,115 +91,4 @@
   outline: none;
   margin: 5px;
   margin-right: 3%;
-}
-.modal-card {
-  width: 100vw;
-  height: 100vh;
-  backdrop-filter: blur(15px);
-  background-color: #00000095;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.mssg-card {
-  background-color: #ffffff;
-  border-radius: 13px;
-  width: 35%;
-  padding: 5px;
-  margin: 5px;
-  display: flex;
-}
-.bg-clr {
-  background-color: #fde68a;
-  width: 32px;
-  height: 32px;
-  border-radius: 51px;
-  padding: 2px;
-  margin: 2px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.out-icon {
-  background-color: #fef3c7;
-  width: 48px;
-  height: 48px;
-  border-radius: 51px;
-  padding: 2px;
-  margin: 2px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 2%;
-  margin-left: 2%;
-}
-.text-card {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-  margin-left: 2%;
-}
-.logout-name {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 28px;
-  color: #333b69;
-  padding: 2px;
-}
-.cnfrm-txt {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-  color: #505887;
-  padding: 2px;
-}
-.btn-crd {
-  display: flex;
-  padding: 5px;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
-}
-@media (min-width: 768px) {
-  .btn-crd {
-    flex-direction: row;
-  }
-}
-.s-btn {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  text-align: center;
-  line-height: 20px;
-  color: #ffffff;
-  padding: 8px, 16px, 8px, 16px;
-  background-color: #dc2626;
-  height: 36px;
-  width: 125px;
-  cursor: pointer;
-  outline: none;
-  border-width: 0px;
-  border-radius: 7px;
-  margin: 5px;
-  margin-right: 13px;
-  margin-bottom: 7px;
-}
-.no-btn {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  text-align: center;
-  line-height: 20px;
-  color: #333b69;
-  padding: 8px, 16px, 8px, 16px;
-  background-color: #ffffff;
-  height: 36px;
-  width: 125px;
-  cursor: pointer;
-  outline: none;
-  border-width: 1px;
-  border-color: #cbd5e1;
-  border-radius: 7px;
 }

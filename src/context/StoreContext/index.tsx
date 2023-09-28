@@ -1,5 +1,6 @@
 import React, { useContext, useRef } from "react"
 import { TransactionStore } from "../../store";
+
 export const StoreContext = React.createContext<TransactionStore | undefined>(undefined)
 
 export const useStoreProvider = () => {

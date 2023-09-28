@@ -10,33 +10,28 @@ const Login = () => {
   const [email , setEmail] = useState("")
     const [password ,setPassword] = useState("")
     const [errMssg, setErrMssg] = useState("")
-    const [mailErr , setMailErr] = useState(false)
+    const [isMailErr , setIsMailErr] = useState(false)
     const history = useHistory()
     const onCheckMail = (event: React.FocusEvent<HTMLInputElement>) => {
         if (event.target.value.endsWith("@gmail.com") === false &&
         event.target.value !== "") {
             setErrMssg("*Please provide a valid Email-Id")
-            setMailErr(true)
+            setIsMailErr(true)
         }
         else if (event.target.value.endsWith("@gmail.com")) {
             setErrMssg("")
-            setMailErr(false)
+            setIsMailErr(false)
         }
 
     }
     
     const onSuccess = (id: string) => {
-      setMailErr(false)
+      setIsMailErr(false)
       setErrMssg("")
       Cookies.set("id", id, { expires: 23 });
-      history.push("/")
+      history.replace("/")
     }
-    const onMailId = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setEmail(event.target.value)
-    } 
-    const onPassword = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setPassword(event.target.value)
-    }
+  
     const onLogin = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         if (email !== "" && password !== "") {
@@ -56,7 +51,7 @@ const Login = () => {
           if (data.get_user_id.length !== 0) {
             onSuccess(data.get_user_id[0].id);
           } else {
-            setMailErr(true)
+            setIsMailErr(true)
             setErrMssg("*email & password doesn't match")
           }
         } else {
@@ -68,9 +63,9 @@ const Login = () => {
     }
 
     return (
-      <div className="background">
-        <div className="page-card">
-          <div className="image-card">
+      <div className="login-background">
+        <div className="login-page-card">
+          <div className="login-page-image-card">
             <img
               alt="logo"
               className="company-logo"
@@ -82,40 +77,40 @@ const Login = () => {
               src="https://res.cloudinary.com/djwve85r0/image/upload/v1690629076/IM_zlx35s.png"
             />
           </div>
-          <form onSubmit={onLogin} className="login-form">
+          <form onSubmit={onLogin} className="login-form-card">
             <img
               alt="logo"
-              className="logo"
+              className="login-form-logo"
               src="https://res.cloudinary.com/djwve85r0/image/upload/v1690624094/logo.png"
             />
-            <div className="form-card">
-              <div className="input-card">
-                <label className="label" htmlFor="email">
+            <div className="credential-form-card">
+              <div className="login-input-card">
+                <label className="login-form-label" htmlFor="email">
                   Email Address
                 </label>
-                <div className="icon-box">
+                <div className="login-form-input">
                   <MdOutlineMail color="#1b2a33" size="23" />
                   <input
                     className="input"
                     placeholder="Email ID"
                     onBlur={onCheckMail}
-                    onChange={onMailId}
+                    onChange={(e) => setEmail(e.target.value)}
                     value={email}
                     type="text"
                     id="email"
                   />
                 </div>
               </div>
-              <div className="input-card">
-                <label className="label" htmlFor="password">
+              <div className="login-input-card">
+                <label className="login-form-label" htmlFor="password">
                   Password
                 </label>
-                <div className="icon-box">
+                <div className="login-form-input">
                   <PiPassword color="#1b2a33" size="23" />
                   <input
                     className="input"
                     placeholder="Password"
-                    onChange={onPassword}
+                    onChange={(e) => setPassword(e.target.value)}
                     value={password}
                     type="password"
                     id="password"
@@ -125,7 +120,7 @@ const Login = () => {
               <button className="login-btn" type="submit">
                 Login
               </button>
-              {mailErr && <p className="err">{errMssg}</p>}
+              {isMailErr && <p className="login-error">{errMssg}</p>}
             </div>
           </form>
         </div>

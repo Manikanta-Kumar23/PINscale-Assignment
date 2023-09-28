@@ -2,7 +2,7 @@ export const apiStatus = {
     res: "SUCCESS",
     rej: "FAIL",
     inProgress: "PENDING",
-    initial: "",
+    initial: "INITIAL",
   };
   export const imagesUrl = [
     {

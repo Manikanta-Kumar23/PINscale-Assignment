@@ -6,11 +6,12 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { BiUpArrowCircle } from "react-icons/bi";
 import { BsArrowDownCircle } from "react-icons/bs";
 
-import "./index.css"
 import useUserId from "../../hooks/useUserId";
 import { ResourceContext } from "../../context/ResourceContext";
 import { imagesUrl } from "../../constants";
 import { useStoreProvider } from "../../context/StoreContext";
+
+import "./index.css"
 
   interface TransactionTabType {
     name: string
@@ -36,7 +37,7 @@ const TransactionsList = (props: TransactionProps) => {
     const {activeTypeId , limit} = props
     const userId = useUserId()
     const transaction = useStoreProvider()
-    const {showDeletePopup , showTransactionPopup , showUpdatePopup , logoutPopup  , onClickEdit , onClickDelete ,
+    const {shouldShowDeletePopup , shouldShowAddTransactionPopup , shouldShowUpdatePopup , shouldShowLogoutPopup  , onClickEdit , onClickDelete ,
     userList} = useContext(ResourceContext)
     if (activeTypeId !== transactionTypes[0].id) {
         filterList = transaction.transactionList.filter(
@@ -67,10 +68,10 @@ const TransactionsList = (props: TransactionProps) => {
         onClickDelete(event.target.value)
       };
     return (
-        <div className="table-card">
-                  <table className="table">
-                    <thead className="head">
-                      <tr className="head-card">
+        <div className="transactions-table-card">
+                  <table className="transaction-table">
+                    <thead className="transaction-tablehead">
+                      <tr className="transaction-header-text">
                         {((userId) === "3")  && <th>User Name</th>}
                         <th>Transaction Name</th>
                         <th>Category</th>
@@ -78,13 +79,13 @@ const TransactionsList = (props: TransactionProps) => {
                         <th>Amount</th>
                       </tr>
                     </thead>
-                    {!showTransactionPopup && !showUpdatePopup &&  !showDeletePopup && !logoutPopup && finalList!== undefined &&(
-                      <tbody className="body">
+                    {!shouldShowAddTransactionPopup && !shouldShowUpdatePopup &&  !shouldShowDeletePopup && !shouldShowLogoutPopup && finalList!== undefined &&(
+                      <tbody className="transaction-table-body-text">
                         {finalList.map((each) => (
                           <tr key={each.id}>
                             {((userId) === "3")  && (
                               <td>
-                                <div className="usr-icn-crd">
+                                <div className="transaction-table-user-icon">
                                   {((userId) === "3") ? (
                                     each.type.toLowerCase() === "credit" ? (
                                       <BiUpArrowCircle
@@ -99,7 +100,7 @@ const TransactionsList = (props: TransactionProps) => {
                                     )
                                   ) : null}
                                   <img
-                                    className="usr-icn"
+                                    className="table-user-icon"
                                     alt="user-icon"
                                     src={
                                       imagesUrl.find(
@@ -115,7 +116,7 @@ const TransactionsList = (props: TransactionProps) => {
                               </td>
                             )}
                             <td>
-                              <div className="align">
+                              <div className="admin-card-icons">
                                 {((userId) !== "3")  ? (
                                   each.type.toLowerCase() === "credit" ? (
                                     <BiUpArrowCircle
@@ -129,7 +130,7 @@ const TransactionsList = (props: TransactionProps) => {
                                     />
                                   )
                                 ) : null}
-                                <p className="margin">{each.transactionName}</p>
+                                <p className="transaction-name-margin">{each.transactionName}</p>
                               </div>
                             </td>
                             <td>{each.category}</td>
@@ -157,7 +158,7 @@ const TransactionsList = (props: TransactionProps) => {
                                   <button
                                     onClick={onEdit}
                                     value={each.id}
-                                    className="edit-btn"
+                                    className="transaction-table-edit-btn"
                                     type="button"
                                   >
                                     <HiOutlinePencil
@@ -169,7 +170,7 @@ const TransactionsList = (props: TransactionProps) => {
                                 <td>
                                 <button
                                         onClick={changePopup}
-                                        className="edit-btn"
+                                        className="transaction-table-edit-btn"
                                         value = {each.id}
                                         type="button"
                                       >

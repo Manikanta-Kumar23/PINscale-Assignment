@@ -6,8 +6,9 @@ import {  observer } from "mobx-react";
 import {ResourceContext} from "../../context/ResourceContext";
 import { useStoreProvider } from "../../context/StoreContext";
 import useUserId from "../../hooks/useUserId";
-import "./index.css";
 import { TransactionModel  } from "../../store";
+
+import "./index.css";
 
 const transactionCategoryTypes = [
   { name: "Select", value: "null" },
@@ -20,72 +21,72 @@ const transactionCategoryTypes = [
 ];
 
 const UpdateTransactions = () => {
-  const [nameErr , setNameErr] = useState(false)
+  const [isNameErr , setIsNameErr] = useState(false)
   const [nameErrMssg , setNameErrMssg] = useState("")
-  const [catErr , setCatErr] = useState(false)
-  const [catErrMssg , setCatErrMssg] = useState("")
-  const [amntErr , setAmntErr] = useState(false)
-  const [amntErrMssg , setAmntErrMssg] = useState("")
-  const [dateErr , setDateErr] = useState(false)
+  const [isCategoryErr , setIsCategoryErr] = useState(false)
+  const [categoryErrMssg , setCategoryErrMssg] = useState("")
+  const [isAmountErr , setIsAmountErr] = useState(false)
+  const [amountErrMssg , setAmountErrMssg] = useState("")
+  const [isDateErr , setIsDateErr] = useState(false)
   const [dateErrMssg , setDateErrMssg] = useState("")
-  const [typeErr , setTypeErr] = useState(false)
+  const [isTypeErr , setIsTypeErr] = useState(false)
   const [typeErrMssg ,setTypeErrMssg]  =useState("")
+  const [isUpdateSuccess , setIsUpdateSuccess] = useState(false)
   const userId = useUserId()
   const {
-    showUpdatePopup,
+    shouldShowUpdatePopup,
     onCancel, apiCall
   } = useContext(ResourceContext)
   const transaction = useStoreProvider()
-  const [updateSuccessMssg , setUpdateSuccessMssg] = useState(false)
 
   const onBlurName = (event: React.FocusEvent<HTMLInputElement>) => {
     if (event.target.value === "") {
-        setNameErr(true)
+        setIsNameErr(true)
         setNameErrMssg("*Required")
     } else if (event.target.value.length > 30) {
-        setNameErr(true)
+        setIsNameErr(true)
         setNameErrMssg("Max limit 30 Characters")
     } else {
-        setNameErr(false)
+        setIsNameErr(false)
     }
   };
 
-  const onBlurCat = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const onBlurCategory = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (event.target.value === "null") {
-        setCatErr(true)
-        setCatErrMssg("*Required")
+        setIsCategoryErr(true)
+        setCategoryErrMssg("*Required")
     } else {
-        setCatErr(false)
+        setIsCategoryErr(false)
     }
   };
 
   const onBlurType = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (event.target.value === "null") {
-        setTypeErr(true)
+        setIsTypeErr(true)
         setTypeErrMssg("*Required")
     } else {
-        setTypeErr(false)
+        setIsTypeErr(false)
     }
   };
 
   const onBlurAmount = (event: React.FocusEvent<HTMLInputElement>) => {
     if (event.target.value === "") {
-        setAmntErr(true)
-        setAmntErrMssg("*Required")
+        setIsAmountErr(true)
+        setAmountErrMssg("*Required")
     } else if (parseInt(event.target.value) === 0) {
-        setAmntErr(true)
-        setAmntErrMssg("Amount should be > 0")
+        setIsAmountErr(true)
+        setAmountErrMssg("Amount should be > 0")
     } else {
-        setAmntErr(false)
+        setIsAmountErr(false)
     }
   };
 
   const onBlurDate = (event: React.FocusEvent<HTMLInputElement>) => {
     if (event.target.value === "") {
     } else {
-        setDateErr(true)
+        setIsDateErr(true)
         setDateErrMssg("*Required")
-        setDateErr(false)
+        setIsDateErr(false)
     }
   };
   const [updateTransactionModel]    = useState(() => {
@@ -126,69 +127,69 @@ const UpdateTransactions = () => {
             transactionData = {transactionName: transactionData.transaction_name , type: transactionData.type, category: transactionData.category , amount: transactionData.amount , date: transactionData.date , id: transactionData.id , userId: transactionData.user_id}
             const list = new TransactionModel(transactionData.transactionNme ,transactionData.type , transactionData.category , transactionData.amount  , transactionData.date , transactionData.id , transactionData.userId)
             transaction.updateTransactionList(list)
-            setUpdateSuccessMssg(true)
+            setIsUpdateSuccess(true)
             apiCall()
           };
           const close = () => {
             onCancel();
-            setUpdateSuccessMssg(false)
-            setCatErr(false)
-            setTypeErr(false)
-            setNameErr(false)
-            setAmntErr(false)
-            setDateErr(false)
+            setIsUpdateSuccess(false)
+            setIsCategoryErr(false)
+            setIsTypeErr(false)
+            setIsNameErr(false)
+            setIsAmountErr(false)
+            setIsDateErr(false)
           };
           return (
-              showUpdatePopup && (
-                <div className="add-transactions">
-                  <form onSubmit={onUpdateTransaction} className="add-form-crd">
-                    <div className="frm-head">
-                      {!updateSuccessMssg && (
-                        <div className="hed-crd">
-                          <h1 className="heading">Update Transaction</h1>
-                          <p className="para">
+              shouldShowUpdatePopup && (
+                <div className="add-transaction-card">
+                  <form onSubmit={onUpdateTransaction} className="add-transaction-form-card">
+                    <div className="form-header">
+                      {!isUpdateSuccess && (
+                        <div className="form-header-card">
+                          <h1 className="form-header-heading">Update Transaction</h1>
+                          <p className="form-header-para">
                             You can update your transaction here.
                           </p>
                         </div>
                       )}
                       <button
-                        className="cancel-btn"
+                        className="add-transaction-cancel-btn"
                         onClick={close}
                         type="button"
                       >
                         <RxCross2 color="#718EBF" size="19" />
                       </button>
                     </div>
-                    {updateSuccessMssg === false ? (
+                    {isUpdateSuccess === false ? (
                       <>
-                        <div className="data-crd">
-                          <div className="label-crd">
-                            <label className="add-label" htmlFor="transc-name">
+                        <div className="add-transaction-data-card">
+                          <div className="add-transaction-input-card">
+                            <label className="add-transaction-label" htmlFor="updateTransacName">
                               Transaction Name
                             </label>
                             <input
-                              className="add-transc-name"
+                              className="add-transaction-input"
                               onBlur={onBlurName}
                               onChange={(event) => updateTransactionModel.setName(event.target.value)}
                               value={updateTransactionModel.transactionName}
                               type="text"
-                              id="transc-name"
+                              id="updateTransacName"
                               placeholder="Enter Name"
                             />
-                            {nameErr && (
-                              <p className="transc-err">{nameErrMssg}</p>
+                            {isNameErr && (
+                              <p className="add-transaction-error">{nameErrMssg}</p>
                             )}
                           </div>
-                          <div className="label-crd">
-                            <label className="add-label" htmlFor="transc-type">
+                          <div className="add-transaction-input-card">
+                            <label className="add-transaction-label" htmlFor="updateTransacType">
                               Transaction Type
                             </label>
                             <select
                               onBlur={onBlurType}
                               value={updateTransactionModel.type}
                               onChange={(event)=> updateTransactionModel.setType(event.target.value)}
-                              className="add-transc-name"
-                              id="transc-type"
+                              className="add-transaction-input"
+                              id="updateTransacType"
                             >
                               <option value="null">
                                 Select Transaction Type
@@ -196,20 +197,20 @@ const UpdateTransactions = () => {
                               <option value="credit">Credit</option>
                               <option value="debit">Debit</option>
                             </select>
-                            {typeErr && (
-                              <p className="transc-err">{typeErrMssg}</p>
+                            {isTypeErr && (
+                              <p className="add-transaction-error">{typeErrMssg}</p>
                             )}
                           </div>
-                          <div className="label-crd">
-                            <label className="add-label" htmlFor="transc-type">
+                          <div className="add-transaction-input-card">
+                            <label className="add-transaction-label" htmlFor="updateTransacCat">
                               Transaction Category
                             </label>
                             <select
                               onChange={(event)=> updateTransactionModel.setCategory(event.target.value)}
-                              onBlur={onBlurCat}
+                              onBlur={onBlurCategory}
                               value={updateTransactionModel.category}
-                              className="add-transc-name"
-                              id="transc-type"
+                              className="add-transaction-input"
+                              id="updateTransacCat"
                             >
                               {transactionCategoryTypes.map((each) => (
                                 <option value={each.value} key={each.value}>
@@ -217,40 +218,40 @@ const UpdateTransactions = () => {
                                 </option>
                               ))}
                             </select>
-                            {catErr && <p className="transc-err">{catErrMssg}</p>}
+                            {isCategoryErr && <p className="add-transaction-error">{categoryErrMssg}</p>}
                           </div>
-                          <div className="label-crd">
-                            <label className="add-label" htmlFor="transc-amount">
+                          <div className="add-transaction-input-card">
+                            <label className="add-transaction-label" htmlFor="updateTransacAmnt">
                               Amount
                             </label>
                             <input
                               onBlur={onBlurAmount}
                               onChange={(event)=> updateTransactionModel.setAmount(event.target.value)}
                               value={updateTransactionModel.amount}
-                              className="add-transc-name"
+                              className="add-transaction-input"
                               type="number"
-                              id="transc-amount"
+                              id="updateTransacAmnt"
                               placeholder="Enter Amount"
                             />
-                            {amntErr && (
-                              <p className="transc-err">{amntErrMssg}</p>
+                            {isAmountErr && (
+                              <p className="add-transaction-error">{amountErrMssg}</p>
                             )}
                           </div>
-                          <div className="label-crd">
-                            <label className="add-label" htmlFor="transc-date">
+                          <div className="add-transaction-input-card">
+                            <label className="add-transaction-label" htmlFor="updateTransacDate">
                               Date
                             </label>
                             <input
                               onBlur={onBlurDate}
                               onChange={(event)=> updateTransactionModel.setDate(event.target.value)}
                               value = {updateTransactionModel.date !== undefined ? format(parseISO(updateTransactionModel.date),"yyyy-MM-dd") : format(parseISO(transaction.updateList.date),"yyyy-MM-dd")}
-                              className="add-transc-name"
+                              className="add-transaction-input"
                               type="date"
-                              id="transc-date"
+                              id="updateTransacDate"
                               placeholder="Enter Date"
                             />
-                            {dateErr && (
-                              <p className="transc-err">{dateErrMssg}</p>
+                            {isDateErr && (
+                              <p className="add-transaction-error">{dateErrMssg}</p>
                             )}
                           </div>
                         </div>
@@ -259,8 +260,8 @@ const UpdateTransactions = () => {
                         </button>
                       </>
                     ) : (
-                      <div className="add-suc-crd">
-                        <h1 className="add-suc">
+                      <div className="add-transaction-success-card">
+                        <h1 className="add-transaction-success-heading">
                           Transaction Updated Successfully
                         </h1>
                       </div>

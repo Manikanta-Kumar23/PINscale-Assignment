@@ -10,7 +10,7 @@
   align-items: center;
   margin-top: 3%;
 }
-.failure-head {
+.failure-card-heading {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 25px;
   font-weight: 600;
@@ -19,7 +19,7 @@
   margin: 5px;
   color: #343c6a;
 }
-.failure-para {
+.failure-card-para {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 15px;
   font-weight: 400;

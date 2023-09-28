@@ -61,13 +61,13 @@ const TransactionOverviewChart = (props: ChartProps) => {
   });
 
   return (
-    <div className="chart">
-      <h1 className="week_cost">
-        <span className="span">${debit}</span> Debited &
-        <span className="span"> ${credit}</span> Credited this Week
+    <div className="recharts-card">
+      <h1 className="week-cost-card">
+        <span className="week-cost-span">${debit}</span> Debited &
+        <span className="week-cost-span"> ${credit}</span> Credited this Week
       </h1>
       {credit === 0 && debit === 0 ? (
-        <p className="no-data">No Data to show at the given time.</p>
+        <p className="recharts-no-data">No Data to show at the given time.</p>
       ) : (
         <ResponsiveContainer width="85%" height={400}>
           <BarChart

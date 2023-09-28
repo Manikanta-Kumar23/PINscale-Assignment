@@ -1,3 +1,4 @@
+import { useContext, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { IoWarningOutline } from "react-icons/io5";
 import { FiLogOut } from "react-icons/fi";
@@ -9,33 +10,30 @@ import { useStoreProvider } from "../../context/StoreContext";
 import useUserId from "../../hooks/useUserId";
 
 import "./index.css"
-import { useContext, useState } from "react";
 
 interface TransactionModelType {
-  transaction_name?: string
-  user_id?:string
   amount: string
   category: string
   id: string
   type: string
   date: string
-  transactionName?: string
+  transactionName: string
   userId?: string
 }
 
 const DeleteTransaction = (props: any) => {
-    const {showDeletePopup , onCancel , deleteTransacId ,  logoutPopup , logoutPop , apiCall} = useContext(ResourceContext)
-    const [deleteMssg , setDeleteMssg] = useState(false)
-    const [errMssg , setErrMssg] = useState(false)
+    const {shouldShowDeletePopup , onCancel , deleteTransacId ,  shouldShowLogoutPopup , hideLogoutPop , apiCall} = useContext(ResourceContext)
+    const [isDeleted , setIsDeleted] = useState(false)
+    const [isErr , setIsErr] = useState(false)
     const userId = useUserId()
     const transaction = useStoreProvider()
     const onClose = () => {
-        setErrMssg(false)
+        setIsErr(false)
         onCancel()
-        setDeleteMssg(false)
+        setIsDeleted(false)
     }
     const onDelete = async () => {
-        setErrMssg(false)
+        setIsErr(false)
         const id = parseInt(deleteTransacId)
         const options = {
             method: "DELETE",
@@ -55,104 +53,104 @@ const DeleteTransaction = (props: any) => {
             const updateList = transaction.transactionList.filter((each: TransactionModelType) => each.id !== trnsacId);
             transaction.deleteTransactionList(updateList)
             apiCall()
-            setDeleteMssg(true)
+            setIsDeleted(true)
           }
           else {
-            setErrMssg(true)
+            setIsErr(true)
           }
     }
     const onLogout = () => {
         const { history } = props;
         Cookies.remove("id");
         history.replace("/login");
-        logoutPop()
+        hideLogoutPop()
       };
     const renderDeleteView = () => {
         return (
-            <div className="add-transactions">
+            <div className="add-transaction-card">
                 <div className="modal-card">
-  <div className="mssg-card">
-      {!deleteMssg ? (
-           <>
-             <div className="out-icon">
-                  <span className="bg-clr">
-                          <IoWarningOutline
-                              color="#D97706"
-                              size="21"
-                          />
-                  </span>
-              </div>
-              <div className="text-card">
-                  <h1 className="logout-name">
-                      Are you sure you want to
-                      Delete?
-                  </h1>
-                  <p className="cnfrm-txt">
-                      This transaction will be
-                      deleted immediately. You can’t
-                       undo this action.
-                  </p>
-                  <div className="btn-crd">
-                      <button
-                          className="s-btn"
-                          onClick={onDelete}
-                          type="button"
-                       >
-                          Yes, Delete
-                      </button>
-                      <button
-                      className="no-btn"
-                      type="button"
-                      onClick={ onClose}
-                      >
-                      No, Leave it
-                      </button>
-              </div>
-              {errMssg && (<p className="err">*Please try Again</p>)}
-          </div>
-      </>) : (
-               <div className="add-suc-crd">
-                      <h1 className="add-suc">
-                           Transaction deleted successfully.</h1>
-              </div>)}
-                 <button
-                 onClick={onClose}
-                      className="cancl-btn"
-                      type="button">
-                        <RxCross2 color="#718EBF" size="17"/>
-                  </button>
-      </div>
-       </div>
-            </div>
+                  <div className="modal-card-header">
+                    {!isDeleted ? (
+                        <>
+                          <div className="warning-icon">
+                                <span className="warning-icon-bg">
+                                        <IoWarningOutline
+                                            color="#D97706"
+                                            size="21"
+                                        />
+                                </span>
+                          </div>
+                          <div className="main-text-card">
+                              <h1 className="main-text-heading">
+                                  Are you sure you want to
+                                  Delete?
+                              </h1>
+                              <p className="confirm-text">
+                                  This transaction will be
+                                  deleted immediately. You can’t
+                                  undo this action.
+                              </p>
+                              <div className="delete-card-btns">
+                                  <button
+                                      className="confirm-btn"
+                                      onClick={onDelete}
+                                      type="button"
+                                  >
+                                      Yes, Delete
+                                  </button>
+                                  <button
+                                  className="reject-btn"
+                                  type="button"
+                                  onClick={ onClose}
+                                  >
+                                  No, Leave it
+                                  </button>
+                          </div>
+                          {isErr && (<p className="delete-transaction-error">*Please try Again</p>)}
+                      </div>
+                  </>) : (
+                          <div className="add-transaction-success-card">
+                                  <h1 className="add-transaction-success-heading">
+                                      Transaction deleted successfully.</h1>
+                          </div>)}
+                            <button
+                            onClick={onClose}
+                                  className="add-transaction-cancel-btn"
+                                  type="button">
+                                    <RxCross2 color="#718EBF" size="17"/>
+                              </button>
+                  </div>
+                  </div>
+                        </div>
         )
     }
     const renderLogOutView = () => {
         return (
-            <div className="add-transactions">
+            <div className="add-transaction-card">
                 <div className="modal-card">
-                      <div className="mssg-card">
-                        <div className="out-icon">
-                          <span className="bg-clr">
+                      <div className="modal-card-header">
+                        <div className="warning-icon">
+                          <span className="warning-icon-bg">
                             <FiLogOut color="#D97706" size="21" />
                           </span>
                         </div>
-                        <div className="text-card">
-                          <h1 className="logout-name">
+                        <div className="main-text-card">
+                          <h1 className="main-text-heading">
                             Are you sure you want to Logout?
                           </h1>
-                          <p className="cnfrm-txt">
+                          <p className="confirm-text">
                             Click Yes to logout or else Cancel
                           </p>
-                          <div className="btn-crd">
+                          <div className="delete-card-btns">
                             <button
                               onClick={onLogout}
-                              className="s-btn"
+                              className="confirm-btn"
                               type="button"
                             >
                               Yes,Logout
                             </button>
                             <button
-                              className="no-btn"
+                              className="reject-btn"
                               type="button"
                               onClick={onClose}
                             >
@@ -168,8 +166,8 @@ const DeleteTransaction = (props: any) => {
     return (
         ( 
        <>
-        {showDeletePopup && renderDeleteView()}
-        {logoutPopup && renderLogOutView()}</>)
+        {shouldShowDeletePopup && renderDeleteView()}
+        {shouldShowLogoutPopup && renderLogOutView()}</>)
     )
 }
 export default withRouter(DeleteTransaction)
