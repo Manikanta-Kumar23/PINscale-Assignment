@@ -1,6 +1,5 @@
 import { Switch, Route, withRouter } from "react-router-dom";
 
-
 import "./App.css";
 import AddTransactions from "./components/AddTransactions";
 import UpdateTransactions from "./components/UpdateTransactions";
@@ -14,23 +13,23 @@ import NotFound from "./common/NotFound";
 import ResourceProvider from "./context/ResourceContext";
 import StoreProvider from "./context/StoreContext";
 
-const  App = () => {
-    return (
-      <StoreProvider>
-        <ResourceProvider>
-          <UpdateTransactions />
+const App = () => {
+  return (
+    <StoreProvider>
+      <ResourceProvider>
+        <UpdateTransactions />
         <AddTransactions />
         <DeleteTransaction />
         <Switch>
-        <Route exact path="/login" component={Login} />
-              <AuthenticateRoute exact path="/" component={Home} />
-              <AuthenticateRoute path="/transactions" component={Transactions}/>
-              <AuthenticateRoute path="/profile" component={Profile} />
+          <Route exact path="/login" component={Login} />
+          <AuthenticateRoute exact path="/" component={Home} />
+          <AuthenticateRoute path="/transactions" component={Transactions} />
+          <AuthenticateRoute path="/profile" component={Profile} />
           <Route component={NotFound} />
         </Switch>
-        </ResourceProvider>
-      </StoreProvider>
-    );
-  }
+      </ResourceProvider>
+    </StoreProvider>
+  );
+};
 
 export default withRouter(App);

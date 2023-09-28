@@ -11,18 +11,18 @@ import {
 import "./index.css";
 
 interface ChartType {
-  sum: number
-  type: string
-  date: string
+  sum: number;
+  type: string;
+  date: string;
 }
 
 interface ChartProps {
-  data: ChartType[]
+  data: ChartType[];
 }
 interface FormatDataType {
-  date: string
-  debit?: number
-  credit?:number
+  date: string;
+  debit?: number;
+  credit?: number;
 }
 
 const TransactionOverviewChart = (props: ChartProps) => {
@@ -34,7 +34,9 @@ const TransactionOverviewChart = (props: ChartProps) => {
   };
   const { data } = props;
   const groupedData: FormatDataType[] = data.reduce((acc: any, curr: any) => {
-    const existingGroup: any = acc.find((item: ChartType) => item.date === curr.date);
+    const existingGroup: any = acc.find(
+      (item: ChartType) => item.date === curr.date,
+    );
     if (existingGroup) {
       existingGroup[curr.type.toLowerCase()] = curr.sum;
     } else {
