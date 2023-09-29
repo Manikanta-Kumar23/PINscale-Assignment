@@ -63,13 +63,13 @@ const TransactionOverviewChart = (props: ChartProps) => {
   });
 
   return (
-    <div className="recharts-card">
-      <h1 className="week-cost-card">
-        <span className="week-cost-span">${debit}</span> Debited &
-        <span className="week-cost-span"> ${credit}</span> Credited this Week
+    <div className="flex flex-col justify-center items-center rounded-[13px] bg-[#ffffff] ml-[3%]">
+      <h1 className="font-[Arial, Helvetica, sans-serif] text-[16px] leading-[19.36px] text-[#718ebf] p-[5px] m-[5px] mt-[2%] ml-[3%] text-left font-[400] self-start">
+        <span className="text-[#333b69]">${debit}</span> Debited &
+        <span className="text-[#333b69]"> ${credit}</span> Credited this Week
       </h1>
       {credit === 0 && debit === 0 ? (
-        <p className="recharts-no-data">No Data to show at the given time.</p>
+        <p className="font-[Arial, Helvetica, sans-serif] text-[16px] leading-[19.36px] text-[#333b69] p-[5px] m-[5px] mt-[2%] ml-[3%] text-center font-[600]">No Data to show at the given time.</p>
       ) : (
         <ResponsiveContainer width="85%" height={400}>
           <BarChart

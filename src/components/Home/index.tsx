@@ -138,21 +138,21 @@ const Home = (props: HomeProps) => {
           },
         ];
         return (
-          <ul className="totalcredit-card">
+          <ul className="flex flex-col md:flex-row justify-evenly items-center  w-[95%] p-[5px] m-[5px] list-none mt-[3%]">
             {transData.map((each) => (
-              <li key={each.type} className="credit-card">
-                <div className="cost-card">
+              <li key={each.type} className="flex justify-between min-h-[170px] last:flex-row-reverse last:md:flex-row md:w-[45%] w-[95%] bg-[#ffffff] p-[5px_3px_5px_3px] rounded-[13px] m-[8px]">
+                <div className="flex flex-col items-left ml-[3%]">
                   <h1
-                    className={`cost ${
-                      each.type.toLowerCase() === "debit" ? "debit-cost" : null
+                    className={`font-[Arial, Helvetica, sans-serif] text-[32px] leading-[38.73px] text-[#16dbaa] p-[3px] m-[3px] mb-[0px] font-semibold ${
+                      each.type.toLowerCase() === "debit" ? "text-[#fe5c73] text-[28px] leading-[30.26px]" : null
                     }`}
                   >
                     ${each.cost}
                   </h1>
-                  <p className="transaction-type">{each.type}</p>
+                  <p className="font-[Arial, Helvetica, sans-serif] text-[16px] leading-[19.36px] text-[#718ebf] p-[3px] m-[3px] mt-[0px] font-normal">{each.type}</p>
                 </div>
                 <img
-                  className="totalcredit-card-image"
+                  className="w-[182px] h-[161px] p-[5px] m-[5px]"
                   alt={`${each.type}`}
                   src={each.image}
                 />
@@ -173,8 +173,8 @@ const Home = (props: HomeProps) => {
     switch (transacCurrent.value) {
       case apiStatus.res:
         return (
-          <div className="recent-transactions-card">
-            <h1 className="recent-transaction-card-heading">
+          <div className="w-[95%] flex flex-col m-[5px]">
+            <h1 className="font-[Arial, Helvetica, sans-serif] text-[22px] leading-[26.63px] text-[#333b69] p-[5px] m-[5px] mb-[0px] ml-[3%] font-[600]">
               Last Transaction
             </h1>
             <TransactionsList limit={limit} />
@@ -193,8 +193,8 @@ const Home = (props: HomeProps) => {
     switch (current.value) {
       case apiStatus.res:
         return (
-          <div className="overview-chart-card">
-            <h1 className="overview-card-heading">Debit & Credit Overview</h1>
+          <div className="flex flex-col w-[95%] p-[5px] m-[5px] mb-[3%]">
+            <h1 className="font-[Arial, Helvetica, sans-serif] text-[22px] leading-[26.63px] text-[#333b69] p-[5px] m-[3px] ml-[3%] font-[600]">Debit & Credit Overview</h1>
             {!shouldShowAddTransactionPopup &&
               !shouldShowUpdatePopup &&
               !shouldShowDeletePopup &&
@@ -212,7 +212,7 @@ const Home = (props: HomeProps) => {
     }
   };
   return (
-    <div className="main-content">
+    <div className="overflow-auto">
       {renderTotalCreditAndDebit()}
       {renderTransactions()}
       {renderTransactionOverviewCharts()}

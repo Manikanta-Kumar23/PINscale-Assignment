@@ -15,9 +15,9 @@ const AuthenticateRoute = (props: RouteProps) => {
     return <Redirect to="/login" />;
   }
   return (
-    <div className="home-bg">
+    <div className="w-[100vw] h-[100vh] p-[0px] m-[0px] flex bg-[#eee9e9]">
       <SideBar />
-      <div className="home-content">
+      <div className="flex flex-col w-[100%] p-[0px] m-[0px] md:w-[85%]">
         <Navbar />
         <Route {...props} />
       </div>
