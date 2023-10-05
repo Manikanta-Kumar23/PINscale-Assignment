@@ -69,7 +69,7 @@ const Navbar = (props: any) => {
             onChange={(e) => i18n.changeLanguage(e.target.value)}
           >
             {lngs.map((each) => (
-              <option value={each.value}>{each.nativeName}</option>
+              <option key = {each.value} value={each.value}>{each.nativeName}</option>
             ))}
           </select>
           {userId !== "3" && (

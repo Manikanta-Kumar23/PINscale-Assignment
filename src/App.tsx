@@ -1,4 +1,4 @@
-import { Switch, Route, withRouter } from "react-router-dom";
+import {BrowserRouter , Switch, Route ,Router} from "react-router-dom";
 
 import "./App.css";
 import AddTransactions from "./components/AddTransactions";
@@ -12,24 +12,28 @@ import AuthenticateRoute from "./components/AuthenticateRoute";
 import NotFound from "./common/NotFound";
 import ResourceProvider from "./context/ResourceContext";
 import StoreProvider from "./context/StoreContext";
+import {createMemoryHistory} from "history"
 
 const App = () => {
+  const history = createMemoryHistory()
   return (
     <StoreProvider>
       <ResourceProvider>
         <UpdateTransactions />
         <AddTransactions />
-        <DeleteTransaction />
-        <Switch>
+        <Router history={history}><DeleteTransaction /></Router>
+       <BrowserRouter>
+       <Switch>
           <Route exact path="/login" component={Login} />
           <AuthenticateRoute exact path="/" component={Home} />
           <AuthenticateRoute path="/transactions" component={Transactions} />
           <AuthenticateRoute path="/profile" component={Profile} />
           <Route component={NotFound} />
         </Switch>
+        </BrowserRouter>
       </ResourceProvider>
     </StoreProvider>
   );
 };
 
-export default withRouter(App);
+export default App;

@@ -48,6 +48,7 @@ const Login = () => {
       };
       const res = await fetch(url, options);
       const data = await res.json();
+      console.log(res)
       if (data.get_user_id.length !== 0) {
         onSuccess(data.get_user_id[0].id);
       } else {
@@ -67,7 +68,7 @@ const Login = () => {
       <div className="login-page-card">
         <div className="login-page-image-card">
           <img
-            alt="logo"
+            alt="loginLogo"
             className="company-logo"
             src="https://res.cloudinary.com/djwve85r0/image/upload/v1690624094/Company_logo.png"
           />
